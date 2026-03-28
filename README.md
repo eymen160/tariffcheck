@@ -1,5 +1,5 @@
 # TariffCheck — AI Customs Duty Auditor
-**Hacklanta 2026 | Nexlayer All-In Track**
+**Hacklanta 2026 |OBIM team- Finance Track**
 
 US importers overpay $26 billion in customs duties annually due to HTS misclassification. TariffCheck finds the errors and generates a ready-to-file CBP protest letter in 30 seconds.
 
