@@ -5,58 +5,80 @@ import Navbar from '../components/Navbar'
 const API = 'http://localhost:8000'
 
 const DEMOS = [
-  { id: 1, label: 'Furniture from Mexico', tag: 'USMCA', color: '#059669', savings: '$3,392', desc: '9403.90 misclassified — save 5.3% duty' },
-  { id: 2, label: 'Clothing from Bangladesh', tag: 'Classification', color: '#2563EB', savings: '~$3,500', desc: '6109.90 vs 6109.10 — 32% vs 16.5%' },
-  { id: 3, label: 'Electronics from China', tag: 'Section 301', color: '#7C3AED', savings: '$0', desc: 'Laptops and phones — verify Section 301' },
-  { id: 4, label: 'Auto Parts from South Korea', tag: 'KORUS FTA', color: '#B45309', savings: 'FTA Eligible', desc: '8708.29 — KORUS trade agreement applies' },
-  { id: 5, label: 'Leather Goods from Italy', tag: 'Classification', color: '#DC2626', savings: 'Potential', desc: '4202.92 leather classification review' },
+  { id: 1, label: 'Office Furniture — Mexico', tag: 'USMCA + Misclass', color: '#059669', savings: '$3,392', desc: 'HTS 9403.90 vs 9403.10 — USMCA not claimed' },
+  { id: 2, label: 'Athletic Footwear — Vietnam', tag: 'Classification', color: '#2563EB', savings: '$10,850', desc: 'HTS 6404.19 vs 6404.11 — 37.5% vs 20%' },
+  { id: 3, label: 'Coffee Equipment — Colombia', tag: 'CTPA FTA', color: '#7C3AED', savings: '$4,338', desc: 'US-Colombia FTA not applied — 4.5% to 0%' },
+  { id: 4, label: 'Auto Parts — South Korea', tag: 'KORUS FTA', color: '#B45309', savings: '$1,970', desc: 'KORUS preference not claimed — 2.5% to 0%' },
+  { id: 5, label: 'Pharma Equipment — India', tag: 'Principal Use', color: '#DC2626', savings: '$7,105', desc: 'HTS 8477.80 vs 8479.89 — 3.5% to 0%' },
 ]
 
 const DEMO_TEXTS = {
-  1: `COMMERCIAL INVOICE
-Seller: Muebles ACME S.A. de C.V., Monterrey, Mexico
-Buyer: Atlanta Office Supply Co., Atlanta, GA 30309
-Country of Origin: Mexico
+  1: `COMMERCIAL INVOICE — INV: MX-INV-2026-0087
+Seller: Grupo Muebles Monterrey S.A. de C.V., Monterrey, Mexico
+Buyer: Atlanta Office Furnishings LLC, Atlanta, GA 30305
+Country of Origin: Mexico | Incoterms: FOB Lazaro Cardenas
+
 HTS Code: 9403.90.8040
-Description: Office furniture, metal frame ergonomic chairs, qty 200
-Unit Value: USD 320.00
-Total Declared Value: USD 64,000.00`,
+Description: Executive office chairs, adjustable height, metal base, fabric upholstery
+Quantity: 200 PCS | Unit Price: USD 320.00 | Total: USD 64,000.00
 
-  2: `COMMERCIAL INVOICE
-Seller: Dhaka Garments Export Ltd., Dhaka, Bangladesh
-Buyer: Southeast Apparel LLC, Atlanta, GA 30303
-Country of Origin: Bangladesh
-Item 1: HTS 6109.90.1090 - Men's t-shirts, 60% polyester 40% cotton, 2000 pcs, $8 each, Total $16,000
-Item 2: HTS 6204.69.9010 - Women's trousers, cotton-polyester blend, 500 pcs, $15 each, Total $7,500
-Grand Total: USD 23,500.00`,
+USMCA Certificate of Origin: Not attached`,
 
-  3: `COMMERCIAL INVOICE
-Seller: Shenzhen Electronics Mfg Ltd., Shenzhen, China
-Buyer: TechDistro USA Inc., Atlanta, GA 30318
-Country of Origin: China
-Item 1: HTS 8471.30.0100 - Laptops, portable data processing machines, 50 units, $800 each, Total $40,000
-Item 2: HTS 8517.12.0050 - Smartphones 5G, 100 units, $450 each, Total $45,000
-Grand Total: USD 85,000.00`,
+  2: `COMMERCIAL INVOICE — INV: VN-EXP-2026-2241
+Seller: Hanoi Footwear Manufacturing Co. Ltd., Hanoi, Vietnam
+Buyer: SportsGear USA Distributors Inc., Atlanta, GA 30336
+Country of Origin: Vietnam | Incoterms: CIF Savannah
 
-  4: `COMMERCIAL INVOICE
-Seller: Hyundai Parts Co. Ltd., Ulsan, South Korea
-Buyer: Atlanta Auto Components Inc., Atlanta, GA 30354
-Country of Origin: South Korea
-Item 1: HTS 8708.29.5060 - Vehicle body parts, stamped steel panels, 500 units, $45 each, Total $22,500
-Item 2: HTS 8501.10.4060 - Electric motors under 37.5W, 200 units, $28 each, Total $5,600
-Grand Total: USD 28,100.00
-Note: Goods qualify for KORUS FTA preferential treatment`,
+Item 1: HTS 6404.19.3560 — Athletic shoes, rubber sole, textile upper, size 6-13
+Qty: 2,000 PRS | Unit: USD 22.00 | Total: USD 44,000.00
 
-  5: `COMMERCIAL INVOICE
-Seller: Pelletteria Romano S.r.l., Florence, Italy
-Buyer: Luxury Goods Imports LLC, Atlanta, GA 30305
-Country of Origin: Italy
-Item 1: HTS 4202.92.9060 - Handbags, genuine cowhide leather, 100 units, $280 each, Total $28,000
-Item 2: HTS 4202.92.9060 - Travel duffel bags, full grain leather, 50 units, $320 each, Total $16,000
-Grand Total: USD 44,000.00`,
+Item 2: HTS 6404.19.9060 — Walking shoes, rubber sole, mesh textile upper
+Qty: 1,000 PRS | Unit: USD 18.00 | Total: USD 18,000.00
+
+Grand Total: USD 62,000.00`,
+
+  3: `COMMERCIAL INVOICE — INV: CO-COM-2026-0312
+Seller: Industrias Tecnicas de Colombia S.A.S., Medellin, Colombia
+Buyer: Specialty Coffee Roasters of America LLC, Atlanta, GA 30313
+Country of Origin: Colombia | Incoterms: CIF Miami
+
+Item 1: HTS 8419.89.1000 — Industrial coffee roasting machines, 60kg/batch capacity
+Qty: 4 UNITS | Unit: USD 18,500.00 | Total: USD 74,000.00
+
+Item 2: HTS 8419.89.1000 — Replacement drum assemblies and heating elements
+Qty: 8 SETS | Unit: USD 2,800.00 | Total: USD 22,400.00
+
+Grand Total: USD 96,400.00 | US-Colombia FTA applicable but not claimed`,
+
+  4: `COMMERCIAL INVOICE — INV: KR-INV-2026-7734
+Seller: Korea Precision Components Co. Ltd., Incheon, South Korea
+Buyer: Peach State Auto Manufacturing Inc., Dacula, GA 30019
+Country of Origin: South Korea | Incoterms: FOB Incheon
+
+Item 1: HTS 8708.99.8180 — Precision transmission housings, cast aluminum
+Qty: 300 PCS | Unit: USD 145.00 | Total: USD 43,500.00
+
+Item 2: HTS 8483.40.5000 — Gear boxes and speed reducers, automotive
+Qty: 150 PCS | Unit: USD 210.00 | Total: USD 31,500.00
+
+Grand Total: USD 75,000.00 | KORUS FTA not applied at entry`,
+
+  5: `COMMERCIAL INVOICE — INV: IN-EXP-2026-4489
+Seller: Mumbai Pharma Equipment Exports Pvt. Ltd., Mumbai, India
+Buyer: BioTech Processing Solutions LLC, Alpharetta, GA 30005
+Country of Origin: India | Incoterms: CIF Charleston
+
+Item 1: HTS 8477.80.0000 — Tablet coating machines, pharma grade, 316L SS
+Qty: 3 UNITS | Unit: USD 42,000.00 | Total: USD 126,000.00
+
+Item 2: HTS 8477.80.0000 — Fluid bed dryer/granulator systems, GMP 150L
+Qty: 2 UNITS | Unit: USD 38,500.00 | Total: USD 77,000.00
+
+Grand Total: USD 203,000.00`,
 }
 
-const DEMO_ICONS = { 1: '🪑', 2: '👕', 3: '💻', 4: '🚗', 5: '👜' }
+
+const DEMO_ICONS = { 1: '🪑', 2: '👟', 3: '☕', 4: '⚙️', 5: '💊' }
 
 const STEPS = [
   'Parsing invoice document...',
@@ -251,7 +273,7 @@ export default function HomePage() {
                 <input ref={fileRef} type="file" accept=".pdf,.txt" onChange={e=>setFile(e.target.files[0])} />
               </div>
               <div style={{marginTop:12,background:'var(--blue-light)',borderRadius:'var(--radius-md)',padding:'12px 16px',fontSize:13,color:'var(--blue)',border:'1px solid var(--blue-mid)'}}>
-                📎 Need a sample? Download the demo PDFs from the <code style={{fontFamily:'JetBrains Mono'}}>demo/</code> folder in the project.
+                📎 Use the sample PDFs: demo1_mexico_furniture.pdf through demo5_india_pharma.pdf from the demo/ folder.
               </div>
               <button className="submit-btn" onClick={handleSubmit} disabled={!file}>
                 Analyze Uploaded Invoice

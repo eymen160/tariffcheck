@@ -156,15 +156,15 @@ def analyze():
             if file.filename and file.filename.lower().endswith('.pdf'):
                 # Route demo PDFs to mock responses directly
                 fname = file.filename.lower()
-                if 'furniture' in fname or 'mexico' in fname or 'invoice1' in fname:
+                if 'furniture' in fname or 'mexico' in fname or 'demo1' in fname:
                     return jsonify(MOCK_DEMOS["1"])
-                elif 'clothing' in fname or 'bangladesh' in fname or 'invoice2' in fname:
+                elif 'footwear' in fname or 'vietnam' in fname or 'demo2' in fname:
                     return jsonify(MOCK_DEMOS["2"])
-                elif 'electronics' in fname or 'china' in fname or 'invoice3' in fname:
+                elif 'coffee' in fname or 'colombia' in fname or 'demo3' in fname:
                     return jsonify(MOCK_DEMOS["3"])
-                elif 'auto' in fname or 'korea' in fname or 'invoice4' in fname:
+                elif 'autopart' in fname or 'korea' in fname or 'demo4' in fname:
                     return jsonify(MOCK_DEMOS["4"])
-                elif 'leather' in fname or 'italy' in fname or 'invoice5' in fname:
+                elif 'pharma' in fname or 'india' in fname or 'demo5' in fname:
                     return jsonify(MOCK_DEMOS["5"])
                 invoice_text = extract_text_from_pdf(file_bytes)
             else:
@@ -205,42 +205,213 @@ def analyze():
 
 MOCK_DEMOS = {
     "1": {
-        "findings": [{"hts_code":"9403.90.8040","description":"Office furniture, metal frame ergonomic chairs","current_rate":5.3,"suggested_code":"9403.10.0000","suggested_rate":0.0,"declared_value":64000,"savings":3392,"explanation":"Metal office chairs are specifically classified under HTS 9403.10 (metal furniture of a kind used in offices) at 0% duty rate. The general category 9403.90 at 5.3% is overly broad for this merchandise. Since goods originate from Mexico, USMCA also provides duty-free treatment under 19 U.S.C. 4531."}],
-        "total_savings":3392,"fta_eligible":True,"fta_type":"USMCA","country_of_origin":"Mexico",
-        "protest_letter":"To: U.S. Customs and Border Protection\nPort Director, Port of Atlanta\n\nRe: Protest of Tariff Classification pursuant to 19 U.S.C. 1514(a)(2)\n\nDear Port Director,\n\nThe importer hereby protests the classification of imported merchandise under HTS 9403.90.8040 at a general duty rate of 5.3%.\n\nThe imported merchandise consists of metal-frame office chairs, more specifically provided for under HTS 9403.10.0000 (metal furniture of a kind used in offices) at 0% duty. As goods of Mexican origin, USMCA duty-free treatment also applies under 19 U.S.C. 4531.\n\nTotal overpayment: $3,392. We request reliquidation and refund.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+        "findings": [{
+            "hts_code": "9403.90.8040",
+            "description": "Executive office chairs, adjustable height, metal base, fabric upholstery",
+            "current_rate": 5.3,
+            "suggested_code": "9403.10.0000",
+            "suggested_rate": 0.0,
+            "declared_value": 64000,
+            "savings": 3392,
+            "explanation": "Metal-frame office chairs are specifically provided for under HTS 9403.10 (metal furniture of a kind used in offices) at 0% duty. The importer used the catch-all 9403.90 at 5.3%. Additionally, as goods of Mexican origin, USMCA provides duty-free treatment under 19 U.S.C. 4531. The importer failed to claim this FTA preference."
+        }],
+        "total_savings": 3392, "fta_eligible": True, "fta_type": "USMCA", "country_of_origin": "Mexico",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Houston\n\nRe: Protest of Tariff Classification — Entry No. ATL-2026-0087\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer of record hereby protests the tariff classification of merchandise entered under HTS subheading 9403.90.8040 at a general duty rate of 5.3%.\n\nThe imported merchandise consists of adjustable-height executive office chairs with metal frames and bases. These goods are more specifically provided for under HTS subheading 9403.10.0000 (furniture of a kind used in offices, of metal) at a general duty rate of 0%. Furthermore, as goods of Mexican origin, the merchandise qualifies for duty-free preferential treatment under the United States-Mexico-Canada Agreement (USMCA) pursuant to 19 U.S.C. 4531.\n\nThe total overpayment of duties on this entry amounts to $3,392.00. We respectfully request that CBP reliquidate this entry under HTS 9403.10.0000 and refund all excess duties paid.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     },
     "2": {
         "findings": [
-            {"hts_code":"6109.90.1090","description":"Men's t-shirts, 60% polyester 40% cotton blend","current_rate":32.0,"suggested_code":"6109.10.0012","suggested_rate":16.5,"declared_value":16000,"savings":2480,"explanation":"Although this fabric is a blend, the garment's chief weight is cotton (40% cotton is chief weight when considering fiber type). Under GRI 3(b), the essential character is cotton, making 6109.10 (cotton t-shirts at 16.5%) the correct classification. This results in significant duty savings vs 6109.90 at 32%."},
-            {"hts_code":"6204.69.9010","description":"Women's trousers, woven, cotton-polyester blend","current_rate":28.6,"suggested_code":"6204.62.4021","suggested_rate":16.6,"declared_value":7500,"savings":900,"explanation":"Women's woven trousers with cotton as chief weight fiber are classified under 6204.62 at 16.6%, not the general 6204.69 category at 28.6%. Chief weight determination favors cotton, supporting the more specific classification."}
+            {
+                "hts_code": "6404.19.3560",
+                "description": "Athletic shoes, outer sole rubber/plastics, textile upper, size 6-13",
+                "current_rate": 37.5,
+                "suggested_code": "6404.11.2060",
+                "suggested_rate": 20.0,
+                "declared_value": 44000,
+                "savings": 7700,
+                "explanation": "Footwear designed for athletic/sports use with rubber outer soles and textile uppers is specifically classified under HTS 6404.11 (sports footwear) at 20%, not the general 6404.19 category at 37.5%. The product description and intended use clearly indicate these are athletic shoes requiring the more specific classification."
+            },
+            {
+                "hts_code": "6404.19.9060",
+                "description": "Walking shoes, outer sole rubber, mesh textile upper, casual",
+                "current_rate": 37.5,
+                "suggested_code": "6404.11.2060",
+                "suggested_rate": 20.0,
+                "declared_value": 18000,
+                "savings": 3150,
+                "explanation": "Mesh-upper walking shoes with rubber soles qualify as sports footwear under 6404.11 at 20%. The current classification under 6404.19 at 37.5% overstates duty by 17.5 percentage points."
+            }
         ],
-        "total_savings":3380,"fta_eligible":False,"fta_type":None,"country_of_origin":"Bangladesh",
-        "protest_letter":"To: U.S. Customs and Border Protection\nPort Director, Port of Atlanta\n\nRe: Protest of Tariff Classification pursuant to 19 U.S.C. 1514(a)(2)\n\nDear Port Director,\n\nThe importer protests the classification of two textile items from Bangladesh.\n\nItem 1: HTS 6109.90.1090 (32%) should be 6109.10.0012 (16.5%) based on cotton chief weight determination under GRI 3(b). Savings: $2,480.\n\nItem 2: HTS 6204.69.9010 (28.6%) should be 6204.62.4021 (16.6%) for the same reason. Savings: $900.\n\nTotal overpayment: $3,380. We request reliquidation and refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+        "total_savings": 10850, "fta_eligible": False, "fta_type": None, "country_of_origin": "Vietnam",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Savannah\n\nRe: Protest of Tariff Classification — Entry No. SAV-2026-2241\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of two lines of footwear from Vietnam.\n\nItem 1: Athletic shoes classified under HTS 6404.19.3560 (37.5%) should be HTS 6404.11.2060 (sports footwear, 20%). Overpayment: $7,700.\nItem 2: Walking shoes classified under HTS 6404.19.9060 (37.5%) should be HTS 6404.11.2060 (20%). Overpayment: $3,150.\n\nBoth items were designed for athletic use as evidenced by the product specifications, mesh uppers, and cushioned athletic soles. HTS 6404.11 specifically covers sports footwear with rubber/plastic outer soles and textile uppers.\n\nTotal overpayment: $10,850. We respectfully request reliquidation and full refund.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     },
     "3": {
-        "findings": [
-            {"hts_code":"8471.30.0100","description":"Portable laptops, 15 inch, automatic data processing machines","current_rate":0.0,"suggested_code":"8471.30.0100","suggested_rate":0.0,"declared_value":40000,"savings":0,"explanation":"HTS 8471.30.0100 is the correct classification for portable laptops. The 0% duty rate under the ITA (Information Technology Agreement) applies. No misclassification identified."},
-            {"hts_code":"8517.12.0050","description":"Smartphones, 5G capable, Android OS","current_rate":0.0,"suggested_code":"8517.12.0050","suggested_rate":0.0,"declared_value":45000,"savings":0,"explanation":"Smartphones are correctly classified under 8517.12 at 0% duty. However, note that Section 301 additional tariffs on Chinese-origin goods may apply separately. Verify with your customs broker whether any Chapter 99 additional duties were assessed."}
-        ],
-        "total_savings":0,"fta_eligible":False,"fta_type":None,"country_of_origin":"China",
-        "protest_letter":"No protest needed. Current HTS classifications for electronics from China appear correct. Note: Verify whether Section 301 Chapter 99 additional tariffs were correctly assessed on these entries separately from the base HTS duty rates."
+        "findings": [{
+            "hts_code": "8419.89.1000",
+            "description": "Industrial coffee roasting machines + replacement drum assemblies",
+            "current_rate": 4.5,
+            "suggested_code": "8419.89.1000",
+            "suggested_rate": 0.0,
+            "declared_value": 96400,
+            "savings": 4338,
+            "explanation": "The goods are correctly classified under HTS 8419.89.1000. However, the importer failed to claim US-Colombia Trade Promotion Agreement (CTPA) preferential duty-free treatment. As goods wholly originating in Colombia, these machines qualify for a 0% preferential rate under CTPA, reducing duties from 4.5% to 0%."
+        }],
+        "total_savings": 4338, "fta_eligible": True, "fta_type": "US-Colombia CTPA", "country_of_origin": "Colombia",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Miami\n\nRe: Protest — US-Colombia FTA Preference Not Applied\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the failure to apply US-Colombia Trade Promotion Agreement (CTPA) preferential duty rates.\n\nThe imported industrial coffee roasting equipment (HTS 8419.89.1000) originates in Colombia and qualifies for duty-free treatment under the US-Colombia CTPA, which entered into force May 15, 2012. The importer inadvertently paid the 4.5% general rate rather than the 0% CTPA preferential rate.\n\nCertificate of origin documentation confirming Colombian origin is attached. Total duties overpaid: $4,338.\n\nWe request reliquidation at the 0% CTPA preferential rate and full refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     },
     "4": {
         "findings": [
-            {"hts_code":"8708.29.5060","description":"Vehicle body parts, stamped steel panels","current_rate":2.5,"suggested_code":"8708.29.5060","suggested_rate":0.0,"declared_value":22500,"savings":562,"explanation":"As goods originating in South Korea, these auto parts qualify for duty-free treatment under the US-Korea Free Trade Agreement (KORUS) pursuant to 19 U.S.C. 3805. The applicable KORUS rate for HTS 8708.29 is 0%, reducing duty from 2.5% general rate. Ensure Form 3461 and KORUS certificate of origin documentation are on file."},
-            {"hts_code":"8501.10.4060","description":"Electric motors, output not exceeding 37.5W","current_rate":6.7,"suggested_code":"8501.10.4060","suggested_rate":0.0,"declared_value":5600,"savings":375,"explanation":"Electric motors from South Korea qualify for KORUS preferential treatment at 0% vs the 6.7% general rate under HTS 8501.10. Proper KORUS origin documentation required."}
+            {
+                "hts_code": "8708.99.8180",
+                "description": "Precision-machined transmission housings, cast aluminum, CNC finished",
+                "current_rate": 2.5,
+                "suggested_code": "8708.99.8180",
+                "suggested_rate": 0.0,
+                "declared_value": 43500,
+                "savings": 1088,
+                "explanation": "Transmission housings originating in South Korea qualify for duty-free treatment under the US-Korea Free Trade Agreement (KORUS) pursuant to 19 U.S.C. 3805. The KORUS preferential rate for HTS 8708.99 is 0% vs the 2.5% general rate. KORUS preference was not claimed at entry."
+            },
+            {
+                "hts_code": "8483.40.5000",
+                "description": "Gear boxes and speed reducers for automotive applications",
+                "current_rate": 2.8,
+                "suggested_code": "8483.40.5000",
+                "suggested_rate": 0.0,
+                "declared_value": 31500,
+                "savings": 882,
+                "explanation": "Gear boxes of South Korean origin qualify for KORUS duty-free treatment. The 2.8% general rate applied at entry should be 0% under KORUS. Certificate of origin required."
+            }
         ],
-        "total_savings":937,"fta_eligible":True,"fta_type":"KORUS","country_of_origin":"South Korea",
-        "protest_letter":"To: U.S. Customs and Border Protection\nPort Director, Port of Atlanta\n\nRe: Protest of Tariff Classification pursuant to 19 U.S.C. 1514(a)(2)\n\nDear Port Director,\n\nThe importer protests the failure to apply KORUS FTA preferential duty rates to goods of South Korean origin.\n\nItem 1: HTS 8708.29.5060 - KORUS rate 0% vs general rate 2.5%. Savings: $562.\nItem 2: HTS 8501.10.4060 - KORUS rate 0% vs general rate 6.7%. Savings: $375.\n\nCertificate of origin and KORUS eligibility documentation is attached. Total overpayment: $937.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+        "total_savings": 1970, "fta_eligible": True, "fta_type": "KORUS", "country_of_origin": "South Korea",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Savannah\n\nRe: Protest — KORUS FTA Preferential Treatment Not Applied\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the failure to apply KORUS FTA preferential rates.\n\nItem 1: HTS 8708.99.8180 — KORUS rate 0% vs general 2.5%. Overpayment: $1,088.\nItem 2: HTS 8483.40.5000 — KORUS rate 0% vs general 2.8%. Overpayment: $882.\n\nAll goods originate in South Korea as supported by attached KORUS certificates of origin. Total overpayment: $1,970.\n\nWe request reliquidation at KORUS preferential rates and full refund.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     },
     "5": {
         "findings": [
-            {"hts_code":"4202.92.9060","description":"Handbags and travel bags, genuine cowhide leather","current_rate":17.6,"suggested_code":"4202.12.2020","suggested_rate":20.0,"declared_value":44000,"savings":-1056,"explanation":"These leather handbags and duffels have genuine leather outer surface. HTS 4202.12 (leather outer surface bags) at 20% is more specific than 4202.92 (other bags, other materials) at 17.6%. The importer is currently UNDERPAYING duties by using the general category. This should be reclassified upward to avoid potential CBP penalty assessment for undervaluation."}
+            {
+                "hts_code": "8477.80.0000",
+                "description": "Pharmaceutical tablet coating machines + fluid bed dryer/granulator systems",
+                "current_rate": 3.5,
+                "suggested_code": "8479.89.9499",
+                "suggested_rate": 0.0,
+                "declared_value": 203000,
+                "savings": 7105,
+                "explanation": "Pharmaceutical processing equipment (tablet coaters and fluid bed dryers) is more specifically classified under HTS 8479.89.9499 (other machinery for making pharmaceutical products) at 0% duty, not the general 8477.80 category for plastics/rubber machinery at 3.5%. The principal use of this equipment in pharmaceutical manufacturing governs its classification under GRI principal use rules."
+            }
         ],
-        "total_savings":0,"fta_eligible":False,"fta_type":None,"country_of_origin":"Italy",
-        "protest_letter":"IMPORTANT NOTICE: TariffCheck analysis indicates the current HTS classification 4202.92.9060 at 17.6% may be incorrect for genuine leather goods. The more specific classification 4202.12.2020 at 20% applies to bags with leather outer surface. Current classification may result in underpayment of duties, which carries CBP penalty risk. Recommend filing a prior disclosure with CBP and reclassifying prospectively. Consult a licensed customs broker immediately."
+        "total_savings": 7105, "fta_eligible": False, "fta_type": None, "country_of_origin": "India",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Charleston\n\nRe: Protest of Tariff Classification — Entry No. CHS-2026-4489\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of pharmaceutical processing equipment under HTS 8477.80.0000 at 3.5%.\n\nThe imported machinery consists of GMP-compliant tablet coating machines and fluid bed dryer/granulator systems used exclusively in pharmaceutical manufacturing. Under GRI principal use rules and Additional U.S. Note 1 to Chapter 84, equipment designed principally for pharmaceutical production is classified under HTS 8479.89.9499 at 0%.\n\nThe importer provides pharmaceutical production contracts and FDA facility registration as evidence of principal use. Total overpayment: $7,105.\n\nWe request reliquidation under HTS 8479.89.9499 and full refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     }
 }
+
+
+def extract_text_from_pdf(file_bytes):
+    try:
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
+        text = ""
+        for page in pdf_reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted + "\n"
+        return text.strip()
+    except Exception as e:
+        print(f"PDF extraction error: {e}")
+        return ""
+
+
+def analyze_with_claude(invoice_text):
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key or api_key in ("dummy", "dummy_key_for_demo", "your_key_here", ""):
+        print("No valid API key — returning mock response")
+        return None
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+
+        system_prompt = """You are a US customs classification expert with 20 years of experience analyzing commercial invoices and HTS codes.
+
+Analyze the provided document and find duty savings opportunities.
+
+Return ONLY valid JSON in this exact format, no other text:
+{
+  "findings": [
+    {
+      "hts_code": "current HTS code from invoice or inferred from product description",
+      "description": "product description from invoice",
+      "current_rate": 5.3,
+      "suggested_code": "better HTS code if one exists, same as current if correct",
+      "suggested_rate": 0.0,
+      "declared_value": 64000,
+      "savings": 3392,
+      "explanation": "plain English explanation of the savings opportunity or why current code is correct"
+    }
+  ],
+  "total_savings": 3392,
+  "fta_eligible": true,
+  "fta_type": "USMCA",
+  "country_of_origin": "Mexico"
+}
+
+Rules:
+- If origin is Canada or Mexico: USMCA applies, set fta_eligible=true, fta_type="USMCA"
+- If origin is South Korea: KORUS applies
+- savings = (current_rate - suggested_rate) / 100 * declared_value
+- If no savings found, set savings=0 and explain why current classification is correct
+- Always return valid JSON only"""
+
+        message = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1500,
+            system=system_prompt,
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Analyze this customs invoice and find HTS misclassification savings:\n\n{invoice_text[:3000]}"
+                }
+            ]
+        )
+
+        response_text = message.content[0].text.strip()
+        # Extract JSON
+        start = response_text.find('{')
+        end = response_text.rfind('}') + 1
+        if start != -1 and end > start:
+            return json.loads(response_text[start:end])
+        return None
+
+    except Exception as e:
+        print(f"Claude error: {e}")
+        return None
+
+
+def generate_protest_letter(findings, total_savings, fta_type=None):
+    if not findings or total_savings == 0:
+        return "No protest needed — current classification appears correct."
+
+    items = "\n".join([
+        f"- HTS {f.get('hts_code')} → {f.get('suggested_code')} (save ${f.get('savings', 0):,.0f})"
+        for f in findings if f.get('savings', 0) > 0
+    ])
+
+    fta_text = ""
+    if fta_type:
+        fta_text = f"Furthermore, as goods qualifying under {fta_type}, duty-free treatment applies. "
+
+    return f"""To: U.S. Customs and Border Protection
+Port Director
+
+Re: Protest of Tariff Classification
+
+Dear Port Director,
+
+Pursuant to 19 U.S.C. §1514(a)(2), the importer hereby protests the tariff classification of imported merchandise and requests reliquidation of the affected entries.
+
+The following misclassifications were identified:
+{items}
+
+{fta_text}The total overpayment of duties amounts to ${total_savings:,.2f}. We respectfully request that CBP reliquidate these entries under the correct HTS classifications and refund the excess duties paid within the statutory timeframe.
+
+Respectfully submitted,
+Authorized Importer Representative
+TariffCheck Analysis System"""
 
 @app.route('/demo', methods=['GET'])
 def demo():
