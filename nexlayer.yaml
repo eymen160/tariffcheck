@@ -1,0 +1,16 @@
+application:
+  name: tariffcheck
+  pods:
+    - name: backend
+      image: ttl.sh/tariffcheck-backend:1d
+      path: /api
+      servicePorts:
+        - 5000
+      vars:
+        - key: ANTHROPIC_API_KEY
+          value: "REPLACE_WITH_YOUR_KEY"
+    - name: frontend
+      image: ttl.sh/tariffcheck-frontend:1d
+      path: /
+      servicePorts:
+        - 80

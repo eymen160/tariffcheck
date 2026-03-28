@@ -1,0 +1,30 @@
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Mac
+.DS_Store
+**/.DS_Store
+
+# IDE
+.vscode/
+.cursor/
+*.swp
+
+# Temp
+tariffcheck_backend_fixed/
+frontend 2/

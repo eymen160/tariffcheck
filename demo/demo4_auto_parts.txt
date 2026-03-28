@@ -1,0 +1,25 @@
+COMMERCIAL INVOICE
+
+Seller: Hyundai Parts Co. Ltd., Ulsan Industrial Complex, South Korea
+Buyer: Atlanta Auto Components Inc., 2200 Industrial Blvd, Atlanta, GA 30354
+
+Country of Origin: South Korea
+Invoice Number: KR-2026-3312
+Invoice Date: March 28, 2026
+
+Item 1:
+HTS Code: 8708.29.5060
+Description: Body parts and accessories for motor vehicles, stamped steel panels
+Quantity: 500 units
+Unit Price: USD 45.00
+Total: USD 22,500.00
+
+Item 2:
+HTS Code: 8501.10.4060
+Description: Electric motors, output not exceeding 37.5W, for industrial use
+Quantity: 200 units
+Unit Price: USD 28.00
+Total: USD 5,600.00
+
+Grand Total: USD 28,100.00
+Note: Goods qualify for KORUS preferential treatment

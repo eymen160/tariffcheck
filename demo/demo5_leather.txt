@@ -1,0 +1,25 @@
+COMMERCIAL INVOICE
+
+Seller: Pelletteria Romano S.r.l., Via Nazionale 45, Florence, Italy
+Buyer: Luxury Goods Imports LLC, 100 Buckhead Ave, Atlanta, GA 30305
+
+Country of Origin: Italy
+Invoice Number: IT-2026-0099
+Invoice Date: March 28, 2026
+
+Item 1:
+HTS Code: 4202.92.9060
+Description: Handbags, shoulder bags, genuine cowhide leather exterior and interior
+Quantity: 100 units
+Unit Price: USD 280.00
+Total: USD 28,000.00
+
+Item 2:
+HTS Code: 4202.92.9060
+Description: Travel duffel bags, full grain leather, brass hardware
+Quantity: 50 units
+Unit Price: USD 320.00
+Total: USD 16,000.00
+
+Grand Total: USD 44,000.00
+Payment: Wire transfer

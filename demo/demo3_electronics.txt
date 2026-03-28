@@ -1,0 +1,25 @@
+COMMERCIAL INVOICE
+
+Seller: Shenzhen Electronics Manufacturing Ltd., Tech Park, Shenzhen, China
+Buyer: TechDistro USA Inc., 500 Technology Square, Atlanta, GA 30318
+
+Country of Origin: China
+Invoice Number: CN-2026-7789
+Invoice Date: March 28, 2026
+
+Item 1:
+HTS Code: 8471.30.0100
+Description: Portable automatic data processing machines, laptops, 15 inch screen
+Quantity: 50 units
+Unit Price: USD 800.00
+Total: USD 40,000.00
+
+Item 2:
+HTS Code: 8517.12.0050
+Description: Smartphones, 5G capable, Android OS
+Quantity: 100 units
+Unit Price: USD 450.00
+Total: USD 45,000.00
+
+Grand Total: USD 85,000.00
+Payment: T/T 30 days

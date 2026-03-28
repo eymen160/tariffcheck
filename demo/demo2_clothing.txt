@@ -1,0 +1,25 @@
+COMMERCIAL INVOICE
+
+Seller: Dhaka Garments Export Ltd., Export Processing Zone, Dhaka, Bangladesh
+Buyer: Southeast Apparel LLC, 789 Fashion Ave, Atlanta, GA 30303
+
+Country of Origin: Bangladesh
+Invoice Number: BD-2026-4421
+Invoice Date: March 28, 2026
+
+Item 1:
+HTS Code: 6109.90.1090
+Description: Men's t-shirts, knitted, 60% polyester 40% cotton blend
+Quantity: 2,000 pieces
+Unit Price: USD 8.00
+Total: USD 16,000.00
+
+Item 2:
+HTS Code: 6204.69.9010
+Description: Women's trousers, woven, cotton-polyester blend fabric
+Quantity: 500 pieces
+Unit Price: USD 15.00
+Total: USD 7,500.00
+
+Grand Total: USD 23,500.00
+Payment: Net 30

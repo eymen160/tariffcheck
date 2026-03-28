@@ -1,0 +1,17 @@
+COMMERCIAL INVOICE
+
+Seller: Muebles ACME S.A. de C.V., Monterrey, Nuevo Leon, Mexico
+Buyer: Atlanta Office Supply Co., 1234 Peachtree St NE, Atlanta, GA 30309
+
+Country of Origin: Mexico
+Invoice Number: MX-2026-0892
+Invoice Date: March 28, 2026
+
+HTS Code: 9403.90.8040
+Description: Office furniture, metal frame ergonomic chairs
+Quantity: 200 units
+Unit Value: USD 320.00
+Total Declared Value: USD 64,000.00
+
+Incoterms: FOB Monterrey
+Payment: Net 30

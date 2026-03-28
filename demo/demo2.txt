@@ -1,0 +1,29 @@
+COMMERCIAL INVOICE
+
+Seller: Shenzhen Tech Manufacturing Ltd.
+Address: Building A, Industrial Zone, Shenzhen, Guangdong, China
+
+Buyer: Southeast Electronics LLC
+Address: 456 Commerce Dr, Atlanta, GA 30301, USA
+
+Country of Origin: China
+Invoice Date: March 28, 2026
+Invoice No: STM-2026-789
+
+Item 1:
+HTS Code: 8528.59.0000
+Description: 27-inch computer display monitors, IPS panel, HDMI/DisplayPort inputs, for computer use
+Quantity: 500 units
+Unit Value: $220.00 USD
+Total: $110,000.00 USD
+
+Item 2:
+HTS Code: 9102.11.0040
+Description: Electronic wrist watches, with digital display showing hours/minutes/seconds
+Quantity: 200 units
+Unit Value: $45.00 USD
+Total: $9,000.00 USD
+
+Total Invoice Value: $119,000.00 USD
+Incoterms: CIF Los Angeles
+Payment Terms: Letter of Credit

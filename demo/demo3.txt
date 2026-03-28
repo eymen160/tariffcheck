@@ -1,0 +1,29 @@
+COMMERCIAL INVOICE
+
+Seller: Dhaka Garments Manufacturing Ltd.
+Address: Export Processing Zone, Dhaka, Bangladesh
+
+Buyer: Southern Fashion Wholesale Inc.
+Address: 789 Market St, Atlanta, GA 30302, USA
+
+Country of Origin: Bangladesh
+Invoice Date: March 28, 2026
+Invoice No: DGM-2026-456
+
+Item 1:
+HTS Code: 6109.90.1070
+Description: T-shirts, men's, 60% cotton 40% polyester blend, knitted
+Quantity: 5,000 units
+Unit Value: $8.50 USD
+Total: $42,500.00 USD
+
+Item 2:
+HTS Code: 6110.30.3010
+Description: Pullover sweatshirts, 100% cotton, fleece interior, knitted
+Quantity: 2,000 units
+Unit Value: $14.00 USD
+Total: $28,000.00 USD
+
+Total Invoice Value: $70,500.00 USD
+Incoterms: FOB Chittagong
+Carrier: Maersk Line
