@@ -146,6 +146,7 @@ TariffCheck Analysis System"""
 
 
 @app.route('/analyze', methods=['POST'])
+@app.route('/api/analyze', methods=['POST'])
 def analyze():
     try:
         invoice_text = ""
@@ -414,10 +415,12 @@ Authorized Importer Representative
 TariffCheck Analysis System"""
 
 @app.route('/demo', methods=['GET'])
+@app.route('/api/demo', methods=['GET'])
 def demo():
     return jsonify(MOCK_RESPONSE)
 
 @app.route('/demo/<demo_id>', methods=['GET'])
+@app.route('/api/demo/<demo_id>', methods=['GET'])
 def demo_by_id(demo_id):
     if demo_id in MOCK_DEMOS:
         return jsonify(MOCK_DEMOS[demo_id])
@@ -425,6 +428,7 @@ def demo_by_id(demo_id):
 
 
 @app.route('/health', methods=['GET'])
+@app.route('/api/health', methods=['GET'])
 def health():
     return jsonify({
         "status": "ok",

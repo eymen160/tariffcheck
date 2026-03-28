@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 
-const API = 'http://localhost:8000'
+const API = ''
 
 const DEMOS = [
   { id: 1, label: 'Office Furniture — Mexico', tag: 'USMCA + Misclass', color: '#059669', savings: '$3,392', desc: 'HTS 9403.90 vs 9403.10 — USMCA not claimed' },
@@ -109,7 +109,7 @@ export default function HomePage() {
     setActiveDemo(id)
     const t = startSteps(600)
     try {
-      const res = await fetch(`${API}/demo/${id}`)
+      const res = await fetch(`${API}/api/demo/${id}`)
       const data = await res.json()
       clearInterval(t)
       setTimeout(() => navigate('/results', { state: { data, demoId: id } }), 300)
@@ -127,11 +127,11 @@ export default function HomePage() {
     try {
       let data
       if (tab==='text') {
-        const res = await fetch(`${API}/analyze`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text}) })
+        const res = await fetch(`${API}/api/analyze`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text}) })
         data = await res.json()
       } else {
         const fd = new FormData(); fd.append('file', file)
-        const res = await fetch(`${API}/analyze`, { method:'POST', body:fd })
+        const res = await fetch(`${API}/api/analyze`, { method:'POST', body:fd })
         data = await res.json()
       }
       clearInterval(t)

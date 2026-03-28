@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 
-const API = 'http://localhost:8000'
+const API = ''
 
 function fmt(n) {
   return Number(n).toLocaleString('en-US')
@@ -33,7 +33,7 @@ export default function ResultsPage() {
   async function loadDemo() {
     setDemoError('')
     try {
-      const res = await fetch(`${API}/demo/2`)
+      const res = await fetch(`${API}/api/demo/2`)
       const d = await res.json()
       navigate('/results', { state: { data: d }, replace: true })
     } catch {

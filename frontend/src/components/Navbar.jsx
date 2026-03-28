@@ -13,17 +13,6 @@ export default function Navbar() {
           <span className="logo-tagline">AI Customs Duty Auditor</span>
         </div>
       </Link>
-      <div className="nav-right">
-        <a
-          href="https://nexlayer.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="nav-badge green"
-          style={{ textDecoration: 'none', cursor: 'pointer' }}
-        >
-          ⚡ Nexlayer All-In
-        </a>
-      </div>
     </nav>
   )
 }
