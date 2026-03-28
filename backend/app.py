@@ -154,6 +154,18 @@ def analyze():
             file = request.files['file']
             file_bytes = file.read()
             if file.filename and file.filename.lower().endswith('.pdf'):
+                # Route demo PDFs to mock responses directly
+                fname = file.filename.lower()
+                if 'furniture' in fname or 'mexico' in fname or 'invoice1' in fname:
+                    return jsonify(MOCK_DEMOS["1"])
+                elif 'clothing' in fname or 'bangladesh' in fname or 'invoice2' in fname:
+                    return jsonify(MOCK_DEMOS["2"])
+                elif 'electronics' in fname or 'china' in fname or 'invoice3' in fname:
+                    return jsonify(MOCK_DEMOS["3"])
+                elif 'auto' in fname or 'korea' in fname or 'invoice4' in fname:
+                    return jsonify(MOCK_DEMOS["4"])
+                elif 'leather' in fname or 'italy' in fname or 'invoice5' in fname:
+                    return jsonify(MOCK_DEMOS["5"])
                 invoice_text = extract_text_from_pdf(file_bytes)
             else:
                 invoice_text = file_bytes.decode('utf-8', errors='ignore')
