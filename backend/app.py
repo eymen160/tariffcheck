@@ -2,7 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import anthropic
 import PyPDF2
+import pdfplumber
 import json
+import re
 import io
 import os
 from dotenv import load_dotenv
@@ -35,6 +37,32 @@ MOCK_RESPONSE = {
 
 
 def extract_text_from_pdf(file_bytes):
+    # Try pdfplumber first — preserves table layout and spacing much better than PyPDF2
+    try:
+        with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+            pages = []
+            for page in pdf.pages:
+                # Extract tables first to capture HTS codes in table cells
+                tables = page.extract_tables()
+                if tables:
+                    for table in tables:
+                        for row in table:
+                            pages.append("  |  ".join(str(cell or "").strip() for cell in row))
+                # Also extract raw text for non-table content
+                text = page.extract_text(x_tolerance=3, y_tolerance=3)
+                if text:
+                    pages.append(text)
+            result = "\n".join(pages).strip()
+            if result:
+                # Normalize HTS codes that got split by whitespace during extraction
+                # e.g. "9403.10. 0000" → "9403.10.0000", "9403 .10.0000" → "9403.10.0000"
+                result = re.sub(r'(\d{4})\s*\.\s*(\d{2})\s*\.\s*(\d{4})', r'\1.\2.\3', result)
+                result = re.sub(r'(\d{4})\s*\.\s*(\d{2})\b', r'\1.\2', result)
+                return result
+    except Exception as e:
+        print(f"pdfplumber error: {e}")
+
+    # Fallback to PyPDF2
     try:
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
         text = ""
@@ -42,7 +70,10 @@ def extract_text_from_pdf(file_bytes):
             extracted = page.extract_text()
             if extracted:
                 text += extracted + "\n"
-        return text.strip()
+        result = text.strip()
+        result = re.sub(r'(\d{4})\s*\.\s*(\d{2})\s*\.\s*(\d{4})', r'\1.\2.\3', result)
+        result = re.sub(r'(\d{4})\s*\.\s*(\d{2})\b', r'\1.\2', result)
+        return result
     except Exception as e:
         print(f"PDF extraction error: {e}")
         return ""
@@ -61,14 +92,17 @@ def analyze_with_claude(invoice_text):
 
 Analyze the provided document and find duty savings opportunities.
 
+CRITICAL: HTS codes are always 10 digits in the format XXXX.XX.XXXX (e.g. 9403.10.0000, 6404.11.2060).
+Never truncate or shorten HTS codes. Always use the full 10-digit format with two decimal points.
+
 Return ONLY valid JSON in this exact format, no other text:
 {
   "findings": [
     {
-      "hts_code": "current HTS code from invoice or inferred from product description",
+      "hts_code": "full 10-digit HTS code e.g. 9403.90.8040",
       "description": "product description from invoice",
       "current_rate": 5.3,
-      "suggested_code": "better HTS code if one exists, same as current if correct",
+      "suggested_code": "full 10-digit suggested HTS code e.g. 9403.10.0000",
       "suggested_rate": 0.0,
       "declared_value": 64000,
       "savings": 3392,
@@ -82,26 +116,29 @@ Return ONLY valid JSON in this exact format, no other text:
 }
 
 Rules:
+- ALWAYS use full 10-digit HTS codes in XXXX.XX.XXXX format
+- If the invoice has a 6-digit code (XXXX.XX), look up and complete it to 10 digits
 - If origin is Canada or Mexico: USMCA applies, set fta_eligible=true, fta_type="USMCA"
-- If origin is South Korea: KORUS applies
+- If origin is South Korea: KORUS applies, set fta_eligible=true, fta_type="KORUS"
+- If origin is Colombia: CTPA applies, set fta_eligible=true, fta_type="US-Colombia CTPA"
 - savings = (current_rate - suggested_rate) / 100 * declared_value
 - If no savings found, set savings=0 and explain why current classification is correct
 - Always return valid JSON only"""
 
+        # Send up to 8000 chars to capture full multi-page invoices
         message = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=1500,
+            max_tokens=2000,
             system=system_prompt,
             messages=[
                 {
                     "role": "user",
-                    "content": f"Analyze this customs invoice and find HTS misclassification savings:\n\n{invoice_text[:3000]}"
+                    "content": f"Analyze this customs invoice and find HTS misclassification savings:\n\n{invoice_text[:8000]}"
                 }
             ]
         )
 
         response_text = message.content[0].text.strip()
-        # Extract JSON
         start = response_text.find('{')
         end = response_text.rfind('}') + 1
         if start != -1 and end > start:
@@ -181,15 +218,12 @@ def analyze():
         if not invoice_text or len(invoice_text.strip()) < 5:
             return jsonify({"error": "No invoice content provided"}), 400
 
-        # Try Claude first
         analysis = analyze_with_claude(invoice_text)
 
-        # Fallback to mock if Claude fails
         if not analysis:
             print("Using mock response")
             return jsonify(MOCK_RESPONSE)
 
-        # Generate protest letter if not included
         if not analysis.get('protest_letter'):
             analysis['protest_letter'] = generate_protest_letter(
                 analysis.get('findings', []),
@@ -303,116 +337,6 @@ MOCK_DEMOS = {
     }
 }
 
-
-def extract_text_from_pdf(file_bytes):
-    try:
-        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
-        text = ""
-        for page in pdf_reader.pages:
-            extracted = page.extract_text()
-            if extracted:
-                text += extracted + "\n"
-        return text.strip()
-    except Exception as e:
-        print(f"PDF extraction error: {e}")
-        return ""
-
-
-def analyze_with_claude(invoice_text):
-    api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if not api_key or api_key in ("dummy", "dummy_key_for_demo", "your_key_here", ""):
-        print("No valid API key — returning mock response")
-        return None
-
-    try:
-        client = anthropic.Anthropic(api_key=api_key)
-
-        system_prompt = """You are a US customs classification expert with 20 years of experience analyzing commercial invoices and HTS codes.
-
-Analyze the provided document and find duty savings opportunities.
-
-Return ONLY valid JSON in this exact format, no other text:
-{
-  "findings": [
-    {
-      "hts_code": "current HTS code from invoice or inferred from product description",
-      "description": "product description from invoice",
-      "current_rate": 5.3,
-      "suggested_code": "better HTS code if one exists, same as current if correct",
-      "suggested_rate": 0.0,
-      "declared_value": 64000,
-      "savings": 3392,
-      "explanation": "plain English explanation of the savings opportunity or why current code is correct"
-    }
-  ],
-  "total_savings": 3392,
-  "fta_eligible": true,
-  "fta_type": "USMCA",
-  "country_of_origin": "Mexico"
-}
-
-Rules:
-- If origin is Canada or Mexico: USMCA applies, set fta_eligible=true, fta_type="USMCA"
-- If origin is South Korea: KORUS applies
-- savings = (current_rate - suggested_rate) / 100 * declared_value
-- If no savings found, set savings=0 and explain why current classification is correct
-- Always return valid JSON only"""
-
-        message = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=1500,
-            system=system_prompt,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Analyze this customs invoice and find HTS misclassification savings:\n\n{invoice_text[:3000]}"
-                }
-            ]
-        )
-
-        response_text = message.content[0].text.strip()
-        # Extract JSON
-        start = response_text.find('{')
-        end = response_text.rfind('}') + 1
-        if start != -1 and end > start:
-            return json.loads(response_text[start:end])
-        return None
-
-    except Exception as e:
-        print(f"Claude error: {e}")
-        return None
-
-
-def generate_protest_letter(findings, total_savings, fta_type=None):
-    if not findings or total_savings == 0:
-        return "No protest needed — current classification appears correct."
-
-    items = "\n".join([
-        f"- HTS {f.get('hts_code')} → {f.get('suggested_code')} (save ${f.get('savings', 0):,.0f})"
-        for f in findings if f.get('savings', 0) > 0
-    ])
-
-    fta_text = ""
-    if fta_type:
-        fta_text = f"Furthermore, as goods qualifying under {fta_type}, duty-free treatment applies. "
-
-    return f"""To: U.S. Customs and Border Protection
-Port Director
-
-Re: Protest of Tariff Classification
-
-Dear Port Director,
-
-Pursuant to 19 U.S.C. §1514(a)(2), the importer hereby protests the tariff classification of imported merchandise and requests reliquidation of the affected entries.
-
-The following misclassifications were identified:
-{items}
-
-{fta_text}The total overpayment of duties amounts to ${total_savings:,.2f}. We respectfully request that CBP reliquidate these entries under the correct HTS classifications and refund the excess duties paid within the statutory timeframe.
-
-Respectfully submitted,
-Authorized Importer Representative
-TariffCheck Analysis System"""
 
 @app.route('/demo', methods=['GET'])
 @app.route('/api/demo', methods=['GET'])
