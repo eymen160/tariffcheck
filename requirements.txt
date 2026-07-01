@@ -1,0 +1,6 @@
+flask
+flask-cors
+anthropic>=0.75
+PyPDF2
+pdfplumber
+python-dotenv

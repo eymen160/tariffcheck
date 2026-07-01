@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from pathlib import Path
 import anthropic
 import PyPDF2
 import pdfplumber
@@ -702,13 +703,34 @@ def hts_search():
     })
 
 
+# Built frontend (copied to public/ during the Vercel build; served by nginx
+# in the Docker setup, so these routes are a fallback for SPA client routing).
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "public"
+
+
 @app.route('/', methods=['GET'])
 def index():
+    if (FRONTEND_DIR / "index.html").is_file():
+        return send_from_directory(FRONTEND_DIR, "index.html")
     return jsonify({
         "message": "TariffCheck API running",
         "version": VERSION,
         "endpoints": ["/health", "/demo", "/demo/<id>", "/analyze", "/api/hts-lookup", "/api/hts-search?q="]
     })
+
+
+@app.route('/<path:path>', methods=['GET'])
+def spa_fallback(path):
+    """Serve static files from the built frontend; unknown non-API paths fall
+    back to index.html so client-side routes (/hts-lookup, /results) work."""
+    if path.startswith(("api/", "health", "demo", "analyze")):
+        return jsonify({"error": "Not found"}), 404
+    candidate = (FRONTEND_DIR / path).resolve()
+    if candidate.is_file() and str(candidate).startswith(str(FRONTEND_DIR)):
+        return send_from_directory(FRONTEND_DIR, path)
+    if (FRONTEND_DIR / "index.html").is_file():
+        return send_from_directory(FRONTEND_DIR, "index.html")
+    return jsonify({"error": "Not found"}), 404
 
 
 if __name__ == '__main__':

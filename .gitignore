@@ -29,3 +29,9 @@ frontend/.vite/
 tariffcheck_backend_fixed/
 frontend 2/
 .venv
+.vercel
+.env*
+
+# Vercel build artifacts
+public/
+.vercel/
