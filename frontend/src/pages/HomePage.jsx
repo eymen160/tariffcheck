@@ -10,6 +10,9 @@ const DEMOS = [
   { id: 3, label: 'Coffee Equipment — Colombia', tag: 'CTPA FTA', color: '#7C3AED', savings: '$4,338', desc: 'US-Colombia FTA not applied — 4.5% to 0%' },
   { id: 4, label: 'Auto Parts — South Korea', tag: 'KORUS FTA', color: '#B45309', savings: '$1,970', desc: 'KORUS preference not claimed — 2.5% to 0%' },
   { id: 5, label: 'Pharma Equipment — India', tag: 'Principal Use', color: '#DC2626', savings: '$7,105', desc: 'HTS 8477.80 vs 8479.89 — 3.5% to 0%' },
+  { id: 6, label: 'Kitchen Cabinets — Vietnam', tag: 'Classification', color: '#0891b2', savings: 'Audit Risk', desc: 'HTS 9403.60 vs 9403.40 — wrong furniture subheading' },
+  { id: 7, label: 'Stainless Tumblers — China', tag: 'Section 301', color: '#dc2626', savings: '$377', desc: '9617 vacuum flask vs 7323.93 stainless — rate difference' },
+  { id: 8, label: 'Cotton T-shirts — Bangladesh', tag: 'Chief Weight', color: '#7c3aed', savings: '$1,302', desc: '6109.90 synthetic vs 6109.10 cotton — 32% vs 16.5%' },
 ]
 
 const DEMO_TEXTS = {
@@ -75,10 +78,52 @@ Item 2: HTS 8477.80.0000 — Fluid bed dryer/granulator systems, GMP 150L
 Qty: 2 UNITS | Unit: USD 38,500.00 | Total: USD 77,000.00
 
 Grand Total: USD 203,000.00`,
+
+  6: `COMMERCIAL INVOICE — INV: VN-CAB-2026-0441
+Seller: Vietnam Cabinet Manufacturing Co. Ltd., Ho Chi Minh City, Vietnam
+Buyer: Southern Kitchen Supply LLC, Atlanta, GA 30349
+Country of Origin: Vietnam | Incoterms: FOB Ho Chi Minh City
+
+Item 1: HTS 9403.60.8040 — Kitchen cabinet sets, solid wood shaker style
+Quantity: 36 SETS | Unit Price: USD 680.00 | Total: USD 24,480.00
+
+Item 2: HTS 9403.60.8040 — Upper wall cabinet units, solid wood
+Quantity: 48 PCS | Unit Price: USD 320.00 | Total: USD 15,360.00
+
+Item 3: HTS 9403.90.8040 — Cabinet hardware and installation brackets
+Quantity: 200 SETS | Unit Price: USD 45.00 | Total: USD 9,000.00
+
+Grand Total: USD 48,840.00
+Note: Vietnam origin. No FTA. No Section 301.`,
+
+  7: `COMMERCIAL INVOICE — INV: CN-DRK-2026-0883
+Seller: Shenzhen DrinkTech Manufacturing Co. Ltd., Shenzhen, China
+Buyer: Atlanta Drinkware Imports LLC, Atlanta, GA 30318
+Country of Origin: China | Incoterms: FOB Shenzhen
+
+Item 1: HTS 9617.00.9000 — Stainless steel insulated tumblers, 20oz, powder coated, double-wall
+Quantity: 500 PCS | Unit Price: USD 8.50 | Total: USD 4,250.00
+
+Item 2: HTS 9617.00.9000 — Stainless steel insulated tumblers, 30oz, powder coated
+Quantity: 300 PCS | Unit Price: USD 10.00 | Total: USD 3,000.00
+
+Grand Total: USD 7,250.00
+Note: China origin — Section 301 List 3 applies to Chapter 73 goods.`,
+
+  8: `COMMERCIAL INVOICE — INV: BD-APR-2026-1142
+Seller: Dhaka Premium Garments Ltd., Dhaka, Bangladesh
+Buyer: Southeast Apparel Distributors Inc., Atlanta, GA 30336
+Country of Origin: Bangladesh | Incoterms: CIF Savannah
+
+Item 1: HTS 6109.90.1007 — Crew neck t-shirts, 60% cotton 40% polyester blend, unisex
+Quantity: 2,000 PCS | Unit Price: USD 4.20 | Total: USD 8,400.00
+
+Grand Total: USD 8,400.00
+Note: Bangladesh origin. No FTA. No Section 301.`,
 }
 
 
-const DEMO_ICONS = { 1: '🪑', 2: '👟', 3: '☕', 4: '⚙️', 5: '💊' }
+const DEMO_ICONS = { 1: '🪑', 2: '👟', 3: '☕', 4: '⚙️', 5: '💊', 6: '🪵', 7: '🥤', 8: '👕' }
 
 const STEPS = [
   'Parsing invoice document...',
@@ -96,6 +141,7 @@ export default function HomePage() {
   const [dragging, setDragging] = useState(false)
   const [error, setError] = useState('')
   const [activeDemo, setActiveDemo] = useState(null)
+  const [showCapeBanner, setShowCapeBanner] = useState(true)
   const fileRef = useRef()
   const navigate = useNavigate()
 
@@ -185,12 +231,20 @@ export default function HomePage() {
             <div className="stat-item"><span className="stat-num">$26B</span><span className="stat-label">overpaid in duties annually</span></div>
             <div className="stat-item"><span className="stat-num">14M+</span><span className="stat-label">customs entries per year</span></div>
             <div className="stat-item"><span className="stat-num">180</span><span className="stat-label">days to file CBP protest</span></div>
+            <div className="stat-item"><span className="stat-num">$35B</span><span className="stat-label">IEEPA refunds processing now</span></div>
           </div>
         </div>
       </section>
 
       <section className="upload-section">
         <div className="upload-card">
+          {showCapeBanner && (
+            <div className="cape-banner">
+              <span>💡 <strong>New:</strong> $166B in IEEPA tariff refunds are being processed by CBP. This is separate from HTS misclassification savings. <a href="/cape-refund" style={{color:'#92400e'}}>Learn more →</a></span>
+              <button onClick={() => setShowCapeBanner(false)} style={{background:'none',border:'none',cursor:'pointer',fontSize:18,color:'#92400e'}}>×</button>
+            </div>
+          )}
+
           <div className="upload-title">Analyze Your Invoice</div>
           <div className="upload-sub">Choose a demo scenario or upload your own invoice</div>
 
@@ -280,6 +334,33 @@ export default function HomePage() {
               </button>
             </>
           )}
+        </div>
+      </section>
+
+      <section className="niche-callout-section">
+        <div className="niche-callout">
+          <div className="niche-callout-icon">🪵</div>
+          <div className="niche-callout-content">
+            <h3 className="niche-callout-title">Furniture & Cabinet Importers: Vietnam and China Sourcing?</h3>
+            <div className="niche-callout-points">
+              <div className="niche-point">
+                <span className="niche-dot">•</span>
+                <span>Chapter 94 misclassification (9403.40 vs 9403.60 vs 9403.89) is the #1 error in furniture imports — same rate but wrong code creates audit exposure</span>
+              </div>
+              <div className="niche-point">
+                <span className="niche-dot">•</span>
+                <span>Vietnam-origin cabinets: No Section 301, but base rate misclassification still triggers CBP scrutiny</span>
+              </div>
+              <div className="niche-point">
+                <span className="niche-dot">•</span>
+                <span>China-origin furniture: 25% Section 301 (List 3) stacks on base rate — correct classification critical</span>
+              </div>
+              <div className="niche-point">
+                <span className="niche-dot">•</span>
+                <span>Marble/stone importers: polished countertops (6802.91) vs raw slabs (6802.21) — different rates, commonly confused</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

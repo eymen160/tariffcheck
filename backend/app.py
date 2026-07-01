@@ -8,32 +8,102 @@ import re
 import io
 import os
 from dotenv import load_dotenv
-from hts_database import lookup_hts, check_fta, HTS_RATES, get_misclassification_hint
+from hts_database import (
+    lookup_hts,
+    check_fta,
+    HTS_RATES,
+    FTA_COUNTRIES,
+    get_misclassification_hint,
+    get_misclassification_hints,
+    get_section_301_rate,
+)
 
 load_dotenv()
+
+VERSION = "2.0.0"
 
 app = Flask(__name__)
 CORS(app, origins="*")
 
-MOCK_RESPONSE = {
-    "findings": [
-        {
-            "hts_code": "9403.90.8040",
-            "description": "Office furniture, metal frame chairs",
-            "current_rate": 5.3,
-            "suggested_code": "9403.10.0000",
-            "suggested_rate": 0.0,
-            "declared_value": 64000,
-            "savings": 3392,
-            "explanation": "Metal office chairs are more specifically classified under HTS 9403.10 (metal furniture of a kind used in offices) at 0% duty rate, rather than the general 9403.90 category at 5.3%. Since goods originate from Mexico, USMCA also applies for 0% duty."
-        }
-    ],
-    "total_savings": 3392,
-    "fta_eligible": True,
-    "fta_type": "USMCA",
-    "country_of_origin": "Mexico",
-    "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Atlanta\n\nRe: Protest of Tariff Classification — Entry #ATL-2026-DEMO\n\nDear Port Director,\n\nPursuant to 19 U.S.C. §1514(a)(2), the importer hereby protests the classification of imported merchandise under HTS subheading 9403.90.8040 at a general duty rate of 5.3%.\n\nThe imported merchandise consists of metal-frame office chairs, which are more specifically provided for under HTS subheading 9403.10.0000 (furniture of a kind used in offices, of metal) at a general duty rate of 0%. Furthermore, as goods of Mexican origin, the merchandise qualifies for duty-free treatment under the United States-Mexico-Canada Agreement (USMCA) pursuant to 19 U.S.C. §4531.\n\nThe total overpayment of duties resulting from this misclassification amounts to $3,392. We respectfully request that CBP reliquidate this entry under HTS 9403.10.0000 and refund the excess duties paid.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+DEMO_MODE_RESPONSE = {
+    "error": "demo_mode",
+    "message": "TariffCheck AI analysis is temporarily unavailable. Please try again or use a demo scenario.",
+    "demo_available": True,
+    "findings": [],
+    "total_savings": 0
 }
+
+SYSTEM_PROMPT = """You are a licensed US customs broker and trade compliance specialist with 20 years of experience. You specialize in HTS classification for furniture/cabinets, natural stone, apparel, and consumer goods.
+
+EXPERTISE AREAS:
+- Chapter 94 furniture: kitchen cabinets (9403.40), closets (9403.89), bedroom furniture (9403.50), parts (9403.90)
+- Chapter 68 stone: polished marble countertops (6802.91) vs raw slabs (6802.21), granite (6802.93), travertine
+- Chapter 61/62 apparel: chief weight cotton rule (6109.10 vs 6109.90), sports footwear (6404.11 vs 6404.19)
+- Chapter 73 tumblers: stainless steel (7323.93 at 2%) vs vacuum flasks (9617 at 7.2%)
+- Section 301 China tariff stacking: List 3 (25% for Ch.94 furniture, hardware), List 4A (7.5% for apparel)
+- FTA preferences: USMCA (Canada/Mexico), KORUS (South Korea), CTPA (Colombia)
+- Vietnam: NO Section 301, NO FTA — only base MFN rate
+- China: NO FTA — Section 301 stacks on top of base rate
+
+YOUR TASK: Analyze this commercial invoice and find every duty savings opportunity.
+
+CHECK IN THIS ORDER:
+1. HTS MISCLASSIFICATION: Is the declared code the most specific correct subheading?
+   - For wooden furniture: is it kitchen (9403.40) vs bedroom (9403.50) vs other (9403.60/9403.89)?
+   - For stone: is it raw/cut (6802.21) or polished/finished (6802.91)? Polished is different rate.
+   - For apparel: what is the chief weight? Cotton >50% → 6109.10 (16.5%) not 6109.90 (32%)
+   - For tumblers: single-wall or double-wall? True vacuum → consider 9617, but most stainless tumblers → 7323.93
+2. FTA NOT CLAIMED: Canada/Mexico → USMCA. South Korea → KORUS. Colombia → CTPA.
+3. SECTION 301 ACCURACY: For China goods, is the correct Section 301 layer applied?
+   - Chapter 94 furniture from China: base rate + 25% Section 301
+   - Chapter 61/62 apparel from China: base rate + 7.5% Section 301
+   - Natural stone (Ch.68) from China: NO Section 301
+   - Vietnam: NO Section 301 at all
+4. OVERPAYMENT FROM WRONG SECTION 301: Did importer apply Section 301 to non-China goods?
+5. PARTS vs ASSEMBLED: Cabinet parts (9403.90) vs assembled cabinets (9403.40) — different codes
+
+IMPORTANT RULES:
+- NEVER invent savings that do not exist. Accuracy above all.
+- If current classification is correct, say so clearly with explanation.
+- For Vietnam-origin furniture: rate is just the base MFN rate (usually 0% for Ch.94). No Section 301.
+- For China furniture: base rate (usually 0%) + 25% Section 301 = 25% total effective rate.
+- Always note: 180-day protest deadline from liquidation per 19 U.S.C. §1514(a)(2)
+- Use confidence: "high" (clear ruling/rule), "medium" (reasonable interpretation), "low" (ambiguous)
+
+Return ONLY valid JSON, no markdown fences, no preamble:
+{
+  "findings": [
+    {
+      "hts_code": "9403.60.8040",
+      "description": "exact product description from invoice",
+      "current_rate": 0.0,
+      "section_301_rate": 25.0,
+      "total_current_rate": 25.0,
+      "suggested_code": "9403.40.9060",
+      "suggested_rate": 0.0,
+      "section_301_applies_suggested": true,
+      "total_suggested_rate": 25.0,
+      "declared_value": 48000,
+      "savings": 0,
+      "classification_risk": true,
+      "confidence": "high",
+      "explanation": "Plain English explanation. Include what the correct rule is and why.",
+      "legal_basis": "GRI Rule 1, Chapter 94 Note, or CBP Ruling [number if known]",
+      "action_required": "File protest" or "Correct future entries" or "No action needed"
+    }
+  ],
+  "total_savings": 0,
+  "fta_eligible": false,
+  "fta_type": null,
+  "fta_form_required": null,
+  "country_of_origin": "Vietnam",
+  "section_301_applies": false,
+  "section_301_rate": 0.0,
+  "protest_deadline_note": "180 days from liquidation date per 19 U.S.C. §1514(a)(2)",
+  "cape_eligible": false,
+  "cape_note": "IEEPA refunds do not apply here. Savings from HTS misclassification require CBP protest.",
+  "disclaimer": "TariffCheck analysis is for informational purposes only. Consult a licensed customs broker before filing."
+}"""
 
 
 def extract_text_from_pdf(file_bytes):
@@ -88,42 +158,7 @@ def analyze_with_claude(invoice_text):
     try:
         client = anthropic.Anthropic(api_key=api_key)
 
-        system_prompt = """You are a US customs classification expert with 20 years of experience analyzing commercial invoices and HTS codes.
-
-Analyze the provided document and find duty savings opportunities.
-
-CRITICAL: HTS codes are always 10 digits in the format XXXX.XX.XXXX (e.g. 9403.10.0000, 6404.11.2060).
-Never truncate or shorten HTS codes. Always use the full 10-digit format with two decimal points.
-
-Return ONLY valid JSON in this exact format, no other text:
-{
-  "findings": [
-    {
-      "hts_code": "full 10-digit HTS code e.g. 9403.90.8040",
-      "description": "product description from invoice",
-      "current_rate": 5.3,
-      "suggested_code": "full 10-digit suggested HTS code e.g. 9403.10.0000",
-      "suggested_rate": 0.0,
-      "declared_value": 64000,
-      "savings": 3392,
-      "explanation": "plain English explanation of the savings opportunity or why current code is correct"
-    }
-  ],
-  "total_savings": 3392,
-  "fta_eligible": true,
-  "fta_type": "USMCA",
-  "country_of_origin": "Mexico"
-}
-
-Rules:
-- ALWAYS use full 10-digit HTS codes in XXXX.XX.XXXX format
-- If the invoice has a 6-digit code (XXXX.XX), look up and complete it to 10 digits
-- If origin is Canada or Mexico: USMCA applies, set fta_eligible=true, fta_type="USMCA"
-- If origin is South Korea: KORUS applies, set fta_eligible=true, fta_type="KORUS"
-- If origin is Colombia: CTPA applies, set fta_eligible=true, fta_type="US-Colombia CTPA"
-- savings = (current_rate - suggested_rate) / 100 * declared_value
-- If no savings found, set savings=0 and explain why current classification is correct
-- Always return valid JSON only"""
+        system_prompt = SYSTEM_PROMPT
 
         # Send up to 8000 chars to capture full multi-page invoices
         message = client.messages.create(
@@ -215,14 +250,19 @@ def analyze():
             else:
                 invoice_text = request.form.get('text', '')
 
-        if not invoice_text or len(invoice_text.strip()) < 5:
-            return jsonify({"error": "No invoice content provided"}), 400
+        # Sanitize input
+        invoice_text = invoice_text.strip()[:10000]
+        if len(invoice_text) < 20:
+            return jsonify({"error": "Invoice text too short. Please include product descriptions, HTS codes, values, and country of origin."}), 400
+
+        # Log request (no invoice content for privacy)
+        print(f"[ANALYZE] Length={len(invoice_text)} chars, timestamp={__import__('datetime').datetime.utcnow().isoformat()}")
 
         analysis = analyze_with_claude(invoice_text)
 
         if not analysis:
-            print("Using mock response")
-            return jsonify(MOCK_RESPONSE)
+            print("Claude unavailable — returning demo mode notice")
+            return jsonify(DEMO_MODE_RESPONSE), 503
 
         if not analysis.get('protest_letter'):
             analysis['protest_letter'] = generate_protest_letter(
@@ -235,7 +275,7 @@ def analyze():
 
     except Exception as e:
         print(f"Error in /analyze: {e}")
-        return jsonify(MOCK_RESPONSE)
+        return jsonify(DEMO_MODE_RESPONSE), 500
 
 
 MOCK_DEMOS = {
@@ -334,6 +374,123 @@ MOCK_DEMOS = {
         ],
         "total_savings": 7105, "fta_eligible": False, "fta_type": None, "country_of_origin": "India",
         "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Charleston\n\nRe: Protest of Tariff Classification — Entry No. CHS-2026-4489\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of pharmaceutical processing equipment under HTS 8477.80.0000 at 3.5%.\n\nThe imported machinery consists of GMP-compliant tablet coating machines and fluid bed dryer/granulator systems used exclusively in pharmaceutical manufacturing. Under GRI principal use rules and Additional U.S. Note 1 to Chapter 84, equipment designed principally for pharmaceutical production is classified under HTS 8479.89.9499 at 0%.\n\nThe importer provides pharmaceutical production contracts and FDA facility registration as evidence of principal use. Total overpayment: $7,105.\n\nWe request reliquidation under HTS 8479.89.9499 and full refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+    },
+    "6": {
+        "findings": [
+            {
+                "hts_code": "9403.60.8040",
+                "description": "Kitchen cabinet sets, solid wood shaker style, 36 sets",
+                "current_rate": 0.0,
+                "section_301_rate": 0.0,
+                "total_current_rate": 0.0,
+                "suggested_code": "9403.40.9060",
+                "suggested_rate": 0.0,
+                "section_301_applies_suggested": False,
+                "total_suggested_rate": 0.0,
+                "declared_value": 24480,
+                "savings": 0,
+                "classification_risk": True,
+                "confidence": "high",
+                "explanation": "Kitchen cabinets have a specific HTS code: 9403.40.9060. Using 9403.60.8040 (other wooden furniture) is a misclassification even though the rate is identical for Vietnam-origin goods. Incorrect classification creates audit exposure and could trigger CBP scrutiny on future shipments. Vietnam origin: no Section 301 applies, base rate is Free.",
+                "legal_basis": "GRI Rule 1, Chapter 94 Note 2 — goods are classifiable in the most specific heading",
+                "action_required": "Correct future entries to 9403.40.9060"
+            },
+            {
+                "hts_code": "9403.90.8040",
+                "description": "Cabinet hardware and installation brackets, parts",
+                "current_rate": 4.3,
+                "section_301_rate": 0.0,
+                "total_current_rate": 4.3,
+                "suggested_code": "8302.49.6055",
+                "suggested_rate": 3.9,
+                "section_301_applies_suggested": False,
+                "total_suggested_rate": 3.9,
+                "declared_value": 9000,
+                "savings": 36,
+                "classification_risk": False,
+                "confidence": "medium",
+                "explanation": "Cabinet installation brackets sold separately may be more correctly classified as hardware under 8302.49 (drawer slides/mounting hardware) at 3.9% rather than furniture parts under 9403.90 at 4.3%. Small savings but correct classification is important.",
+                "legal_basis": "Chapter 83 Note vs Chapter 94 Note 2 — parts sold separately may fall to Ch.83",
+                "action_required": "Review with customs broker for binding ruling"
+            }
+        ],
+        "total_savings": 36,
+        "fta_eligible": False,
+        "fta_type": None,
+        "country_of_origin": "Vietnam",
+        "section_301_applies": False,
+        "section_301_rate": 0.0,
+        "protest_deadline_note": "180 days from liquidation date per 19 U.S.C. §1514(a)(2)",
+        "cape_eligible": False,
+        "cape_note": "IEEPA refunds do not apply here.",
+        "disclaimer": "TariffCheck analysis is for informational purposes only.",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Savannah\n\nRe: Classification Correction Notice — Vietnam-origin Kitchen Cabinets\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer notes a classification discrepancy on recent entries of kitchen cabinets from Vietnam, currently entered under HTS 9403.60.8040 (other wooden furniture).\n\nUnder GRI Rule 1 and Chapter 94 Note 2, kitchen cabinets are specifically provided for under HTS 9403.40.9060 (wooden furniture of a kind used in kitchens). Although the base duty rate is 0% for both subheadings on Vietnam-origin goods (no Section 301 applies), classification under the most specific heading is required.\n\nThe importer requests reclassification of subject entries to HTS 9403.40.9060 to align with the official tariff schedule and reduce future audit exposure. Additionally, cabinet installation brackets (entered as 9403.90.8040 at 4.3%) may be more appropriately classified under HTS 8302.49.6055 at 3.9%; a binding ruling is recommended.\n\nTotal duty correction on hardware items: $36.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+    },
+    "7": {
+        "findings": [
+            {
+                "hts_code": "9617.00.9000",
+                "description": "Stainless steel insulated tumblers, 20oz and 30oz, powder coated",
+                "current_rate": 7.2,
+                "section_301_rate": 0.0,
+                "total_current_rate": 7.2,
+                "suggested_code": "7323.93.0060",
+                "suggested_rate": 2.0,
+                "section_301_applies_suggested": True,
+                "total_suggested_rate": 27.0,
+                "declared_value": 7250,
+                "savings": 377,
+                "classification_risk": False,
+                "confidence": "high",
+                "explanation": "Most stainless steel tumblers are classified under 7323.93.0060 (stainless steel household articles) at 2% base rate, NOT 9617.00.9000 (vacuum flasks) at 7.2%. While the tumbler may be double-walled, CBP rulings generally require a true vacuum seal for 9617 classification. Under 7323.93, China Section 301 List 3 adds 25%, for a total of 27% — but this is still lower than 7.2% under 9617 if no Section 301 applies there. IMPORTANT: Verify whether the Section 301 rate applies to 9617 for your specific product before filing protest.",
+                "legal_basis": "GRI Rule 1, Chapter 96 Note; CBP administrative rulings on tumbler classification",
+                "action_required": "Verify with customs broker — binding ruling recommended for large volumes"
+            }
+        ],
+        "total_savings": 377,
+        "fta_eligible": False,
+        "fta_type": None,
+        "country_of_origin": "China",
+        "section_301_applies": True,
+        "section_301_rate": 25.0,
+        "protest_deadline_note": "180 days from liquidation date per 19 U.S.C. §1514(a)(2)",
+        "cape_eligible": False,
+        "cape_note": "IEEPA refunds do not apply here. Section 301 tariffs remain in effect.",
+        "disclaimer": "TariffCheck analysis is for informational purposes only.",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Long Beach\n\nRe: Protest of Tariff Classification — China-origin Stainless Tumblers\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of stainless steel insulated tumblers under HTS 9617.00.9000 at 7.2%.\n\nThe imported merchandise consists of powder-coated, double-walled stainless steel tumblers without a true vacuum-seal mechanism. Per CBP administrative rulings, articles of this construction are more specifically classified under HTS 7323.93.0060 (stainless steel household articles, table/kitchen) at 2%. Even with Section 301 List 3 stacking (25%) on China-origin goods, the total effective rate of 27% under 7323.93 produces a net savings versus 7.2% under 9617 in cases where Section 301 does not apply to the 9617 classification.\n\nProduct sample, technical drawings, and supplier specification sheets are attached. The importer requests CBP confirm classification via binding ruling for future shipments. Total overpayment on this entry: $377.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
+    },
+    "8": {
+        "findings": [
+            {
+                "hts_code": "6109.90.1007",
+                "description": "T-shirts, crew neck, fabric composition 60% cotton 40% polyester",
+                "current_rate": 32.0,
+                "section_301_rate": 0.0,
+                "total_current_rate": 32.0,
+                "suggested_code": "6109.10.0012",
+                "suggested_rate": 16.5,
+                "section_301_applies_suggested": False,
+                "total_suggested_rate": 16.5,
+                "declared_value": 8400,
+                "savings": 1302,
+                "classification_risk": False,
+                "confidence": "high",
+                "explanation": "A fabric that is 60% cotton and 40% polyester is classified by CHIEF WEIGHT under US tariff rules. Since cotton exceeds 50%, these are COTTON t-shirts under 6109.10 at 16.5%, NOT synthetic t-shirts under 6109.90 at 32%. This is one of the most common apparel misclassifications. Bangladesh has no Section 301. Savings: 15.5% on $8,400 = $1,302.",
+                "legal_basis": "Additional U.S. Note 2 to Section XI — chief weight determines fiber classification",
+                "action_required": "File CBP protest within 180 days of liquidation"
+            }
+        ],
+        "total_savings": 1302,
+        "fta_eligible": False,
+        "fta_type": None,
+        "country_of_origin": "Bangladesh",
+        "section_301_applies": False,
+        "section_301_rate": 0.0,
+        "protest_deadline_note": "180 days from liquidation date per 19 U.S.C. §1514(a)(2)",
+        "cape_eligible": False,
+        "cape_note": "IEEPA refunds do not apply. Bangladesh is not subject to Section 301.",
+        "disclaimer": "TariffCheck analysis is for informational purposes only.",
+        "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Savannah\n\nRe: Protest of Tariff Classification — Bangladesh-origin Cotton-Blend T-shirts\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of crew-neck t-shirts under HTS 6109.90.1007 (t-shirts of man-made fibers) at 32%.\n\nThe imported merchandise has a verified fabric composition of 60% cotton, 40% polyester. Under Additional U.S. Note 2 to Section XI of the HTS, classification by chief weight controls: because cotton exceeds 50% by weight, these goods are properly classified under HTS 6109.10.0012 (t-shirts of cotton) at 16.5%.\n\nBangladesh is not subject to Section 301 tariffs. Mill certificates and fiber-weight test reports are attached as evidence of chief weight.\n\nTotal duty overpayment on this entry: $1,302. The importer respectfully requests reliquidation under HTS 6109.10.0012 and refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     }
 }
 
@@ -341,14 +498,14 @@ MOCK_DEMOS = {
 @app.route('/demo', methods=['GET'])
 @app.route('/api/demo', methods=['GET'])
 def demo():
-    return jsonify(MOCK_RESPONSE)
+    return jsonify(MOCK_DEMOS["1"])
 
 @app.route('/demo/<demo_id>', methods=['GET'])
 @app.route('/api/demo/<demo_id>', methods=['GET'])
 def demo_by_id(demo_id):
     if demo_id in MOCK_DEMOS:
         return jsonify(MOCK_DEMOS[demo_id])
-    return jsonify(MOCK_RESPONSE)
+    return jsonify(MOCK_DEMOS["1"])
 
 
 @app.route('/health', methods=['GET'])
@@ -356,15 +513,54 @@ def demo_by_id(demo_id):
 def health():
     return jsonify({
         "status": "ok",
+        "version": VERSION,
         "service": "TariffCheck API",
-        "hts_codes": len(HTS_RATES),
-        "claude_ready": bool(os.getenv("ANTHROPIC_API_KEY", "").startswith("sk-"))
+        "hts_codes_loaded": len(HTS_RATES),
+        "chapters_covered": ["94", "68", "61", "62", "73", "83", "44", "39", "42", "64"],
+        "claude_ready": bool(os.getenv("ANTHROPIC_API_KEY", "").startswith("sk-")),
+        "fta_countries": len(FTA_COUNTRIES),
+    })
+
+
+@app.route('/api/hts-lookup', methods=['POST'])
+def hts_lookup():
+    data = request.get_json(silent=True) or {}
+    code = data.get('code', '').strip()
+    origin = data.get('country_of_origin', '').strip()
+
+    if not code:
+        return jsonify({"error": "Provide an HTS code"}), 400
+
+    result = lookup_hts(code)
+    if not result:
+        return jsonify({"error": f"HTS code {code} not found in database", "found": False}), 404
+
+    section_301 = get_section_301_rate(code, origin)
+    fta_name, fta_rate, fta_form = check_fta(origin)
+
+    return jsonify({
+        "found": True,
+        "code": code,
+        "description": result.get("description"),
+        "base_rate": result.get("general_rate"),
+        "section_301_rate": section_301,
+        "total_effective_rate": result.get("general_rate", 0) + section_301,
+        "fta_eligible": fta_name is not None,
+        "fta_name": fta_name,
+        "fta_rate": fta_rate,
+        "fta_form": fta_form,
+        "chapter": result.get("chapter"),
+        "notes": result.get("notes", "")
     })
 
 
 @app.route('/', methods=['GET'])
 def index():
-    return jsonify({"message": "TariffCheck API running", "endpoints": ["/health", "/demo", "/analyze"]})
+    return jsonify({
+        "message": "TariffCheck API running",
+        "version": VERSION,
+        "endpoints": ["/health", "/demo", "/demo/<id>", "/analyze", "/api/hts-lookup"]
+    })
 
 
 if __name__ == '__main__':

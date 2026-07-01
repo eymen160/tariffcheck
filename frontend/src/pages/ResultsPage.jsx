@@ -8,6 +8,20 @@ function fmt(n) {
   return Number(n).toLocaleString('en-US')
 }
 
+function ConfidenceBadge({ level }) {
+  const styles = {
+    high: { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7', label: '✓ High Confidence' },
+    medium: { bg: '#fef3c7', color: '#92400e', border: '#fcd34d', label: '~ Medium Confidence' },
+    low: { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5', label: '⚠ Low Confidence' },
+  }
+  const s = styles[level] || styles.medium
+  return (
+    <span style={{fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:20, background:s.bg, color:s.color, border:`1px solid ${s.border}`, whiteSpace:'nowrap'}}>
+      {s.label}
+    </span>
+  )
+}
+
 
 function getHtsUrl(code) {
   if (!code) return null
@@ -86,6 +100,18 @@ export default function ResultsPage() {
     const a = document.createElement('a')
     a.href = url
     a.download = 'cbp-protest-letter.txt'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  function saveReport() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'tariffcheck_report.json'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -222,6 +248,38 @@ export default function ResultsPage() {
 
                   <div className="finding-desc">{f.description}</div>
 
+                  {f.confidence && (
+                    <div style={{marginBottom:10}}>
+                      <ConfidenceBadge level={f.confidence} />
+                    </div>
+                  )}
+
+                  {f.section_301_rate > 0 && (
+                    <div className="rate-breakdown">
+                      <div className="rate-row"><span>Base MFN Rate:</span><span>{f.current_rate}%</span></div>
+                      <div className="rate-row"><span>+ Section 301 (China):</span><span>{f.section_301_rate}%</span></div>
+                      <div className="rate-row total"><span>= Total Effective Rate:</span><span>{f.total_current_rate ?? (f.current_rate + f.section_301_rate)}%</span></div>
+                    </div>
+                  )}
+
+                  {f.classification_risk === true && (!f.savings || f.savings === 0) && (
+                    <div style={{background:'#fff7ed', border:'1px solid #fed7aa', borderRadius:8, padding:'10px 14px', marginTop:8, fontSize:13, color:'#9a3412'}}>
+                      ⚠️ <strong>Audit Risk:</strong> Current classification may be incorrect even though rate is the same. Incorrect codes trigger CBP flags on future shipments. Correct for future entries.
+                    </div>
+                  )}
+
+                  {f.legal_basis && (
+                    <div style={{marginTop:8, fontSize:12, color:'var(--slate-500)'}}>
+                      <strong style={{color:'var(--slate-600)'}}>Legal basis:</strong> {f.legal_basis}
+                    </div>
+                  )}
+
+                  {f.action_required && (
+                    <div style={{marginTop:6, fontSize:12, color:'var(--slate-500)'}}>
+                      <strong style={{color:'var(--slate-600)'}}>Action:</strong> {f.action_required}
+                    </div>
+                  )}
+
                   {f.explanation && (
                     <>
                       <button className="explanation-toggle" onClick={() => toggleCard(i)}>
@@ -302,6 +360,9 @@ export default function ResultsPage() {
                 <span className="ready-badge">Ready to file</span>
               </div>
             </div>
+            <div style={{background:'#fef3c7', border:'1px solid #fcd34d', color:'#92400e', borderRadius:'var(--radius-md)', padding:'12px 16px', marginBottom:12, fontSize:14, fontWeight:600}}>
+              ⚠️ Protest deadline: 180 days from your liquidation date
+            </div>
             <div className="letter-card">
               <div className="letter-card-header">
                 <div style={{fontSize:14, color:'var(--slate-600)', lineHeight:1.5}}>
@@ -328,12 +389,24 @@ export default function ResultsPage() {
                 <button className="action-btn secondary" onClick={downloadLetter}>
                   ⬇ Download .txt
                 </button>
+                <button className="action-btn secondary" onClick={saveReport}>
+                  💾 Save Report (JSON)
+                </button>
 
 
               </div>
             </div>
           </div>
         )}
+
+        {/* CAPE / IEEPA info card */}
+        <div style={{background:'#fffbeb', border:'1px solid #fcd34d', borderRadius:12, padding:'20px 24px', marginTop:8, marginBottom:24}}>
+          <div style={{fontWeight:700, color:'#92400e', marginBottom:8}}>💡 Separate: IEEPA Tariff Refunds</div>
+          <p style={{fontSize:13, color:'#78350f', margin:0, lineHeight:1.6}}>
+            If you paid tariffs under the IEEPA (Trump's 2025 "Liberation Day" tariffs), those are being refunded separately by CBP through the CAPE system. This is different from HTS misclassification savings.{' '}
+            <a href="/cape-refund" style={{color:'#92400e', fontWeight:600}}>Check your IEEPA eligibility →</a>
+          </p>
+        </div>
 
         {/* Disclaimer */}
         <div className="disclaimer">
