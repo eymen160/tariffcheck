@@ -208,7 +208,15 @@ ANALYSIS_SCHEMA = {
     "additionalProperties": False,
 }
 
-HTS_CODE_RE = re.compile(r"\b(\d{4}\.\d{2}(?:\.\d{2}){0,2}|\d{4}\.\d{2}\.\d{4}|\d{8,10})\b")
+# Longest patterns first — regex alternation is ordered and would otherwise
+# match "9403.60" out of "9403.60.8040" and stop.
+HTS_CODE_RE = re.compile(
+    r"\b(\d{4}\.\d{2}\.\d{2}\.\d{2}"   # 9403.60.80.40 (USITC dotting)
+    r"|\d{4}\.\d{2}\.\d{4}"            # 9403.60.8040  (CBP entry dotting)
+    r"|\d{4}\.\d{2}\.\d{2}"            # 9403.60.80
+    r"|\d{4}\.\d{2}"                   # 9403.60
+    r"|\d{8,10})\b"                    # 9403608040
+)
 
 
 def build_grounding_block(invoice_text):
