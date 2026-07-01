@@ -28,3 +28,4 @@ frontend/.vite/
 # Temp
 tariffcheck_backend_fixed/
 frontend 2/
+.venv

@@ -1,6 +1,11 @@
-# TariffCheck HTS Database v2.0
+# TariffCheck HTS Database v3.0
+# Full schedule: data/hts_db.json.gz — built from the official USITC HTS
+# export (hts.usitc.gov) by data/build_hts_db.py. ~29,700 codes with parsed
+# general (MFN) rates and per-program special (FTA) rates.
+# Curated layer below: broker notes, Section 301 overlays, and common
+# misclassification patterns for high-traffic chapters.
 # Sources: USITC HTS 2026 Rev2, CBP Rulings, USTR Section 301 Lists
-# Last verified: May 2026
+# Last verified: July 2026
 
 # ─────────────────────────────────────────────
 # CHAPTER 94 — FURNITURE (Cabinet/Closet Importers)
@@ -14,7 +19,7 @@
 # 9403.90 = Parts of furniture (drawer slides, cabinet doors sold separately)
 # COMMON MISTAKE: Brokers use 9403.60 or 9403.90 as catch-all for everything
 
-HTS_RATES = {
+CURATED_RATES = {
 
     # KITCHEN CABINETS & VANITIES
     "9403.40.9060": {
@@ -663,19 +668,154 @@ COMMON_MISCLASSIFICATIONS = {
 }
 
 
+# ─────────────────────────────────────────────
+# FULL USITC SCHEDULE LOADER
+# ─────────────────────────────────────────────
+import gzip as _gzip
+import json as _json
+import re as _re
+from pathlib import Path as _Path
+
+_DB_PATH = _Path(__file__).parent / "data" / "hts_db.json.gz"
+
+# Special-rate program codes as printed in the HTS "Special" column
+FTA_PROGRAMS = {
+    "S": "USMCA", "S+": "USMCA",
+    "KR": "KORUS", "AU": "US-Australia FTA", "BH": "US-Bahrain FTA",
+    "CL": "US-Chile FTA", "CO": "US-Colombia CTPA", "IL": "US-Israel FTA",
+    "JO": "US-Jordan FTA", "MA": "US-Morocco FTA", "OM": "US-Oman FTA",
+    "PA": "US-Panama FTA", "PE": "US-Peru FTA", "SG": "US-Singapore FTA",
+    "P": "CAFTA-DR", "P+": "CAFTA-DR", "JP": "US-Japan Trade Agreement",
+    "A": "GSP", "A+": "GSP (LDC)", "A*": "GSP", "D": "AGOA",
+    "E": "CBERA", "E*": "CBERA",
+}
+
+# country (lowercase substring) -> HTS special-column program codes
+COUNTRY_PROGRAMS = {
+    "canada": ["S", "S+"], "mexico": ["S", "S+"],
+    "korea": ["KR"], "australia": ["AU"], "bahrain": ["BH"],
+    "chile": ["CL"], "colombia": ["CO"], "israel": ["IL"],
+    "jordan": ["JO"], "morocco": ["MA"], "oman": ["OM"],
+    "panama": ["PA"], "peru": ["PE"], "singapore": ["SG"],
+    "japan": ["JP"],
+    "guatemala": ["P", "P+"], "honduras": ["P", "P+"], "nicaragua": ["P", "P+"],
+    "el salvador": ["P", "P+"], "costa rica": ["P", "P+"],
+    "dominican republic": ["P", "P+"],
+}
+
+
+def _normalize(code):
+    return _re.sub(r"\D", "", str(code or ""))
+
+
+def _load_full_db():
+    """Load the USITC schedule and merge the curated overlay on top."""
+    try:
+        with _gzip.open(_DB_PATH, "rt", encoding="utf-8") as fh:
+            db = _json.load(fh)
+    except OSError:
+        db = {}
+    for dotted, extra in CURATED_RATES.items():
+        digits = _normalize(dotted)
+        rec = db.get(digits)
+        if rec is None:
+            rec = {"code": dotted, "level": len(digits), "chapter": digits[:2]}
+            db[digits] = rec
+        # Curated notes/301 overlays win; official description/rate wins if present
+        for k, v in extra.items():
+            if k in ("description", "general_rate") and k in rec:
+                continue
+            rec[k] = v
+    return db
+
+
+HTS_RATES = _load_full_db()
+
+# Rate-bearing codes (8/10-digit), pre-sorted for deterministic prefix lookups
+_RATE_LINES = sorted(k for k, v in HTS_RATES.items() if v.get("level", 0) >= 8)
+
+
 def lookup_hts(code):
-    """Look up HTS code. Try exact match, then 7-digit, then 6-digit prefix."""
-    if not code:
+    """Look up an HTS code. Exact digits match first, then longest-prefix
+    fallback onto the most specific rate line under that prefix."""
+    digits = _normalize(code)
+    if not digits:
         return None
-    clean = str(code).strip().replace(" ", "").replace("-", "")
-    if clean in HTS_RATES:
-        return {**HTS_RATES[clean], "code": clean}
-    for length in [9, 7, 6, 4]:
-        prefix = clean[:length]
-        for key, val in HTS_RATES.items():
-            if key.replace(".", "").startswith(prefix.replace(".", "")):
-                return {**val, "code": key, "note": f"Matched from prefix {prefix}"}
+    rec = HTS_RATES.get(digits)
+    if rec and ("general_rate" in rec or rec.get("general_raw")):
+        return {**rec, "code": rec.get("code", digits)}
+    # Prefix fallback: walk down from the full code to the 4-digit heading
+    for length in range(min(len(digits), 10), 3, -1):
+        prefix = digits[:length]
+        if prefix in HTS_RATES and ("general_rate" in HTS_RATES[prefix] or HTS_RATES[prefix].get("general_raw")):
+            rec = HTS_RATES[prefix]
+            return {**rec, "code": rec.get("code", prefix), "note": f"Matched at {length}-digit level"}
+        for key in _RATE_LINES:
+            if key.startswith(prefix):
+                rec = HTS_RATES[key]
+                return {**rec, "code": rec.get("code", key), "note": f"Matched from prefix {prefix}"}
     return None
+
+
+_WORD_RE = _re.compile(r"[a-z0-9]+")
+
+
+def search_hts(query, limit=25):
+    """Keyword / code-prefix search over the full schedule.
+
+    Numeric queries match by code prefix; text queries rank rate lines by
+    how many query words appear in the hierarchical description.
+    """
+    q = str(query or "").strip().lower()
+    if not q:
+        return []
+    digits = _normalize(q)
+    results = []
+
+    if digits and len(digits) >= 2 and digits == _re.sub(r"[.\s]", "", q):
+        for key in _RATE_LINES:
+            if key.startswith(digits):
+                results.append(HTS_RATES[key])
+                if len(results) >= limit:
+                    break
+        return results
+
+    words = _WORD_RE.findall(q)
+    if not words:
+        return []
+    # Require all words; if nothing matches (e.g. trade name not in the official
+    # description), progressively relax to a majority of words.
+    min_hits = len(words)
+    while min_hits >= max(1, (len(words) + 1) // 2):
+        scored = []
+        for key in _RATE_LINES:
+            rec = HTS_RATES[key]
+            desc = rec.get("description", "").lower()
+            hits = sum(1 for w in words if w in desc)
+            if hits >= min_hits:
+                # Prefer more hits, then shorter (more specific) descriptions
+                scored.append((-hits, len(desc), key))
+        if scored:
+            scored.sort()
+            return [HTS_RATES[k] for _, _, k in scored[:limit]]
+        min_hits -= 1
+    return []
+
+
+def fta_rate_for_code(code, country_of_origin):
+    """Data-driven FTA check: does this exact code carry a special rate for
+    this origin? Returns (program_name, rate) or (None, None)."""
+    rec = lookup_hts(code)
+    if not rec:
+        return None, None
+    special = rec.get("special_rates") or {}
+    origin = str(country_of_origin or "").lower()
+    for country, programs in COUNTRY_PROGRAMS.items():
+        if country in origin:
+            for prog in programs:
+                if prog in special:
+                    return FTA_PROGRAMS.get(prog, prog), special[prog]
+    return None, None
 
 
 def get_section_301_rate(hts_code, country_of_origin):

@@ -4,6 +4,7 @@ import anthropic
 import PyPDF2
 import pdfplumber
 import json
+import logging
 import re
 import io
 import os
@@ -11,6 +12,8 @@ from dotenv import load_dotenv
 from hts_database import (
     lookup_hts,
     check_fta,
+    fta_rate_for_code,
+    search_hts,
     HTS_RATES,
     FTA_COUNTRIES,
     get_misclassification_hint,
@@ -20,9 +23,17 @@ from hts_database import (
 
 load_dotenv()
 
-VERSION = "2.0.0"
+VERSION = "3.0.0"
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+log = logging.getLogger("tariffcheck")
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload cap
 CORS(app, origins="*")
 
 DEMO_MODE_RESPONSE = {
@@ -130,7 +141,7 @@ def extract_text_from_pdf(file_bytes):
                 result = re.sub(r'(\d{4})\s*\.\s*(\d{2})\b', r'\1.\2', result)
                 return result
     except Exception as e:
-        print(f"pdfplumber error: {e}")
+        log.warning(f"pdfplumber error: {e}")
 
     # Fallback to PyPDF2
     try:
@@ -145,43 +156,133 @@ def extract_text_from_pdf(file_bytes):
         result = re.sub(r'(\d{4})\s*\.\s*(\d{2})\b', r'\1.\2', result)
         return result
     except Exception as e:
-        print(f"PDF extraction error: {e}")
+        log.error(f"PDF extraction error: {e}")
         return ""
+
+
+# JSON Schema enforced via structured outputs — guarantees parseable analysis
+ANALYSIS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "findings": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "hts_code": {"type": "string"},
+                    "description": {"type": "string"},
+                    "current_rate": {"type": "number"},
+                    "section_301_rate": {"type": "number"},
+                    "total_current_rate": {"type": "number"},
+                    "suggested_code": {"type": "string"},
+                    "suggested_rate": {"type": "number"},
+                    "section_301_applies_suggested": {"type": "boolean"},
+                    "total_suggested_rate": {"type": "number"},
+                    "declared_value": {"type": "number"},
+                    "savings": {"type": "number"},
+                    "classification_risk": {"type": "boolean"},
+                    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+                    "explanation": {"type": "string"},
+                    "legal_basis": {"type": "string"},
+                    "action_required": {"type": "string"},
+                },
+                "required": [
+                    "hts_code", "description", "current_rate", "suggested_code",
+                    "suggested_rate", "declared_value", "savings", "confidence",
+                    "explanation",
+                ],
+                "additionalProperties": False,
+            },
+        },
+        "total_savings": {"type": "number"},
+        "fta_eligible": {"type": "boolean"},
+        "fta_type": {"type": ["string", "null"]},
+        "fta_form_required": {"type": ["string", "null"]},
+        "country_of_origin": {"type": ["string", "null"]},
+        "section_301_applies": {"type": "boolean"},
+        "section_301_rate": {"type": "number"},
+        "protest_deadline_note": {"type": "string"},
+        "disclaimer": {"type": "string"},
+    },
+    "required": ["findings", "total_savings", "fta_eligible", "country_of_origin"],
+    "additionalProperties": False,
+}
+
+HTS_CODE_RE = re.compile(r"\b(\d{4}\.\d{2}(?:\.\d{2}){0,2}|\d{4}\.\d{2}\.\d{4}|\d{8,10})\b")
+
+
+def build_grounding_block(invoice_text):
+    """Extract HTS codes from the invoice and look each one up in the official
+    USITC schedule. The verified rates are injected into the prompt so the
+    model reasons from real tariff data instead of memory."""
+    seen = set()
+    lines = []
+    for match in HTS_CODE_RE.findall(invoice_text):
+        digits = re.sub(r"\D", "", match)
+        if len(digits) < 6 or digits in seen:
+            continue
+        seen.add(digits)
+        rec = lookup_hts(digits)
+        if not rec:
+            lines.append(f"- {match}: NOT FOUND in the 2026 USITC schedule — likely invalid or retired code.")
+            continue
+        rate = rec.get("general_raw") or (f"{rec.get('general_rate')}%" if rec.get("general_rate") is not None else "unknown")
+        special = rec.get("special_rates") or {}
+        fta_progs = ", ".join(sorted(special)) if special else "none"
+        lines.append(
+            f"- {rec['code']}: \"{rec.get('description', '')[:160]}\" — general rate: {rate}; "
+            f"FTA programs with special rate: {fta_progs}"
+        )
+        if len(seen) >= 25:
+            break
+    if not lines:
+        return ""
+    return (
+        "\n\nVERIFIED USITC 2026 TARIFF DATA for the HTS codes found on this invoice "
+        "(authoritative — use these rates, not memory):\n" + "\n".join(lines)
+    )
 
 
 def analyze_with_claude(invoice_text):
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
     if not api_key or api_key in ("dummy", "dummy_key_for_demo", "your_key_here", ""):
-        print("No valid API key — returning mock response")
+        log.warning("No valid ANTHROPIC_API_KEY — returning demo mode")
         return None
 
     try:
         client = anthropic.Anthropic(api_key=api_key)
 
-        system_prompt = SYSTEM_PROMPT
+        grounding = build_grounding_block(invoice_text)
 
-        # Send up to 8000 chars to capture full multi-page invoices
+        # Structured outputs guarantee schema-valid JSON — no manual brace hunting.
+        # System prompt is static → cache it; per-invoice content goes in the user turn.
         message = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=2000,
-            system=system_prompt,
+            model=CLAUDE_MODEL,
+            max_tokens=4000,
+            system=[{
+                "type": "text",
+                "text": SYSTEM_PROMPT,
+                "cache_control": {"type": "ephemeral"},
+            }],
+            output_config={"format": {"type": "json_schema", "schema": ANALYSIS_SCHEMA}},
             messages=[
                 {
                     "role": "user",
-                    "content": f"Analyze this customs invoice and find HTS misclassification savings:\n\n{invoice_text[:8000]}"
+                    "content": (
+                        "Analyze this customs invoice and find HTS misclassification savings:\n\n"
+                        f"{invoice_text[:8000]}{grounding}"
+                    ),
                 }
-            ]
+            ],
         )
 
-        response_text = message.content[0].text.strip()
-        start = response_text.find('{')
-        end = response_text.rfind('}') + 1
-        if start != -1 and end > start:
-            return json.loads(response_text[start:end])
-        return None
+        if message.stop_reason == "refusal":
+            log.warning("Claude declined the request (stop_reason=refusal)")
+            return None
+        return json.loads(message.content[0].text)
 
     except Exception as e:
-        print(f"Claude error: {e}")
+        log.error(f"Claude error: {e}")
         return None
 
 
@@ -256,12 +357,12 @@ def analyze():
             return jsonify({"error": "Invoice text too short. Please include product descriptions, HTS codes, values, and country of origin."}), 400
 
         # Log request (no invoice content for privacy)
-        print(f"[ANALYZE] Length={len(invoice_text)} chars, timestamp={__import__('datetime').datetime.utcnow().isoformat()}")
+        log.info(f"[ANALYZE] length={len(invoice_text)} chars")
 
         analysis = analyze_with_claude(invoice_text)
 
         if not analysis:
-            print("Claude unavailable — returning demo mode notice")
+            log.warning("Claude unavailable — returning demo mode notice")
             return jsonify(DEMO_MODE_RESPONSE), 503
 
         if not analysis.get('protest_letter'):
@@ -274,7 +375,7 @@ def analyze():
         return jsonify(analysis)
 
     except Exception as e:
-        print(f"Error in /analyze: {e}")
+        log.exception(f"Error in /analyze: {e}")
         return jsonify(DEMO_MODE_RESPONSE), 500
 
 
@@ -516,8 +617,9 @@ def health():
         "version": VERSION,
         "service": "TariffCheck API",
         "hts_codes_loaded": len(HTS_RATES),
-        "chapters_covered": ["94", "68", "61", "62", "73", "83", "44", "39", "42", "64"],
+        "data_source": "USITC HTS 2026 (full schedule) + curated broker overlay",
         "claude_ready": bool(os.getenv("ANTHROPIC_API_KEY", "").startswith("sk-")),
+        "model": CLAUDE_MODEL,
         "fta_countries": len(FTA_COUNTRIES),
     })
 
@@ -525,32 +627,70 @@ def health():
 @app.route('/api/hts-lookup', methods=['POST'])
 def hts_lookup():
     data = request.get_json(silent=True) or {}
-    code = data.get('code', '').strip()
-    origin = data.get('country_of_origin', '').strip()
+    code = str(data.get('code', '')).strip()
+    origin = str(data.get('country_of_origin', '')).strip()
 
     if not code:
         return jsonify({"error": "Provide an HTS code"}), 400
 
     result = lookup_hts(code)
     if not result:
-        return jsonify({"error": f"HTS code {code} not found in database", "found": False}), 404
+        return jsonify({"error": f"HTS code {code} not found in the USITC schedule", "found": False}), 404
 
     section_301 = get_section_301_rate(code, origin)
-    fta_name, fta_rate, fta_form = check_fta(origin)
+    # Data-driven FTA check for this exact code, falling back to country-level
+    fta_name, fta_rate = fta_rate_for_code(code, origin)
+    fallback_name, fallback_rate, fta_form = check_fta(origin)
+    if fta_name is None:
+        fta_name, fta_rate = fallback_name, fallback_rate
+    base_rate = result.get("general_rate")
 
     return jsonify({
         "found": True,
-        "code": code,
+        "code": result.get("code", code),
+        "matched_note": result.get("note"),
         "description": result.get("description"),
-        "base_rate": result.get("general_rate"),
+        "base_rate": base_rate,
+        "base_rate_raw": result.get("general_raw", ""),
         "section_301_rate": section_301,
-        "total_effective_rate": result.get("general_rate", 0) + section_301,
+        "total_effective_rate": (base_rate + section_301) if base_rate is not None else None,
         "fta_eligible": fta_name is not None,
         "fta_name": fta_name,
         "fta_rate": fta_rate,
-        "fta_form": fta_form,
+        "fta_form": fta_form if fta_name else None,
+        "special_rates": result.get("special_rates", {}),
+        "units": result.get("units", []),
         "chapter": result.get("chapter"),
         "notes": result.get("notes", "")
+    })
+
+
+@app.route('/api/hts-search', methods=['GET'])
+def hts_search():
+    query = request.args.get('q', '').strip()
+    if len(query) < 2:
+        return jsonify({"error": "Query must be at least 2 characters", "results": []}), 400
+    try:
+        limit = min(int(request.args.get('limit', 25)), 50)
+    except ValueError:
+        limit = 25
+
+    results = search_hts(query, limit=limit)
+    return jsonify({
+        "query": query,
+        "count": len(results),
+        "results": [
+            {
+                "code": r.get("code"),
+                "description": r.get("description"),
+                "general_rate": r.get("general_rate"),
+                "general_rate_raw": r.get("general_raw", ""),
+                "special_rates": r.get("special_rates", {}),
+                "chapter": r.get("chapter"),
+                "units": r.get("units", []),
+            }
+            for r in results
+        ],
     })
 
 
@@ -559,12 +699,14 @@ def index():
     return jsonify({
         "message": "TariffCheck API running",
         "version": VERSION,
-        "endpoints": ["/health", "/demo", "/demo/<id>", "/analyze", "/api/hts-lookup"]
+        "endpoints": ["/health", "/demo", "/demo/<id>", "/analyze", "/api/hts-lookup", "/api/hts-search?q="]
     })
 
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
-    print(f"Starting TariffCheck API on port {port}")
-    print(f"Claude API: {'✅ Ready' if os.getenv('ANTHROPIC_API_KEY', '').startswith('sk-') else '⚠️ Mock mode'}")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    debug = os.environ.get('FLASK_DEBUG', '').lower() in ('1', 'true')
+    log.info(f"Starting TariffCheck API v{VERSION} on port {port} — "
+             f"{len(HTS_RATES)} HTS codes loaded, "
+             f"Claude: {'ready' if os.getenv('ANTHROPIC_API_KEY', '').startswith('sk-') else 'demo mode'}")
+    app.run(host='0.0.0.0', port=port, debug=debug)
