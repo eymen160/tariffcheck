@@ -15,7 +15,7 @@ Every imported shipment requires an HTS (Harmonized Tariff Schedule) code — a 
 ## What TariffCheck Does
 
 1. **Upload** a commercial invoice (PDF or paste text)
-2. **AI Analysis** — Claude compares every HTS code against the official USITC tariff schedule, identifies misclassifications, and checks Free Trade Agreement eligibility (USMCA, KORUS, Colombia CTPA)
+2. **AI Analysis** — every HTS code on the invoice is looked up in the full official USITC schedule (29,755 codes) and the verified rates are fed to Claude, which identifies misclassifications and checks Free Trade Agreement eligibility (USMCA, KORUS, CAFTA-DR, and 12 more)
 3. **Instant Results** — savings calculation per line item, total overpayment amount
 4. **CBP Protest Letter** — ready-to-file letter citing 19 U.S.C. §1514, generated automatically
 
@@ -34,9 +34,9 @@ Every imported shipment requires an HTS (Harmonized Tariff Schedule) code — a 
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 18 + Vite + React Router |
-| Backend | Python Flask + Claude AI (claude-haiku-4-5) |
+| Backend | Python Flask + gunicorn + Claude AI (structured outputs, USITC grounding) |
 | PDF Parsing | pdfplumber (tables) + PyPDF2 (fallback) |
-| Tariff Data | USITC HTS Schedule (50 codes) |
+| Tariff Data | Full USITC HTS 2026 Schedule (29,755 codes, official rates + FTA programs) |
 | Deployment | Nexlayer (combined nginx + gunicorn container) |
 
 ## Run Locally
@@ -64,8 +64,10 @@ The frontend proxies `/api/*` to `localhost:8000` via Vite dev server.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/health` | Service status + Claude readiness |
-| GET | `/api/demo/<1-5>` | Pre-built demo scenarios |
+| GET | `/api/demo/<1-8>` | Pre-built demo scenarios |
 | POST | `/api/analyze` | Analyze invoice — JSON body `{text}` or multipart PDF |
+| POST | `/api/hts-lookup` | Duty rate + FTA eligibility for one code — `{code, country_of_origin}` |
+| GET | `/api/hts-search?q=` | Search 29,755 codes by code prefix or keywords |
 
 ## Docker (Production)
 
