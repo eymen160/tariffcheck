@@ -9,6 +9,7 @@ import logging
 import re
 import io
 import os
+import time
 from dotenv import load_dotenv
 from hts_database import (
     lookup_hts,
@@ -21,6 +22,8 @@ from hts_database import (
     get_misclassification_hints,
     get_section_301_rate,
 )
+from verifier import verify_findings, VERIFICATION_SOURCE
+from batch_audit import run_batch_audit, BatchValidationError
 
 load_dotenv()
 
@@ -37,13 +40,57 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload cap
 CORS(app, origins="*")
 
-DEMO_MODE_RESPONSE = {
-    "error": "demo_mode",
-    "message": "TariffCheck AI analysis is temporarily unavailable. Please try again or use a demo scenario.",
-    "demo_available": True,
-    "findings": [],
-    "total_savings": 0
-}
+def api_error(status, code, message, headers=None, **extra):
+    """Shared error shape: {"error": <machine_code>, "message": <human sentence>}.
+    Error bodies never contain findings/total_savings — a failed analysis must
+    be unmistakably a failure, not a fake-success $0 result."""
+    body = {"error": code, "message": message}
+    body.update(extra)
+    response = jsonify(body)
+    response.status_code = status
+    for key, value in (headers or {}).items():
+        response.headers[key] = value
+    return response
+
+
+class AIUnavailableError(Exception):
+    """No usable ANTHROPIC_API_KEY on this deployment."""
+
+
+class ModelResponseError(Exception):
+    """The model refused or returned an unusable payload."""
+
+
+# ── Rate limiting: in-memory per-IP sliding window ──────────────────────────
+# Module-level dict — per-instance state only, which is exactly what a
+# stateless Vercel deployment allows. demo_id requests are exempt.
+RATE_LIMIT_MAX = 10          # requests
+RATE_LIMIT_WINDOW = 300      # seconds
+_RATE_BUCKETS = {}           # ip -> [timestamps]
+
+
+def _client_ip():
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.remote_addr or "unknown"
+
+
+def check_rate_limit():
+    """Returns None when allowed, or seconds to wait when over the limit."""
+    now = time.time()
+    ip = _client_ip()
+    bucket = [t for t in _RATE_BUCKETS.get(ip, []) if now - t < RATE_LIMIT_WINDOW]
+    if len(bucket) >= RATE_LIMIT_MAX:
+        _RATE_BUCKETS[ip] = bucket
+        return max(1, int(RATE_LIMIT_WINDOW - (now - bucket[0])) + 1)
+    bucket.append(now)
+    _RATE_BUCKETS[ip] = bucket
+    # Opportunistic cleanup so the dict can't grow unbounded per instance
+    if len(_RATE_BUCKETS) > 10000:
+        _RATE_BUCKETS.clear()
+        _RATE_BUCKETS[ip] = bucket
+    return None
 
 SYSTEM_PROMPT = """You are a licensed US customs broker and trade compliance specialist with 20 years of experience. You specialize in HTS classification for furniture/cabinets, natural stone, apparel, and consumer goods.
 
@@ -253,55 +300,83 @@ def build_grounding_block(invoice_text):
 
 
 def analyze_with_claude(invoice_text):
+    """Run the Claude analysis. Raises typed exceptions so analyze() can map
+    honest HTTP statuses instead of collapsing every failure to a fake demo
+    response:
+      AIUnavailableError          → 503 ai_unavailable
+      anthropic.RateLimitError    → 429 rate_limited (Retry-After passthrough)
+      anthropic.APITimeoutError   → 504 model_timeout
+      anthropic.APIStatusError    → 502 model_error
+      ModelResponseError          → 502 model_error
+    """
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if not api_key or api_key in ("dummy", "dummy_key_for_demo", "your_key_here", ""):
-        log.warning("No valid ANTHROPIC_API_KEY — returning demo mode")
-        return None
+    if not api_key or api_key in ("dummy", "dummy_key_for_demo", "your_key_here"):
+        raise AIUnavailableError("No valid ANTHROPIC_API_KEY configured")
 
+    # timeout=45s / max_retries=1 keeps worst-case latency inside Vercel's
+    # 60s function window instead of the SDK default (10 min, 2 retries).
+    client = anthropic.Anthropic(api_key=api_key, timeout=45.0, max_retries=1)
+
+    grounding = build_grounding_block(invoice_text)
+
+    started = time.time()
+    # Structured outputs guarantee schema-valid JSON — no manual brace hunting.
+    # System prompt is static → cache it; per-invoice content goes in the user turn.
+    message = client.messages.create(
+        model=CLAUDE_MODEL,
+        max_tokens=4000,
+        system=[{
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }],
+        output_config={"format": {"type": "json_schema", "schema": ANALYSIS_SCHEMA}},
+        messages=[
+            {
+                "role": "user",
+                "content": (
+                    "Analyze this customs invoice and find HTS misclassification savings:\n\n"
+                    f"{invoice_text[:8000]}{grounding}"
+                ),
+            }
+        ],
+    )
+    latency_ms = int((time.time() - started) * 1000)
+
+    usage = getattr(message, "usage", None)
+    if usage is not None:
+        log.info(json.dumps({
+            "event": "analyze.usage",
+            "model": CLAUDE_MODEL,
+            "input_tokens": getattr(usage, "input_tokens", None),
+            "output_tokens": getattr(usage, "output_tokens", None),
+            "cache_read_input_tokens": getattr(usage, "cache_read_input_tokens", None),
+            "cache_creation_input_tokens": getattr(usage, "cache_creation_input_tokens", None),
+            "latency_ms": latency_ms,
+        }))
+
+    if message.stop_reason == "refusal":
+        log.warning("Claude declined the request (stop_reason=refusal)")
+        raise ModelResponseError("Model declined the request")
     try:
-        client = anthropic.Anthropic(api_key=api_key)
-
-        grounding = build_grounding_block(invoice_text)
-
-        # Structured outputs guarantee schema-valid JSON — no manual brace hunting.
-        # System prompt is static → cache it; per-invoice content goes in the user turn.
-        message = client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=4000,
-            system=[{
-                "type": "text",
-                "text": SYSTEM_PROMPT,
-                "cache_control": {"type": "ephemeral"},
-            }],
-            output_config={"format": {"type": "json_schema", "schema": ANALYSIS_SCHEMA}},
-            messages=[
-                {
-                    "role": "user",
-                    "content": (
-                        "Analyze this customs invoice and find HTS misclassification savings:\n\n"
-                        f"{invoice_text[:8000]}{grounding}"
-                    ),
-                }
-            ],
-        )
-
-        if message.stop_reason == "refusal":
-            log.warning("Claude declined the request (stop_reason=refusal)")
-            return None
         return json.loads(message.content[0].text)
-
-    except Exception as e:
-        log.error(f"Claude error: {e}")
-        return None
+    except (ValueError, IndexError, AttributeError) as e:
+        raise ModelResponseError(f"Unparseable model output: {e}") from e
 
 
 def generate_protest_letter(findings, total_savings, fta_type=None):
-    if not findings or total_savings == 0:
+    # Only verified findings may reach the legal artifact — every number below
+    # was recomputed server-side against the USITC schedule by verify_findings.
+    protestable = [
+        f for f in (findings or [])
+        if f.get('verified') and f.get('savings', 0) > 0
+    ]
+    if not protestable or total_savings == 0:
         return "No protest needed — current classification appears correct."
 
     items = "\n".join([
         f"- HTS {f.get('hts_code')} → {f.get('suggested_code')} (save ${f.get('savings', 0):,.0f})"
-        for f in findings if f.get('savings', 0) > 0
+        for f in protestable
     ])
 
     fta_text = ""
@@ -327,65 +402,261 @@ Authorized Importer Representative
 TariffCheck Analysis System"""
 
 
+MIN_INVOICE_CHARS = 20
+
+
+def _requested_demo_id():
+    """Mock data is served ONLY for an explicit demo_id (form field or JSON
+    key) — filename-based mock selection is gone for good."""
+    demo_id = request.form.get('demo_id')
+    if demo_id is None and request.is_json:
+        data = request.get_json(silent=True) or {}
+        demo_id = data.get('demo_id')
+    return str(demo_id) if demo_id is not None else None
+
+
 @app.route('/analyze', methods=['POST'])
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
+    started = time.time()
     try:
-        invoice_text = ""
+        # Explicit demo request → mock data (verified at import time),
+        # exempt from rate limiting because it costs nothing.
+        demo_id = _requested_demo_id()
+        if demo_id is not None:
+            demo = MOCK_DEMOS.get(demo_id, MOCK_DEMOS["1"])
+            payload = {**demo, "meta": {
+                "demo": True,
+                "model": CLAUDE_MODEL,
+                "latency_ms": int((time.time() - started) * 1000),
+            }}
+            return jsonify(payload)
 
+        wait = check_rate_limit()
+        if wait is not None:
+            return api_error(
+                429, "rate_limited",
+                "Too many analyses from this address. Please wait a minute and retry.",
+                headers={"Retry-After": str(wait)},
+            )
+
+        invoice_text = ""
         if request.files and 'file' in request.files:
             file = request.files['file']
             file_bytes = file.read()
             if file.filename and file.filename.lower().endswith('.pdf'):
-                # Route demo PDFs to mock responses directly
-                fname = file.filename.lower()
-                if 'furniture' in fname or 'mexico' in fname or 'demo1' in fname:
-                    return jsonify(MOCK_DEMOS["1"])
-                elif 'footwear' in fname or 'vietnam' in fname or 'demo2' in fname:
-                    return jsonify(MOCK_DEMOS["2"])
-                elif 'coffee' in fname or 'colombia' in fname or 'demo3' in fname:
-                    return jsonify(MOCK_DEMOS["3"])
-                elif 'autopart' in fname or 'korea' in fname or 'demo4' in fname:
-                    return jsonify(MOCK_DEMOS["4"])
-                elif 'pharma' in fname or 'india' in fname or 'demo5' in fname:
-                    return jsonify(MOCK_DEMOS["5"])
+                if not file_bytes.startswith(b'%PDF-'):
+                    return api_error(
+                        422, "unreadable_file",
+                        "We couldn't read this file. Try a PDF with selectable text, "
+                        "or paste the invoice as text.",
+                    )
                 invoice_text = extract_text_from_pdf(file_bytes)
+                if len(invoice_text.strip()) < MIN_INVOICE_CHARS:
+                    return api_error(
+                        422, "unreadable_file",
+                        "We couldn't read this file. Try a PDF with selectable text, "
+                        "or paste the invoice as text.",
+                    )
             else:
                 invoice_text = file_bytes.decode('utf-8', errors='ignore')
 
         if not invoice_text:
             if request.is_json:
                 data = request.get_json(silent=True) or {}
-                invoice_text = data.get('text', '')
+                invoice_text = str(data.get('text', '') or '')
             else:
                 invoice_text = request.form.get('text', '')
 
         # Sanitize input
         invoice_text = invoice_text.strip()[:10000]
-        if len(invoice_text) < 20:
-            return jsonify({"error": "Invoice text too short. Please include product descriptions, HTS codes, values, and country of origin."}), 400
+        if len(invoice_text) < MIN_INVOICE_CHARS:
+            return api_error(
+                400, "text_too_short",
+                "Invoice text too short. Please include product descriptions, "
+                "HTS codes, values, and country of origin.",
+            )
 
         # Log request (no invoice content for privacy)
         log.info(f"[ANALYZE] length={len(invoice_text)} chars")
 
-        analysis = analyze_with_claude(invoice_text)
-
-        if not analysis:
-            log.warning("Claude unavailable — returning demo mode notice")
-            return jsonify(DEMO_MODE_RESPONSE), 503
-
-        if not analysis.get('protest_letter'):
-            analysis['protest_letter'] = generate_protest_letter(
-                analysis.get('findings', []),
-                analysis.get('total_savings', 0),
-                analysis.get('fta_type')
+        try:
+            analysis = analyze_with_claude(invoice_text)
+        except AIUnavailableError:
+            log.warning("No valid ANTHROPIC_API_KEY — live analysis unavailable")
+            return api_error(
+                503, "ai_unavailable",
+                "Live AI analysis is not configured on this deployment. "
+                "Try a sample scenario instead.",
+                demo_available=True,
             )
+        except anthropic.RateLimitError as e:
+            retry_after = "30"
+            try:
+                retry_after = e.response.headers.get("retry-after") or retry_after
+            except Exception:
+                pass
+            return api_error(
+                429, "rate_limited",
+                "Too many analyses from this address. Please wait a minute and retry.",
+                headers={"Retry-After": str(retry_after)},
+            )
+        except anthropic.APITimeoutError:
+            return api_error(
+                504, "model_timeout",
+                "Analysis took too long. Try a shorter invoice or retry.",
+            )
+        except (anthropic.APIStatusError, anthropic.APIConnectionError, ModelResponseError) as e:
+            log.error(f"Claude error: {e}")
+            return api_error(502, "model_error", "The AI analysis failed. Please retry.")
 
+        # Deterministic verification: every model claim is recomputed against
+        # the official USITC schedule BEFORE the protest letter is generated,
+        # so the legal artifact only ever contains verified numbers.
+        analysis = verify_findings(analysis)
+        analysis['protest_letter'] = generate_protest_letter(
+            analysis.get('findings', []),
+            analysis.get('total_savings', 0),
+            analysis.get('fta_type')
+        )
+        analysis['meta'] = {
+            "demo": False,
+            "model": CLAUDE_MODEL,
+            "latency_ms": int((time.time() - started) * 1000),
+        }
         return jsonify(analysis)
 
     except Exception as e:
         log.exception(f"Error in /analyze: {e}")
-        return jsonify(DEMO_MODE_RESPONSE), 500
+        return api_error(500, "internal_error", "Something went wrong. Please retry.")
+
+
+@app.route('/api/analyze-batch', methods=['POST'])
+def analyze_batch():
+    """Deterministic bulk screen for brokers: 1-100 entry lines audited
+    against the USITC schedule + curated patterns. Zero Claude calls."""
+    payload = request.get_json(silent=True)
+    try:
+        result = run_batch_audit(payload)
+    except BatchValidationError as e:
+        return api_error(400, e.code, e.message)
+    return jsonify(result)
+
+
+# 2026 user-fee figures (19 CFR 24.23/24.24, FY2026 adjusted amounts):
+# Merchandise Processing Fee 0.3464% ad valorem, min $33.58 / max $651.50;
+# Harbor Maintenance Fee 0.125%, ocean shipments only.
+MPF_RATE = 0.3464
+MPF_MIN = 33.58
+MPF_MAX = 651.50
+HMF_RATE = 0.125
+
+
+@app.route('/api/landed-cost', methods=['GET'])
+def landed_cost():
+    code = request.args.get('code', '').strip()
+    origin = request.args.get('origin', '').strip()
+    mode = (request.args.get('mode', 'ocean').strip().lower() or 'ocean')
+    if mode not in ('ocean', 'air'):
+        mode = 'ocean'
+    try:
+        value = float(request.args.get('value', ''))
+    except (TypeError, ValueError):
+        value = 0.0
+    if not code or value <= 0:
+        return api_error(400, "invalid_params", "Provide code and a positive value.")
+
+    rec = lookup_hts(code)
+    if rec is None:
+        return api_error(
+            404, "code_not_found",
+            f"HTS code {code} not found in the USITC schedule.",
+            found=False,
+        )
+
+    mfn_rate = rec.get("general_rate")
+    mfn_raw = rec.get("general_raw", "")
+    if mfn_rate is None:
+        # Unparseable rate line (e.g. compound units) — duty estimated at 0,
+        # raw text surfaced so the caller sees what the schedule says.
+        mfn_rate = 0.0
+    mfn_duty = round(value * mfn_rate / 100.0, 2)
+
+    s301_rate = get_section_301_rate(code, origin)
+    s301_duty = round(value * s301_rate / 100.0, 2)
+    s301_note = (
+        "Chapter-level estimate — confirm the exact Section 301 list for this "
+        "code before relying on it."
+    ) if s301_rate > 0 else None
+
+    mpf = round(min(max(value * MPF_RATE / 100.0, MPF_MIN), MPF_MAX), 2)
+    hmf = round(value * HMF_RATE / 100.0, 2) if mode == 'ocean' else 0.0
+
+    total = round(mfn_duty + s301_duty + mpf + hmf, 2)
+
+    fta = None
+    fta_name, fta_rate = fta_rate_for_code(code, origin)
+    if fta_rate is None and origin:
+        country_name, country_rate, _ = check_fta(origin)
+        if country_name is not None:
+            fta_name, fta_rate = country_name, country_rate
+    if fta_name is not None and fta_rate is not None:
+        _, _, fta_form = check_fta(origin)
+        fta_duty = round(value * fta_rate / 100.0, 2)
+        duty_with_fta = round(fta_duty + s301_duty + mpf + hmf, 2)
+        fta = {
+            "eligible": True,
+            "name": fta_name,
+            "rate": fta_rate,
+            "form": fta_form or "Importer certification",
+            "duty_with_fta": duty_with_fta,
+            "savings": round(total - duty_with_fta, 2),
+        }
+
+    response = jsonify({
+        "found": True,
+        "code": rec.get("code", code),
+        "matched_note": rec.get("note"),
+        "description": rec.get("description"),
+        "origin": origin,
+        "value": value,
+        "mode": mode,
+        "breakdown": {
+            "mfn_rate": mfn_rate, "mfn_duty": mfn_duty, "mfn_rate_raw": mfn_raw,
+            "section_301_rate": s301_rate, "section_301_duty": s301_duty,
+            "section_301_note": s301_note,
+            "mpf_rate": MPF_RATE, "mpf": mpf, "mpf_min": MPF_MIN, "mpf_max": MPF_MAX,
+            "hmf_rate": HMF_RATE, "hmf": hmf,
+        },
+        "total_landed_duty": total,
+        "effective_rate": round(total / value * 100.0, 2),
+        "fta": fta,
+        "disclaimer": "Estimate from the official USITC HTS 2026 schedule. "
+                      "Not customs advice; verify with a licensed broker.",
+    })
+    # Deterministic per query string → safe to cache hard at the CDN.
+    response.headers["Cache-Control"] = "public, s-maxage=86400, stale-while-revalidate=604800"
+    return response
+
+
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+@app.route('/api/leads', methods=['POST'])
+def leads():
+    """Stateless email-capture stub: validate, log a structured line, store
+    nothing. The log stream is the inbox until there's a real CRM."""
+    data = request.get_json(silent=True) or {}
+    email = str(data.get('email', '') or '').strip()
+    if not _EMAIL_RE.match(email):
+        return api_error(400, "invalid_email", "Provide a valid email address.")
+    log.info(json.dumps({
+        "event": "lead.captured",
+        "email": email,
+        "source": str(data.get('source', '') or '')[:100],
+        "context": str(data.get('context', '') or '')[:500],
+    }))
+    return jsonify({"ok": True, "message": "Thanks — we'll be in touch."})
 
 
 MOCK_DEMOS = {
@@ -603,6 +874,12 @@ MOCK_DEMOS = {
         "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Savannah\n\nRe: Protest of Tariff Classification — Bangladesh-origin Cotton-Blend T-shirts\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of crew-neck t-shirts under HTS 6109.90.1007 (t-shirts of man-made fibers) at 32%.\n\nThe imported merchandise has a verified fabric composition of 60% cotton, 40% polyester. Under Additional U.S. Note 2 to Section XI of the HTS, classification by chief weight controls: because cotton exceeds 50% by weight, these goods are properly classified under HTS 6109.10.0012 (t-shirts of cotton) at 16.5%.\n\nBangladesh is not subject to Section 301 tariffs. Mill certificates and fiber-weight test reports are attached as evidence of chief weight.\n\nTotal duty overpayment on this entry: $1,302. The importer respectfully requests reliquidation under HTS 6109.10.0012 and refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     }
 }
+
+# Demo payloads go through the SAME deterministic verifier as live analyses,
+# at import time — demo numbers are provably schedule-consistent, and every
+# demo response carries per-finding verified flags + a verification block.
+for _demo in MOCK_DEMOS.values():
+    verify_findings(_demo)
 
 
 @app.route('/demo', methods=['GET'])
