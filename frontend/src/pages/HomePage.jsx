@@ -193,6 +193,70 @@ function RecoveryTape() {
   )
 }
 
+const EVIDENCE = [
+  {
+    end: 88.7, decimals: 1, suffix: '%',
+    label: 'USMCA utilization by Nov 2025 — up from 44.8% in January, once claiming was suddenly worth 25%. Preferences go unclaimed until someone runs the numbers.',
+    source: 'USITC DataWeb · Federal Reserve',
+  },
+  {
+    end: 509.7, decimals: 1, prefix: '$', suffix: 'B',
+    label: 'of 2024 US imports entered with no USMCA claim — duty paid at full rates on goods that could have qualified for 0%.',
+    source: 'USITC import data',
+  },
+  {
+    end: 45000, decimals: 0,
+    label: 'protests reach CBP each year — from only ~3,750 filers. The long tail of importers lets the 180-day window close unclaimed.',
+    source: 'CBP · 87 FR 34894',
+  },
+  {
+    end: 32, decimals: 0,
+    label: 'revisions to the US tariff schedule in 2025 alone, versus 10 the year before. Every revision re-creates the audit need.',
+    source: 'USITC HTS archive',
+  },
+]
+
+function EvidenceStat({ stat, active, delay }) {
+  const v = useCountUp(stat.end, { duration: 1100, startDelay: delay, enabled: active })
+  const text = `${stat.prefix || ''}${v.toLocaleString('en-US', { minimumFractionDigits: stat.decimals, maximumFractionDigits: stat.decimals })}${stat.suffix || ''}`
+  return (
+    <div className="evidence-stat">
+      <div className="evidence-num">{text}</div>
+      <div className="evidence-desc">{stat.label}</div>
+      <div className="evidence-src">— {stat.source}</div>
+    </div>
+  )
+}
+
+function EvidenceBand() {
+  const ref = useRef(null)
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || typeof IntersectionObserver === 'undefined') { setActive(true); return }
+    const io = new IntersectionObserver(
+      entries => { if (entries.some(e => e.isIntersecting)) { setActive(true); io.disconnect() } },
+      { threshold: 0.25 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return (
+    <section className="evidence" ref={ref}>
+      <div className="evidence-inner">
+        <div className="evidence-kicker">Sec. 02 — Evidence</div>
+        <h2 className="evidence-title">The problem, in the government's own numbers</h2>
+        <div className="evidence-grid">
+          {EVIDENCE.map((s, i) => (
+            <EvidenceStat key={i} stat={s} active={active} delay={i * 150} />
+          ))}
+        </div>
+        <div className="evidence-note">All figures from public government sources — no vendor estimates.</div>
+      </div>
+    </section>
+  )
+}
+
 function StampSeal() {
   return (
     <svg className="stamp-seal" viewBox="0 0 120 120" aria-hidden="true">
@@ -494,9 +558,11 @@ export default function HomePage() {
         </Reveal>
       </section>
 
+      <EvidenceBand />
+
       <section className="niche-callout-section">
         <Reveal>
-          <div className="section-label" style={{ textAlign: 'left' }}>Sec. 02 — Findings</div>
+          <div className="section-label" style={{ textAlign: 'left' }}>Sec. 03 — Findings</div>
           <h2 className="niche-callout-title">Where overpayment hides</h2>
           <p className="niche-callout-sub">
             Four patterns account for most of the duty importers never should have paid. Every audit checks all of them, line by line.

@@ -8,11 +8,12 @@
 
 ## 1. Problem
 
-US importers overpay an estimated **~$26 billion per year** in customs duties — misclassified HTS codes, unclaimed FTA/USMCA preferences, and wrongly applied Section 301 rates. The demand signal is not hypothetical:
+US importers systematically overpay customs duties — misclassified HTS codes, unclaimed FTA/USMCA preferences, and wrongly applied Section 301 rates. Every number below is from a public government source, not a vendor estimate:
 
-- Misclassification drives **~42% of CBP penalties**.
-- CBP found **$310M in lost revenue in a single month**.
-- The 2025–26 tariff regime changes (Section 301 expansions, IEEPA tariffs imposed then voided, de minimis changes) mean **every static classification goes stale**. A code that was right in 2024 is wrong in 2026.
+- **$509.7B of 2024 US imports entered with no USMCA claim** (USITC import data) — duty paid at full rates on goods that could have qualified for 0%. When IEEPA tariffs suddenly made claiming worth 25%, USMCA utilization jumped **from 44.8% (Jan 2025) to 88.7% (Nov 2025)** — proof that roughly 40 points of import value sat eligible-but-unclaimed until someone ran the numbers.
+- **~45,000 protests reach CBP per year, from only ~3,750 filers** (CBP, 87 FR 34894). Protest capability is concentrated in a tiny sophisticated population; the long tail of ~330K importers lets the 180-day window close.
+- **CBP duty collections jumped from $88B (FY2024) to $217B (FY2025)** (CBP Trade Statistics) — every error class now costs 2.5x more.
+- The tariff schedule was revised **32 times in 2025, versus 10 in 2024** (USITC), and HS 2028 will re-map ~8% of all subheadings on a known date. **Every static classification goes stale.** A code that was right in 2024 is wrong in 2026.
 
 The parties who could fix this don't: brokers file entries but almost never audit them retrospectively — protest work is manual and hourly-unprofitable at SMB entry values, so it goes to trade lawyers at $500+/hr or simply doesn't happen. Importers feel the pain on their P&L but have no way to check their broker's work. The 180-day protest window under 19 U.S.C. §1514 quietly expires.
 
@@ -43,9 +44,11 @@ The model proposes; our data layer disposes. Every AI finding is deterministical
 
 ## 5. Market
 
-- **TAM — $5–6B/yr.** Value-capture math: $26B/yr overpayment pool × the 15–20% take-rate that trade law firms, Big 4 trade practices, and protest specialists bill today = $3.9–5.2B, plus $1–1.5B of US trade-compliance software spend (Descartes, ONESOURCE, SAP GTS class) an AI-native challenger cannibalizes. Total spend on the *service* is many times larger than spend on software.
-- **SAM — ~$1.4B/yr.** What our mechanism (classification audit → §1514 protest package) and motion (broker-facing + SMB self-serve, US-only) actually address: ~3,000 active brokerage firms ($300–500M) plus ~130K regular importers at $5–8K blended willingness-to-pay ($800M–1B). Honestly excluded: duty drawback, non-US regimes, and filing itself (license wall).
-- **SOM — $8–12M ARR by end of year 3.** Bottom-up: 150 broker-firm accounts (~5% of the 3,000-firm universe) at ~$25K ACV + 1,500 self-serve importer subscriptions at ~$3.5K + $1–2M in success fees on managed recoveries.
+Honest math, built to survive diligence — the recurring recoverable pool is **single-digit billions per year** (CBP paid $6.7–9.3B/yr in total refunds, FY2024–25, DHS audited financials), not the inflated "tens of billions" folklore vendors circulate:
+
+- **TAM — $1.5–3B/yr.** The recovered-money fee pool: 10–30% contingency on the recurring recoverable pool (the fee band the drawback/recovery industry actually charges today) ≈ $0.5–1B/yr in service fees, plus the $1.2–2.7B global trade-management-software category an AI-native challenger takes share from. The one-time ~$166B IEEPA refund event sits on top of this as 2026 customer acquisition, not run-rate.
+- **SAM — $400–700M/yr.** What our mechanism (classification audit → §1514 protest package) and motion (broker-first, US-only) actually address: ~3,000 active brokerage firms ($300–500M at realistic ACVs) plus the recovery fees flowing through them. Honestly excluded: duty drawback (§1313), non-US regimes, filing itself (license wall), and CAPE-mechanical IEEPA refunds.
+- **SOM — $8–12M revenue by end of year 3.** Bottom-up: 150 broker-firm accounts (~5% of the 3,000-firm universe) at ~$25K ACV + 1,500 self-serve importer subscriptions at ~$3.5K + $1–2M in success fees on managed recoveries. Note the mix: at maturity roughly half of this is recovery-linked, not pure SaaS — we price the way this market demonstrably pays.
 
 ## 6. Business Model
 
@@ -77,17 +80,19 @@ Why credible: (a) the buyer universe is enumerable — 3,000 broker firms is a s
 
 ## 8. Competition
 
-| Player | What they are | Why we win |
-|---|---|---|
-| **TariffLens** | Tariff intelligence/classification tooling | No detection → verified dollars → ready-to-file §1514 letter in a single pass |
-| **Quickcode** | AI HTS classification | Forward-looking classification, not backward-looking recovery of money already overpaid |
-| **Thomson Reuters ONESOURCE** | Fortune-1000 ERP-integrated trade suite (their AI passed the CBP broker exam at 85–86% — proof the accuracy frontier is reachable) | Heavy implementation, enterprise cycles; SMBs and regional brokers can't self-serve; our edge is grounding + deterministic verification, not raw model trust |
-| **Descartes CustomsInfo** | Largest commercial duty database | Data layer, not workflow; paywalls the lookup we give away as PLG |
-| **Trava** (YC, adjacent) | AI entry auditing sold top-down to mid-market compliance teams | Our differentiation: the broker channel as customer *and* filing path, plus the single-artifact finding → savings → protest-letter flow |
+| Player | What they are | Threat | Where we win |
+|---|---|---|---|
+| **Caspian** ($5.4M seed, licensed broker + ABI vendor, lists §1514 protests as a product) | Full-stack AI duty recovery: audit + PSC + protests + drawback, files end-to-end | **Highest** | We are channel-safe for brokers — Caspian *is* a brokerage, so selling to brokers means arming a rival. Our deterministic re-verification and transparent pricing vs their service-flavored stack |
+| **Amari AI** ($4.5M seed, First Round/Pear; 30+ brokerages) | AI copilot for broker *entry operations* (pre-entry) | High | Same buyer, different moment: they optimize filing, we recover money already lost. Post-entry audit→protest is a product they'd have to build; we ship it today |
+| **Gaia Dynamics** (AI Fund) | AI classification + "Tariff Audit Engine"; protest templates advertised on blog only | High | Protest capability appears aspirational; no deterministic verification story; no broker-first motion |
+| **Flexport** | Free "Audit Your Customs Broker" tool; files as broker of record | Ecosystem | Structurally cannot sell to independent brokers — it's their predator. *"Flexport gives your clients a free tool to audit you. We give you the same audit, plus drafted protests, first."* |
+| **Pax AI** (YC S24, $4.5M) | Drawback-led recovery, 1–30% contingency, licensed broker | Medium | Their audit is reconciliation, not schedule-wide misclassification; our 8–10% fee undercuts their band; brokers distrust a rival brokerage |
+| **Reform** (YC W24) | PSC audit + filing for brokers (pre-liquidation) | Medium | PSC-only — no §1514, no recovery economics. We are the post-liquidation half they lack |
+| **Quickcode** (broker tier from $749/mo) | Explainable-AI HTS classification, embedded in Magaya | Medium | Catalog classification, not paid-entry audit; no overpayment math, no protests |
+| **Trava** (YC W25) | AI entry audits for importers | Medium | Stops at "evidence your broker can act on" — no protest drafting; importer-facing |
+| **ONESOURCE / Descartes / CargoWise** | Incumbent GTM suites + broker rails; shipped pre-entry AI assist only in 2025–26 | Watch | No post-entry refund-finding, no protest drafting, no SMB price point — but Descartes owns the NetCHB rails and is a serial acquirer |
 
-**Caspian and Pax are not competitors** — they are duty-drawback companies (drawback requires exports; our protest/misclassification market covers importers with no exports). We cite their ~$10M in combined recent funding as proof the adjacent recovered-money market is fundable, nothing more.
-
-None of the real competitors owns the single-artifact flow: misclassification found → savings computed and verified → ready-to-file protest letter.
+As of July 2026, **no competitor verifiably ships the full flow we do**: schedule-wide misclassification audit → deterministically verified dollars → ready-to-file §1514 protest package, sold broker-first and never filing. But Caspian lists protests, Gaia markets templates, and Amari owns our buyer — the window is measured in quarters. Our answer is speed to referenceable broker case studies, published verification accuracy, and entry-data integrations (NetCHB/CargoWise import).
 
 ## 9. YC RFS Fit
 
@@ -99,17 +104,26 @@ Said before it's asked:
 
 - **Zero design partners today.** The broker design-partner motion is the plan, not the traction.
 - **Success-fee revenue lags 60–180 days** behind bookings — CBP liquidation timelines are outside our control.
-- **CAPE/IEEPA revenue is one-time.** We model it as customer acquisition, never as run-rate.
-- **We prepare filings; the importer of record or a licensed broker files.** We never file with CBP and never claim to.
-- No fabricated customers, logos, or testimonials — the numbers above are market math and public CBP/court figures, not traction claims.
+- **CAPE/IEEPA revenue is one-time and we don't take success fees on CAPE-mechanical refunds** — the free CBP portal handles those; our fee base is misclassification / missed-FTA / Section 301 recoveries, which CAPE cannot touch.
+- **We prepare filings; the importer of record or a licensed broker files.** We never file with CBP and never claim to. We know 19 CFR 111.1 defines "customs business" broadly (see CBP ruling H350722 on AI classification) — a formal counsel opinion and/or CBP ruling request on the self-file + broker-in-the-loop model is a funded-day-one item, and a partner-broker network is the 12-month structural answer.
+- **The category is contested, not empty.** Caspian, Amari, Gaia, Pax, Reform and Flexport all moved into adjacent lanes in 2025–26; our specific flow is unoccupied but the window is quarters, not years.
+- **AI classification is a screen, not an oracle.** Published benchmarks put autonomous 10-digit accuracy below 50%; that's exactly why every finding is deterministically re-verified against the schedule and priced for human broker review — and why wrong-code candidates die before reaching a letter.
+- No fabricated customers, logos, or testimonials — every market number above traces to a public government source (USITC, CBP, DHS AFR, Federal Register), not vendor folklore.
 
 ## 11. Roadmap
 
-1. **CROSS rulings corpus** — ground every finding in cited CBP rulings, raising defensibility and ASP.
-2. **Two-pass grounded classification** — candidate generation, then adjudication against schedule + rulings.
-3. **ACE report ingestion** — audit actual CBP entry data (importer-authorized), not just invoices.
-4. **Tariff-change monitoring** — per-SKU alerts turning every rate change into a customer-value event; the retention layer.
-5. **EU/UK/CA schedules** — same architecture, new customs regimes.
+Next 90 days (the three experiments that most reduce uncertainty):
+
+1. **Broker-workbench pilots** — 5 licensed brokers/trade attorneys running the tool on real backlogs (protective protests on the contested ~$30B finally-liquidated IEEPA segment + Section 232/301 classification reviews). Metric: $ of protests drafted-and-filed per broker-hour vs baseline.
+2. **FOIA CBP for protest grant rates, recovery amounts, and PSC volumes** — this data exists nowhere publicly; owning it is both the honest pitch slide and a marketing moat. In parallel: counsel opinion / CBP ruling request to convert the 19 CFR 111.1 gray zone into a documented safe harbor.
+3. **Precision-on-real-data benchmark** — free audits for 10 importers in exchange for entry data; publish validated-recovery-per-review-hour and the audit's precision after broker review. This becomes the accuracy page brokers cite in their own compliance files.
+
+Then:
+
+4. **CROSS rulings corpus** — ground every finding in cited CBP rulings, raising defensibility and ASP.
+5. **ACE report ingestion + NetCHB/CargoWise entry-data import** — audit actual filed-entry data, not just invoices; the integration is also the distribution channel.
+6. **Tariff-change monitoring** — per-SKU alerts turning every rate change (32 in 2025 alone; HS 2028 re-map incoming) into a customer-value event; the retention layer.
+7. **EU/UK/CA schedules** — same architecture, new customs regimes.
 
 ## 12. Team
 
