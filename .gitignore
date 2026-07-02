@@ -35,3 +35,6 @@ frontend 2/
 # Vercel build artifacts
 public/
 .vercel/
+
+# Local agent config
+.claude/
