@@ -60,9 +60,9 @@ export default function CapePage() {
                 <li>Free to claim yourself</li>
               </ul>
             </div>
-            <div style={{background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:8, padding:16}}>
+            <div style={{background:'var(--blue-light)', border:'1px solid var(--blue-mid)', borderRadius:'var(--radius-sm)', padding:16}}>
               <div style={{fontWeight:700, color:'#1e40af', marginBottom:8}}>HTS Misclassification (TariffCheck)</div>
-              <ul style={{color:'#1d4ed8', fontSize:13, paddingLeft:16, margin:0, lineHeight:1.7}}>
+              <ul style={{color:'var(--ledger-deep)', fontSize:13, paddingLeft:16, margin:0, lineHeight:1.7}}>
                 <li>Wrong HTS code used at entry</li>
                 <li>Filed as CBP protest (Form 19)</li>
                 <li>180-day window from liquidation</li>

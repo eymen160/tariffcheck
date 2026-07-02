@@ -277,10 +277,10 @@ export default function BatchPage() {
         {/* Input card */}
         <div className="card" style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-            <button className="btn-secondary" onClick={() => fileRef.current.click()}>📄 Upload CSV</button>
+            <button className="btn-secondary" onClick={() => fileRef.current.click()}>Upload CSV</button>
             <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={onFile} />
             <button className="btn-secondary" onClick={() => loadCsvString(SAMPLE_CSV, true)}>
-              ⚡ Load sample portfolio <span className="badge-sample" style={{ fontSize: 9, padding: '2px 7px' }}>Sample data</span>
+              Load sample portfolio <span className="badge-sample" style={{ fontSize: 9, padding: '2px 7px' }}>Sample data</span>
             </button>
           </div>
 

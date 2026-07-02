@@ -8,6 +8,7 @@ import CalculatorPage from './pages/CalculatorPage'
 import SavingsPage from './pages/SavingsPage'
 import BrokersPage from './pages/BrokersPage'
 import PricingPage from './pages/PricingPage'
+import TermsPage from './pages/TermsPage'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
       <Route path="/savings" element={<SavingsPage />} />
       <Route path="/brokers" element={<BrokersPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/terms" element={<TermsPage />} />
     </Routes>
   )
 }

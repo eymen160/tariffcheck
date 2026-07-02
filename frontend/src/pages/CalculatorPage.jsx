@@ -148,7 +148,7 @@ export default function CalculatorPage() {
                       color: mode === m ? 'white' : 'var(--slate-600)',
                     }}
                   >
-                    {m === 'ocean' ? '🚢 Ocean' : '✈️ Air'}
+                    {m === 'ocean' ? 'Ocean' : 'Air'}
                   </button>
                 ))}
               </div>

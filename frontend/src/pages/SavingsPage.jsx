@@ -101,7 +101,7 @@ export default function SavingsPage() {
 
         {audits.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: '56px 32px' }}>
-            <div style={{ fontSize: 40, marginBottom: 14 }}>📂</div>
+            <div style={{ fontFamily: 'var(--font-serif)', color: 'var(--slate-300)', fontSize: 44, marginBottom: 14 }}>§</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 8 }}>Run your first audit</div>
             <div style={{ fontSize: 14, color: 'var(--slate-500)', marginBottom: 24, maxWidth: 420, margin: '0 auto 24px' }}>
               Audit an invoice and your verified savings, findings, and protest deadlines will show up here.

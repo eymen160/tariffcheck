@@ -5,17 +5,14 @@ import LeadForm from '../components/LeadForm'
 
 const VALUE_PROPS = [
   {
-    icon: '🗂️',
     title: 'Bulk client-invoice scanning',
     desc: 'Paste or upload entire client entry portfolios as CSV. Every line is screened against the complete 29,755-code USITC HTS 2026 schedule for misclassification patterns, missed FTA claims, and Section 301 exposure — in seconds, deterministically.',
   },
   {
-    icon: '📄',
     title: 'Draft §1514 protest letters your firm files',
     desc: 'Every flagged exception becomes a ready-to-review 19 U.S.C. §1514 protest package with verified rate deltas and recomputed savings. Turn the protest work you used to decline into a new fee line.',
   },
   {
-    icon: '✓',
     title: 'Verified against the official USITC schedule',
     desc: 'Savings math is recomputed server-side against official 2026 rates before it reaches any letter. A hallucinated number physically cannot reach a legal artifact your firm puts its name on.',
   },
@@ -38,7 +35,7 @@ export default function BrokersPage() {
             review-ready §1514 protest drafts with server-verified savings.
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'white', border: '1px solid var(--green-mid)', borderRadius: 20, padding: '9px 20px', fontSize: 14, fontWeight: 700, color: 'var(--green)', boxShadow: 'var(--shadow-sm)' }}>
-            ⚖ We prepare, you file — no license conflict.
+            We prepare, you file — no license conflict.
           </div>
         </div>
       </section>
@@ -47,8 +44,7 @@ export default function BrokersPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 18 }}>
           {VALUE_PROPS.map(v => (
             <div key={v.title} className="card">
-              <div style={{ fontSize: 30, marginBottom: 12 }}>{v.icon}</div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 8 }}>{v.title}</div>
+                            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 8 }}>{v.title}</div>
               <div style={{ fontSize: 14, color: 'var(--slate-500)', lineHeight: 1.65 }}>{v.desc}</div>
             </div>
           ))}

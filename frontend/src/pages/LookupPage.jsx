@@ -175,8 +175,8 @@ export default function LookupPage() {
             )}
 
             {detail.notes && (
-              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '12px 16px', marginBottom: 14, fontSize: 13, color: '#1e40af' }}>
-                💡 {detail.notes}
+              <div style={{ background: 'var(--blue-light)', border: '1px solid var(--blue-mid)', borderRadius: 'var(--radius-sm)', padding: '12px 16px', marginBottom: 14, fontSize: 13, color: 'var(--ledger-deep)' }}>
+                {detail.notes}
               </div>
             )}
 

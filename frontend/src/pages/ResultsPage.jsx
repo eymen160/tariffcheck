@@ -59,7 +59,7 @@ export default function ResultsPage() {
         <Navbar />
         <div className="error-outer">
           <div className="error-card">
-            <div className="error-icon">📋</div>
+            <div className="error-icon" style={{ fontFamily: 'var(--font-serif)', color: 'var(--slate-300)', fontSize: 44 }}>§</div>
             <div className="error-title">No Analysis Loaded</div>
             <div className="error-sub">Run an invoice audit to see verified findings and a draft protest letter here.</div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -176,10 +176,10 @@ export default function ResultsPage() {
               <div className="fta-badge">✓ {fta_type} Free Trade Agreement</div>
             )}
             {country_of_origin && (
-              <div className="fta-badge">🌍 Origin: {country_of_origin}</div>
+              <div className="fta-badge">Origin: {country_of_origin}</div>
             )}
             {hasSavings && (
-              <div className="deadline-badge">⏰ 180 days to file CBP protest</div>
+              <div className="deadline-badge">180 days to file CBP protest</div>
             )}
           </div>
         </div>
@@ -305,9 +305,6 @@ export default function ResultsPage() {
                           <div className="shipment-val">on {money(f.declared_value)} shipment value</div>
                         )}
                       </div>
-                      {f.savings > 0 && (
-                        <span style={{ fontSize: 20 }}>💰</span>
-                      )}
                     </div>
                   )}
                 </div>
@@ -379,7 +376,7 @@ export default function ResultsPage() {
                 </div>
               </div>
               <div className="letter-info-bar">
-                <span>📋</span>
+                <span>§</span>
                 <span>
                   This letter is based on 19 U.S.C. 1514(a)(2). US law gives importers 180 days from liquidation to file a protest with CBP. This deadline is uniform and does not vary by country of origin.
                 </span>
@@ -387,16 +384,16 @@ export default function ResultsPage() {
               <pre className="letter-body">{protest_letter}</pre>
               <div className="letter-actions">
                 <button className={`action-btn ${copied ? 'success' : 'primary'}`} onClick={copyLetter}>
-                  {copied ? '✓ Copied!' : '📋 Copy Letter'}
+                  {copied ? '✓ Copied' : 'Copy letter'}
                 </button>
                 <button className="action-btn secondary" onClick={downloadLetter}>
-                  ⬇ Download .txt
+                  Download .txt
                 </button>
                 <button className="action-btn secondary" onClick={() => window.print()}>
-                  🖨 Print / Save as PDF
+                  Print / save as PDF
                 </button>
                 <button className="action-btn secondary" onClick={saveReport}>
-                  💾 Save Report (JSON)
+                  Save report (JSON)
                 </button>
               </div>
             </div>
@@ -405,9 +402,9 @@ export default function ResultsPage() {
 
         {/* CAPE / IEEPA info card */}
         <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 12, padding: '20px 24px', marginTop: 8, marginBottom: 24 }}>
-          <div style={{ fontWeight: 700, color: '#92400e', marginBottom: 8 }}>💡 Separate: IEEPA Tariff Refunds</div>
+          <div style={{ fontWeight: 700, color: '#92400e', marginBottom: 8 }}>A separate track: IEEPA tariff refunds</div>
           <p style={{ fontSize: 13, color: '#78350f', margin: 0, lineHeight: 1.6 }}>
-            If you paid tariffs under the IEEPA (Trump's 2025 "Liberation Day" tariffs), those are being refunded separately by CBP through the CAPE system. This is different from HTS misclassification savings.{' '}
+            If you paid tariffs imposed under IEEPA in 2025, CBP is refunding those separately through the CAPE system after the courts voided them. That refund track is independent of the HTS misclassification savings shown here.{' '}
             <a href="/cape-refund" style={{ color: '#92400e', fontWeight: 600 }}>Check your IEEPA eligibility →</a>
           </p>
         </div>
