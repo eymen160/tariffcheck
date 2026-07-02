@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Navbar from '../components/Navbar'
-
-const API = ''
+import Footer from '../components/Footer'
+import { htsSearch, htsLookup } from '../lib/api'
 
 const EXAMPLES = ['9403.40', 'kitchen cabinets', 'stainless steel tumbler', 'cotton t-shirts', '6404.11', 'coffee roasting']
 
@@ -35,11 +35,10 @@ export default function LookupPage() {
     debounce.current = setTimeout(async () => {
       setLoading(true); setError('')
       try {
-        const res = await fetch(`${API}/api/hts-search?q=${encodeURIComponent(query.trim())}&limit=25`)
-        const data = await res.json()
+        const data = await htsSearch(query.trim(), 25)
         setResults(data.results || [])
       } catch {
-        setError('Cannot reach the backend. Is the API running on port 8000?')
+        setError('Search is temporarily unavailable. Please try again in a moment.')
         setResults(null)
       } finally {
         setLoading(false)
@@ -51,15 +50,10 @@ export default function LookupPage() {
   async function openDetail(code, originOverride) {
     const o = originOverride !== undefined ? originOverride : origin
     try {
-      const res = await fetch(`${API}/api/hts-lookup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, country_of_origin: o }),
-      })
-      const data = await res.json()
+      const data = await htsLookup({ code, origin: o })
       if (data.found) setDetail(data)
     } catch {
-      setError('Lookup failed — backend not reachable.')
+      setError('Lookup is temporarily unavailable. Please try again in a moment.')
     }
   }
 
@@ -207,6 +201,8 @@ export default function LookupPage() {
           Rates from the official USITC 2026 Harmonized Tariff Schedule. Section 301 figures are chapter-level estimates — verify list membership with a licensed customs broker before filing.
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

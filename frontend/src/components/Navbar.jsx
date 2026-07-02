@@ -1,8 +1,17 @@
 import { Link } from 'react-router-dom'
 
+const LINKS = [
+  { to: '/', label: 'Analyze' },
+  { to: '/calculator', label: 'Landed Cost' },
+  { to: '/hts-lookup', label: 'HTS Lookup' },
+  { to: '/batch', label: 'Batch Audit' },
+  { to: '/savings', label: 'My Savings' },
+  { to: '/pricing', label: 'Pricing' },
+]
+
 export default function Navbar() {
   return (
-    <nav className="navbar">
+    <nav className="navbar no-print">
       <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
         <div className="logo-icon">🛃</div>
         <div className="logo-text-wrap">
@@ -13,10 +22,11 @@ export default function Navbar() {
           <span className="logo-tagline">AI Customs Duty Auditor</span>
         </div>
       </Link>
-      <div style={{display:'flex', gap:18, alignItems:'center'}}>
-        <Link to="/" style={{color:'var(--slate-600)', textDecoration:'none', fontSize:14, fontWeight:500}}>Home</Link>
-        <Link to="/hts-lookup" style={{color:'var(--slate-600)', textDecoration:'none', fontSize:14, fontWeight:500}}>🔍 HTS Lookup</Link>
-        <Link to="/cape-refund" style={{color:'#92400e', textDecoration:'none', fontSize:14, fontWeight:600, background:'#fef3c7', padding:'6px 12px', borderRadius:6, border:'1px solid #fcd34d'}}>💡 IEEPA Refunds</Link>
+      <div className="nav-links">
+        {LINKS.map(l => (
+          <Link key={l.to} to={l.to} className="nav-link">{l.label}</Link>
+        ))}
+        <Link to="/brokers" className="nav-link-cta">For Brokers</Link>
       </div>
     </nav>
   )

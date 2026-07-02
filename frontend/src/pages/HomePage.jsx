@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-
-const API = ''
+import Footer from '../components/Footer'
+import { analyzeInvoice, fetchDemo, ApiError } from '../lib/api'
+import { saveAudit, setLastResult, newAuditId, buildAuditSummary } from '../lib/audits'
 
 const DEMOS = [
   { id: 1, label: 'Office Furniture — Mexico', tag: 'USMCA + Misclass', color: '#059669', savings: '$3,392', desc: 'HTS 9403.90 vs 9403.10 — USMCA not claimed' },
@@ -122,15 +123,45 @@ Grand Total: USD 8,400.00
 Note: Bangladesh origin. No FTA. No Section 301.`,
 }
 
-
 const DEMO_ICONS = { 1: '🪑', 2: '👟', 3: '☕', 4: '⚙️', 5: '💊', 6: '🪵', 7: '🥤', 8: '👕' }
 
 const STEPS = [
-  'Parsing invoice document...',
-  'Comparing to USITC tariff schedule...',
-  'Identifying misclassifications...',
-  'Generating CBP protest letter...',
+  'Extracting invoice lines…',
+  'Matching HTS codes against the USITC schedule…',
+  'Auditing classifications…',
+  'Verifying savings math against official rates…',
 ]
+
+const CLIENT_TIMEOUT_MS = 45000
+
+function friendlyError(err) {
+  if (err instanceof ApiError) {
+    switch (err.code) {
+      case 'ai_unavailable':
+        return "Live AI analysis isn't available right now — try a sample scenario below."
+      case 'rate_limited':
+        return 'Too many analyses from this address. Please wait a minute and retry.'
+      case 'unreadable_file':
+        return "We couldn't read this file. Try a PDF with selectable text, or paste the invoice as text."
+      case 'text_too_short':
+        return err.message || 'Invoice text too short. Include product descriptions, HTS codes, values, and country of origin.'
+      case 'model_timeout':
+        return 'Analysis took too long. Try a shorter invoice or retry.'
+      case 'model_error':
+        return 'The AI analysis failed. Please retry.'
+      case 'client_timeout':
+        return 'The analysis did not finish within 45 seconds, so we stopped it. Try a shorter invoice or retry in a moment.'
+      case 'network_error':
+        return 'We could not reach the analysis service. Please check your connection and try again.'
+      default:
+        return err.message || 'Something went wrong. Please try again.'
+    }
+  }
+  if (err && err.name === 'AbortError') {
+    return 'The analysis did not finish within 45 seconds, so we stopped it. Try a shorter invoice or retry in a moment.'
+  }
+  return 'Something went wrong. Please try again.'
+}
 
 export default function HomePage() {
   const [tab, setTab] = useState('demo')
@@ -141,73 +172,97 @@ export default function HomePage() {
   const [dragging, setDragging] = useState(false)
   const [error, setError] = useState('')
   const [activeDemo, setActiveDemo] = useState(null)
-  const [showCapeBanner, setShowCapeBanner] = useState(true)
   const fileRef = useRef()
+  const timersRef = useRef([])
   const navigate = useNavigate()
 
-  function startSteps(ms=700) {
-    setLoading(true); setError(''); setStep(0)
-    const t = setInterval(() => setStep(s => s < STEPS.length-1 ? s+1 : s), ms)
+  useEffect(() => () => timersRef.current.forEach(t => clearTimeout(t)), [])
+
+  function beginProgress(intervalMs) {
+    setLoading(true)
+    setError('')
+    setStep(0)
+    const t = setInterval(() => setStep(s => (s < STEPS.length - 1 ? s + 1 : s)), intervalMs)
+    timersRef.current.push(t)
     return t
   }
 
-  async function runDemo(id) {
-    setActiveDemo(id)
-    const t = startSteps(600)
+  async function runAnalysis({ demoId, sourceName }) {
+    const stepTimer = beginProgress(demoId ? 600 : 3500)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS)
+    timersRef.current.push(timeout)
     try {
-      const res = await fetch(`${API}/api/demo/${id}`)
-      const data = await res.json()
-      clearInterval(t)
-      setTimeout(() => navigate('/results', { state: { data, demoId: id } }), 300)
-    } catch {
-      clearInterval(t)
+      let data
+      if (demoId != null) {
+        try {
+          data = await analyzeInvoice({ demoId, signal: controller.signal })
+        } catch (err) {
+          // Contract path is POST /api/analyze {demo_id}; fall back to the legacy
+          // GET /api/demo/<id> so sample scenarios never break during rollout.
+          if (err instanceof ApiError && (err.status === 404 || err.status === 400 || err.status === 405)) {
+            data = await fetchDemo(demoId, controller.signal)
+          } else {
+            throw err
+          }
+        }
+        data.meta = { ...(data.meta || {}), demo: true }
+      } else {
+        data = await analyzeInvoice({ text: tab === 'text' ? text : undefined, file: tab === 'file' ? file : undefined, signal: controller.signal })
+      }
+
+      setLastResult(data)
+      saveAudit({
+        id: newAuditId(),
+        ts: Date.now(),
+        sourceName,
+        summary: buildAuditSummary(data),
+        fullResponse: data,
+      })
+      setStep(STEPS.length - 1)
+      setTimeout(() => navigate('/results'), 250)
+    } catch (err) {
       setLoading(false)
-      setError('Backend not reachable on port 8000. Run: PORT=8000 python3 app.py')
+      setError(friendlyError(err))
+    } finally {
+      clearInterval(stepTimer)
+      clearTimeout(timeout)
     }
   }
 
-  async function handleSubmit() {
-    if (tab==='text' && !text.trim()) return
-    if (tab==='file' && !file) return
-    const t = startSteps(800)
-    try {
-      let data
-      if (tab==='text') {
-        const res = await fetch(`${API}/api/analyze`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text}) })
-        data = await res.json()
-      } else {
-        const fd = new FormData(); fd.append('file', file)
-        const res = await fetch(`${API}/api/analyze`, { method:'POST', body:fd })
-        data = await res.json()
-      }
-      clearInterval(t)
-      setTimeout(() => navigate('/results', { state: { data } }), 300)
-    } catch {
-      clearInterval(t)
-      setLoading(false)
-      setError('Cannot connect to backend on port 8000. Run: PORT=8000 python3 app.py')
-    }
+  function runDemo(id) {
+    setActiveDemo(id)
+    const demo = DEMOS.find(d => d.id === id)
+    runAnalysis({ demoId: id, sourceName: `Sample: ${demo ? demo.label : `Scenario ${id}`}` })
+  }
+
+  function handleSubmit() {
+    if (tab === 'text' && !text.trim()) return
+    if (tab === 'file' && !file) return
+    runAnalysis({ sourceName: tab === 'file' && file ? file.name : 'Pasted invoice' })
   }
 
   function onDrop(e) {
-    e.preventDefault(); setDragging(false)
-    const f = e.dataTransfer.files[0]; if (f) setFile(f)
+    e.preventDefault()
+    setDragging(false)
+    const f = e.dataTransfer.files[0]
+    if (f) setFile(f)
   }
 
   if (loading) {
     return (
-      <div style={{minHeight:'100vh',background:'var(--slate-50)'}}>
+      <div style={{ minHeight: '100vh', background: 'var(--slate-50)' }}>
         <Navbar />
         <div className="loading-outer">
           <div className="loading-card">
             <div className="loading-spinner-big" />
-            <div className="loading-title">Analyzing Your Invoice</div>
-            <div className="loading-sub">Comparing against the official US Harmonized Tariff Schedule</div>
+            <div className="loading-title">Auditing Your Invoice</div>
+            <div className="loading-sub">Every finding is re-verified against the official USITC HTS 2026 schedule</div>
             <ul className="loading-steps">
-              {STEPS.map((s,i) => (
-                <li key={i} className={`loading-step ${i<step?'done':i===step?'active':''}`}>
+              {STEPS.map((s, i) => (
+                <li key={i} className={`loading-step ${i < step ? 'done' : i === step ? 'active' : ''}`}>
                   <div className="step-dot" />
-                  <span>{i<step?'✓ ':''}{s}</span>
+                  <span>{i < step ? '✓ ' : ''}{s}</span>
                 </li>
               ))}
             </ul>
@@ -218,73 +273,74 @@ export default function HomePage() {
   }
 
   return (
-    <div style={{minHeight:'100vh',background:'var(--slate-50)'}}>
+    <div style={{ minHeight: '100vh', background: 'var(--slate-50)' }}>
       <Navbar />
 
       <section className="hero">
         <div className="hero-inner">
-          <h1 className="hero-title">Stop Overpaying<br /><span>Customs Duties</span></h1>
+          <h1 className="hero-title">You're probably overpaying tariffs.<br /><span>Find out in 60 seconds.</span></h1>
           <p className="hero-sub">
-            Upload your commercial invoice. Our AI compares your HTS codes against the official US tariff schedule, finds misclassifications, and generates a ready-to-file CBP protest letter in seconds.
+            TariffCheck audits your invoices against the full 29,755-code USITC tariff schedule, finds misclassifications
+            and missed FTA claims, computes exactly what you overpaid, and drafts a ready-to-file CBP protest — before
+            your 180-day window closes.
           </p>
-          <div className="stats-row">
-            <div className="stat-item"><span className="stat-num">$26B</span><span className="stat-label">overpaid in duties annually</span></div>
-            <div className="stat-item"><span className="stat-num">14M+</span><span className="stat-label">customs entries per year</span></div>
-            <div className="stat-item"><span className="stat-num">180</span><span className="stat-label">days to file CBP protest</span></div>
-            <div className="stat-item"><span className="stat-num">$35B</span><span className="stat-label">IEEPA refunds processing now</span></div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <a href="#analyze" className="btn-primary" style={{ padding: '13px 26px', fontSize: 15 }}>Audit an invoice — free</a>
+            <Link to="/hts-lookup" className="btn-secondary" style={{ padding: '13px 26px', fontSize: 15 }}>Look up any HTS code</Link>
+          </div>
+          <div className="hero-trust-chips">
+            <span className="hero-trust-chip">📊 Built on the complete 2026 USITC HTS — 29,755 codes</span>
+            <span className="hero-trust-chip">✓ Every AI finding re-verified against the official schedule</span>
+            <span className="hero-trust-chip">⚖ Misclassification drives ~42% of CBP penalties</span>
           </div>
         </div>
       </section>
 
-      <section className="upload-section">
+      <section className="upload-section" id="analyze">
         <div className="upload-card">
-          {showCapeBanner && (
-            <div className="cape-banner">
-              <span>💡 <strong>New:</strong> $166B in IEEPA tariff refunds are being processed by CBP. This is separate from HTS misclassification savings. <a href="/cape-refund" style={{color:'#92400e'}}>Learn more →</a></span>
-              <button onClick={() => setShowCapeBanner(false)} style={{background:'none',border:'none',cursor:'pointer',fontSize:18,color:'#92400e'}}>×</button>
-            </div>
-          )}
-
-          <div className="upload-title">Analyze Your Invoice</div>
-          <div className="upload-sub">Choose a demo scenario or upload your own invoice</div>
+          <div className="upload-title">Audit Your Invoice</div>
+          <div className="upload-sub">Paste or upload a commercial invoice — or explore a sample scenario</div>
 
           {error && <div className="inline-error"><span>⚠</span><span>{error}</span></div>}
 
           <div className="tabs">
-            <button className={`tab-btn ${tab==='demo'?'active':''}`} onClick={()=>setTab('demo')}>⚡ Quick Demo</button>
-            <button className={`tab-btn ${tab==='text'?'active':''}`} onClick={()=>setTab('text')}>📝 Paste Text</button>
-            <button className={`tab-btn ${tab==='file'?'active':''}`} onClick={()=>setTab('file')}>📄 Upload PDF</button>
+            <button className={`tab-btn ${tab === 'demo' ? 'active' : ''}`} onClick={() => setTab('demo')}>⚡ Sample Scenarios</button>
+            <button className={`tab-btn ${tab === 'text' ? 'active' : ''}`} onClick={() => setTab('text')}>📝 Paste Text</button>
+            <button className={`tab-btn ${tab === 'file' ? 'active' : ''}`} onClick={() => setTab('file')}>📄 Upload PDF</button>
           </div>
 
           {tab === 'demo' && (
-            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {DEMOS.map(d => (
                 <button
                   key={d.id}
                   onClick={() => runDemo(d.id)}
                   style={{
-                    display:'flex', alignItems:'center', justifyContent:'space-between',
-                    padding:'16px 20px', background:'var(--slate-50)',
-                    border:`1.5px solid var(--slate-200)`, borderRadius:'var(--radius-md)',
-                    cursor:'pointer', transition:'all 0.15s', textAlign:'left',
-                    ...(activeDemo===d.id ? {borderColor:'var(--blue)',background:'var(--blue-light)'} : {})
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '16px 20px', background: 'var(--slate-50)',
+                    border: `1.5px solid var(--slate-200)`, borderRadius: 'var(--radius-md)',
+                    cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left',
+                    ...(activeDemo === d.id ? { borderColor: 'var(--blue)', background: 'var(--blue-light)' } : {}),
                   }}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--blue)';e.currentTarget.style.background='var(--blue-light)'}}
-                  onMouseLeave={e=>{if(activeDemo!==d.id){e.currentTarget.style.borderColor='var(--slate-200)';e.currentTarget.style.background='var(--slate-50)'}}}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--blue)'; e.currentTarget.style.background = 'var(--blue-light)' }}
+                  onMouseLeave={e => { if (activeDemo !== d.id) { e.currentTarget.style.borderColor = 'var(--slate-200)'; e.currentTarget.style.background = 'var(--slate-50)' } }}
                 >
-                  <div style={{display:'flex',alignItems:'center',gap:14}}>
-                    <div style={{width:40,height:40,borderRadius:10,background:d.color+'18',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: d.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
                       {DEMO_ICONS[d.id]}
                     </div>
                     <div>
-                      <div style={{fontSize:15,fontWeight:600,color:'var(--slate-900)',marginBottom:2}}>{d.label}</div>
-                      <div style={{fontSize:13,color:'var(--slate-500)'}}>{d.desc}</div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--slate-900)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        {d.label}
+                        <span className="badge-sample" style={{ fontSize: 9, padding: '2px 8px' }}>Sample data</span>
+                      </div>
+                      <div style={{ fontSize: 13, color: 'var(--slate-500)' }}>{d.desc}</div>
                     </div>
                   </div>
-                  <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
-                    <span style={{fontSize:11,fontWeight:700,padding:'3px 9px',borderRadius:20,background:d.color+'18',color:d.color,border:`1px solid ${d.color}30`}}>{d.tag}</span>
-                    <span style={{fontSize:13,fontWeight:700,color:d.color}}>{d.savings}</span>
-                    <span style={{color:'var(--slate-300)',fontSize:18}}>→</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 20, background: d.color + '18', color: d.color, border: `1px solid ${d.color}30` }}>{d.tag}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: d.color }}>{d.savings}</span>
+                    <span style={{ color: 'var(--slate-300)', fontSize: 18 }}>→</span>
                   </div>
                 </button>
               ))}
@@ -297,17 +353,17 @@ export default function HomePage() {
                 className="invoice-textarea"
                 placeholder="Paste your commercial invoice here. Include HTS codes, product descriptions, declared values, and country of origin."
                 value={text}
-                onChange={e=>setText(e.target.value)}
+                onChange={e => setText(e.target.value)}
               />
-              <div style={{marginTop:10,display:'flex',flexWrap:'wrap',gap:8}}>
+              <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {DEMOS.map(d => (
-                  <button key={d.id} className="demo-link" onClick={()=>setText(DEMO_TEXTS[d.id])}>
+                  <button key={d.id} className="demo-link" onClick={() => setText(DEMO_TEXTS[d.id])}>
                     {DEMO_ICONS[d.id]} {d.label}
                   </button>
                 ))}
               </div>
               <button className="submit-btn" onClick={handleSubmit} disabled={!text.trim()}>
-                Analyze My Customs Entry
+                Audit this invoice
               </button>
             </>
           )}
@@ -315,26 +371,44 @@ export default function HomePage() {
           {tab === 'file' && (
             <>
               <div
-                className={`drop-zone ${dragging?'dragging':''}`}
-                onDragOver={e=>{e.preventDefault();setDragging(true)}}
-                onDragLeave={()=>setDragging(false)}
+                className={`drop-zone ${dragging ? 'dragging' : ''}`}
+                onDragOver={e => { e.preventDefault(); setDragging(true) }}
+                onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
-                onClick={()=>fileRef.current.click()}
+                onClick={() => fileRef.current.click()}
               >
-                <div className="drop-icon">{file?'✅':'📄'}</div>
-                <div className="drop-title">{file?file.name:'Drag and drop your invoice PDF here'}</div>
-                <div className="drop-sub">{file?'Click to change file':'or click to browse — PDF or TXT accepted'}</div>
-                <input ref={fileRef} type="file" accept=".pdf,.txt" onChange={e=>setFile(e.target.files[0])} />
-              </div>
-              <div style={{marginTop:12,background:'var(--blue-light)',borderRadius:'var(--radius-md)',padding:'12px 16px',fontSize:13,color:'var(--blue)',border:'1px solid var(--blue-mid)'}}>
-                📎 Use the sample PDFs: demo1_mexico_furniture.pdf through demo5_india_pharma.pdf from the demo/ folder.
+                <div className="drop-icon">{file ? '✅' : '📄'}</div>
+                <div className="drop-title">{file ? file.name : 'Drag and drop your invoice PDF here'}</div>
+                <div className="drop-sub">{file ? 'Click to change file' : 'or click to browse — PDF or TXT accepted'}</div>
+                <input ref={fileRef} type="file" accept=".pdf,.txt" onChange={e => setFile(e.target.files[0])} />
               </div>
               <button className="submit-btn" onClick={handleSubmit} disabled={!file}>
-                Analyze Uploaded Invoice
+                Audit uploaded invoice
               </button>
             </>
           )}
         </div>
+      </section>
+
+      {/* Broker banner */}
+      <section style={{ maxWidth: 780, margin: '0 auto', padding: '0 24px 40px' }}>
+        <Link
+          to="/brokers"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+            background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+            border: '1px solid var(--blue-mid)', borderRadius: 'var(--radius-lg)',
+            padding: '20px 26px', textDecoration: 'none',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--slate-900)' }}>Customs broker? Bulk-scan your clients' invoices →</div>
+            <div style={{ fontSize: 13, color: 'var(--slate-600)', marginTop: 4 }}>
+              Screen entire client portfolios against the official USITC schedule and turn declined protest work into a new fee line.
+            </div>
+          </div>
+          <span style={{ fontSize: 24 }}>🗂️</span>
+        </Link>
       </section>
 
       <section className="niche-callout-section">
@@ -369,9 +443,9 @@ export default function HomePage() {
         <h2 className="section-title">Three steps to reclaim your duties</h2>
         <div className="steps-grid">
           {[
-            {num:'01',icon:'📄',title:'Upload Invoice',desc:'Paste your commercial invoice or upload a PDF. Include HTS codes, product descriptions, declared values, and country of origin.'},
-            {num:'02',icon:'🔍',title:'AI Analysis',desc:'Our AI compares every HTS code against the official USITC tariff schedule and finds misclassification opportunities automatically.'},
-            {num:'03',icon:'⚖️',title:'Claim Your Refund',desc:'Receive a ready-to-file CBP protest letter citing 19 U.S.C. 1514. Under US law, you have 180 days from liquidation to file.'},
+            { num: '01', icon: '📄', title: 'Upload Invoice', desc: 'Paste your commercial invoice or upload a PDF. Include HTS codes, product descriptions, declared values, and country of origin.' },
+            { num: '02', icon: '🔍', title: 'AI Audit + Verification', desc: 'Claude audits every line, then each finding is deterministically re-verified against the complete 29,755-code USITC HTS 2026 schedule — savings are recomputed server-side.' },
+            { num: '03', icon: '⚖️', title: 'Ready-to-File Protest', desc: 'Receive a draft CBP protest citing 19 U.S.C. 1514 for the importer of record or your licensed broker to review and file. You have 180 days from liquidation.' },
           ].map(s => (
             <div className="step-card" key={s.num}>
               <div className="step-num">{s.num}</div>
@@ -386,15 +460,17 @@ export default function HomePage() {
       <div className="trust-section">
         <div className="trust-badges">
           <div className="trust-item">📊 Official USITC Tariff Data</div>
-          <div className="trust-item">⚖ 19 U.S.C. 1514 Compliant</div>
+          <div className="trust-item">⚖ 19 U.S.C. 1514 Compliant Drafts</div>
           <div className="trust-item">🌎 USMCA and KORUS FTA Checks</div>
           <div className="trust-item">🏛 CBP Form 19 Ready</div>
         </div>
         <div className="trust-disclaimer">
-          TariffCheck provides analysis assistance only. Consult a licensed customs broker before filing formal protests with CBP.
+          TariffCheck prepares filings; it does not file with CBP. All findings should be reviewed by the importer of
+          record or a licensed customs broker before filing a formal protest.
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }
-

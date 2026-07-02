@@ -342,6 +342,149 @@ body {
 .niche-point { display: flex; gap: 8px; font-size: 13px; color: #075985; line-height: 1.5; }
 .niche-dot { flex-shrink: 0; font-weight: 700; }
 
+/* ===== SHARED COMPONENT CLASSES ===== */
+.card {
+  background: var(--white); border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm);
+}
+.badge-verified {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid);
+  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+}
+.badge-unverified {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--amber-light); color: var(--amber); border: 1px solid #FDE68A;
+  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+  cursor: help;
+}
+.badge-sample {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 6px; white-space: nowrap;
+}
+.receipt-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  padding: 11px 0; border-bottom: 1px solid var(--slate-100); font-size: 14px; color: var(--slate-700);
+}
+.receipt-row:last-child { border-bottom: none; }
+.receipt-row.total { font-weight: 800; font-size: 16px; color: var(--slate-900); border-top: 2px solid var(--slate-200); border-bottom: none; padding-top: 14px; }
+.receipt-fineprint { font-size: 11px; color: var(--slate-400); line-height: 1.5; margin-top: 2px; }
+.stat-card {
+  background: var(--white); border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg); padding: 20px 24px; box-shadow: var(--shadow-sm); flex: 1; min-width: 180px;
+}
+.stat-card .stat-card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--slate-400); margin-bottom: 6px; }
+.stat-card .stat-card-value { font-size: 26px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.5px; line-height: 1.2; }
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--blue); color: white; border: 1.5px solid var(--blue);
+  border-radius: var(--radius-sm); padding: 11px 22px; font-size: 14px; font-weight: 600;
+  cursor: pointer; text-decoration: none; transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.22); font-family: inherit;
+}
+.btn-primary:hover:not(:disabled) { background: var(--blue-hover); border-color: var(--blue-hover); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: white; color: var(--slate-700); border: 1.5px solid var(--slate-200);
+  border-radius: var(--radius-sm); padding: 11px 22px; font-size: 14px; font-weight: 600;
+  cursor: pointer; text-decoration: none; transition: all 0.15s; font-family: inherit;
+}
+.btn-secondary:hover:not(:disabled) { background: var(--slate-50); border-color: var(--slate-300); }
+.btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Sticky results summary bar */
+.summary-bar {
+  position: sticky; top: 68px; z-index: 40;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);
+  border: 1px solid var(--slate-200); border-radius: var(--radius-lg);
+  padding: 16px 24px; margin-bottom: 28px; box-shadow: var(--shadow-md);
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.summary-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px;
+  background: var(--slate-100); color: var(--slate-600); border: 1px solid var(--slate-200); white-space: nowrap;
+}
+.summary-chip.blue { background: var(--blue-light); color: var(--blue); border-color: var(--blue-mid); }
+.summary-chip.amber { background: var(--amber-light); color: var(--amber); border-color: #FDE68A; }
+.summary-chip.red { background: var(--red-light); color: var(--red); border-color: #FECACA; }
+
+/* Trust chips under hero */
+.hero-trust-chips { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+.hero-trust-chip {
+  display: inline-flex; align-items: center; gap: 6px; background: white;
+  border: 1px solid var(--slate-200); border-radius: 20px; padding: 7px 15px;
+  font-size: 12.5px; font-weight: 600; color: var(--slate-600); box-shadow: var(--shadow-sm);
+}
+
+/* Footer */
+.site-footer { background: var(--slate-900); color: var(--slate-400); padding: 40px 32px; margin-top: 0; }
+.site-footer-inner { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.site-footer a { color: var(--slate-300); text-decoration: none; font-size: 13px; font-weight: 500; }
+.site-footer a:hover { color: white; }
+.site-footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.site-footer-legal { font-size: 12.5px; line-height: 1.65; color: var(--slate-500); max-width: 720px; }
+
+/* Nav links */
+.nav-links { display: flex; gap: 16px; align-items: center; }
+.nav-link { color: var(--slate-600); text-decoration: none; font-size: 13.5px; font-weight: 500; white-space: nowrap; }
+.nav-link:hover { color: var(--slate-900); }
+.nav-link-cta {
+  color: var(--blue); text-decoration: none; font-size: 13px; font-weight: 600;
+  background: var(--blue-light); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--blue-mid); white-space: nowrap;
+}
+.nav-link-cta:hover { background: var(--blue-mid); }
+
+/* Batch table */
+.batch-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.batch-table th { padding: 12px 14px; text-align: left; font-weight: 600; color: var(--slate-500); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; background: var(--slate-50); border-bottom: 1px solid var(--slate-200); cursor: pointer; user-select: none; white-space: nowrap; }
+.batch-table td { padding: 12px 14px; border-bottom: 1px solid var(--slate-100); color: var(--slate-700); vertical-align: top; }
+.batch-table tr:last-child td { border-bottom: none; }
+
+/* Progress bar */
+.progress-track { width: 100%; height: 8px; background: var(--slate-100); border-radius: 20px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--blue); border-radius: 20px; transition: width 0.3s ease; }
+
+/* Feature rollout fallback card */
+.rollout-card {
+  background: var(--blue-light); border: 1px solid var(--blue-mid); border-radius: var(--radius-md);
+  padding: 20px 24px; font-size: 14px; color: var(--slate-700); line-height: 1.6;
+}
+
+/* ===== PRINT (protest letter) ===== */
+.print-only { display: none; }
+@media print {
+  body { background: white !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .print-letter { font-family: Georgia, 'Times New Roman', serif; color: #111; font-size: 12pt; line-height: 1.55; padding: 0 0 60px 0; }
+  .print-letter h1 { font-size: 15pt; letter-spacing: 0.02em; margin-bottom: 18pt; text-align: center; }
+  .print-fill-block { border: 1px solid #999; padding: 12pt 14pt; margin-bottom: 18pt; }
+  .print-fill-row { display: flex; gap: 8pt; margin-bottom: 8pt; font-size: 11pt; }
+  .print-fill-label { font-weight: 700; white-space: nowrap; }
+  .print-fill-line { flex: 1; border-bottom: 1px solid #333; min-width: 120pt; }
+  .print-letter-body { white-space: pre-wrap; word-break: break-word; font-size: 11pt; margin-bottom: 20pt; }
+  .print-exhibit-table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 10pt 0 20pt; }
+  .print-exhibit-table th, .print-exhibit-table td { border: 1px solid #666; padding: 5pt 7pt; text-align: left; }
+  .print-exhibit-table th { background: #eee; }
+  .print-signature { margin-top: 28pt; page-break-inside: avoid; }
+  .print-signature-label { font-size: 10pt; font-style: italic; margin-bottom: 14pt; }
+  .print-signature-line { border-bottom: 1px solid #333; width: 260pt; margin-top: 22pt; }
+  .print-signature-caption { font-size: 9pt; color: #444; margin-top: 3pt; }
+  .print-page-footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    font-size: 8.5pt; color: #555; text-align: center; padding: 6pt 0;
+    border-top: 1px solid #ccc; background: white;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+}
+
 @media (max-width: 768px) {
   .navbar { padding: 0 20px; }
   .hero { padding: 64px 20px 56px; }
