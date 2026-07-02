@@ -8,6 +8,7 @@ import {
   setLastResult, auditDeadline, daysUntil,
 } from '../lib/audits'
 import { money, date } from '../lib/format'
+import { usePageTitle } from '../lib/usePageTitle'
 
 function DeadlineChip({ deadlineTs }) {
   const days = daysUntil(deadlineTs)
@@ -15,7 +16,7 @@ function DeadlineChip({ deadlineTs }) {
   const label = days <= 0 ? 'Window likely closed' : `${days} day${days !== 1 ? 's' : ''} left`
   return (
     <span className={`summary-chip ${cls}`} title={`180-day protest window measured from the audit date — confirm against your liquidation date. Deadline: ${date(deadlineTs)}`}>
-      ⏰ {label} · {date(deadlineTs)}
+      {label} · {date(deadlineTs)}
     </span>
   )
 }
@@ -25,6 +26,8 @@ export default function SavingsPage() {
   const [audits, setAudits] = useState(() => listAudits())
   const [loadingSample, setLoadingSample] = useState(false)
   const [error, setError] = useState('')
+
+  usePageTitle('My Audits')
 
   const totalFound = audits.reduce((sum, a) => sum + (Number(a.summary?.totalSavings) || 0), 0)
   const nearestDeadline = audits.length > 0 ? Math.min(...audits.map(a => auditDeadline(a))) : null
@@ -70,11 +73,11 @@ export default function SavingsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--slate-50)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--paper)', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px 64px', width: '100%', flex: 1 }}>
-        <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.75px', color: 'var(--slate-900)', marginBottom: 6 }}>My Savings</h1>
+        <h1 style={{ fontSize: 30, letterSpacing: '-0.75px', color: 'var(--slate-900)', marginBottom: 6 }}>My Audits</h1>
         <p style={{ fontSize: 15, color: 'var(--slate-500)', marginBottom: 28 }}>
           Your audit history lives in this browser — nothing is stored on our servers.
         </p>
@@ -101,7 +104,7 @@ export default function SavingsPage() {
 
         {audits.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: '56px 32px' }}>
-            <div style={{ fontSize: 40, marginBottom: 14 }}>📂</div>
+            <div style={{ fontFamily: 'var(--font-serif)', color: 'var(--slate-300)', fontSize: 44, marginBottom: 14 }}>§</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 8 }}>Run your first audit</div>
             <div style={{ fontSize: 14, color: 'var(--slate-500)', marginBottom: 24, maxWidth: 420, margin: '0 auto 24px' }}>
               Audit an invoice and your verified savings, findings, and protest deadlines will show up here.
@@ -135,7 +138,7 @@ export default function SavingsPage() {
                   <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: 13 }} onClick={() => viewAudit(a)}>View</button>
                   <button
                     className="btn-secondary"
-                    style={{ padding: '8px 14px', fontSize: 13, color: 'var(--red)', borderColor: '#FECACA' }}
+                    style={{ padding: '8px 14px', fontSize: 13, color: 'var(--red)', borderColor: '#E5C0BA' }}
                     onClick={() => removeAudit(a.id)}
                   >
                     Delete

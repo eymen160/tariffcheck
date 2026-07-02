@@ -2,18 +2,21 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import Reveal from '../components/Reveal'
+import { useCountUp, formatUsd } from '../lib/useCountUp'
+import { usePageTitle } from '../lib/usePageTitle'
 import { analyzeInvoice, fetchDemo, ApiError } from '../lib/api'
 import { saveAudit, setLastResult, newAuditId, buildAuditSummary } from '../lib/audits'
 
 const DEMOS = [
-  { id: 1, label: 'Office Furniture — Mexico', tag: 'USMCA + Misclass', color: '#059669', savings: '$3,392', desc: 'HTS 9403.90 vs 9403.10 — USMCA not claimed' },
-  { id: 2, label: 'Athletic Footwear — Vietnam', tag: 'Classification', color: '#2563EB', savings: '$10,850', desc: 'HTS 6404.19 vs 6404.11 — 37.5% vs 20%' },
-  { id: 3, label: 'Coffee Equipment — Colombia', tag: 'CTPA FTA', color: '#7C3AED', savings: '$4,338', desc: 'US-Colombia FTA not applied — 4.5% to 0%' },
-  { id: 4, label: 'Auto Parts — South Korea', tag: 'KORUS FTA', color: '#B45309', savings: '$1,970', desc: 'KORUS preference not claimed — 2.5% to 0%' },
-  { id: 5, label: 'Pharma Equipment — India', tag: 'Principal Use', color: '#DC2626', savings: '$7,105', desc: 'HTS 8477.80 vs 8479.89 — 3.5% to 0%' },
-  { id: 6, label: 'Kitchen Cabinets — Vietnam', tag: 'Classification', color: '#0891b2', savings: 'Audit Risk', desc: 'HTS 9403.60 vs 9403.40 — wrong furniture subheading' },
-  { id: 7, label: 'Stainless Tumblers — China', tag: 'Section 301', color: '#dc2626', savings: '$377', desc: '9617 vacuum flask vs 7323.93 stainless — rate difference' },
-  { id: 8, label: 'Cotton T-shirts — Bangladesh', tag: 'Chief Weight', color: '#7c3aed', savings: '$1,302', desc: '6109.90 synthetic vs 6109.10 cotton — 32% vs 16.5%' },
+  { id: 1, code: '9403.90', label: 'Office furniture — Mexico', tag: 'USMCA missed', savings: '$3,392', desc: 'Parts code used for finished chairs; USMCA never claimed' },
+  { id: 2, code: '6404.19', label: 'Athletic footwear — Vietnam', tag: 'Misclassified', savings: '$10,850', desc: 'Sports footwear provision applies — 37.5% paid vs 20% owed' },
+  { id: 3, code: '8419.89', label: 'Coffee equipment — Colombia', tag: 'FTA missed', savings: '$4,338', desc: 'US–Colombia TPA not applied — 4.5% paid vs 0% owed' },
+  { id: 4, code: '8708.99', label: 'Auto parts — South Korea', tag: 'FTA missed', savings: '$1,970', desc: 'KORUS preference not claimed at entry — 2.5% to 0%' },
+  { id: 5, code: '8477.80', label: 'Pharma equipment — India', tag: 'Misclassified', savings: '$7,105', desc: 'Principal-use provision applies — 3.5% to 0%' },
+  { id: 6, code: '9403.60', label: 'Kitchen cabinets — Vietnam', tag: 'Audit risk', savings: 'Exposure', desc: 'Wrong furniture subheading — same rate, CBP scrutiny risk' },
+  { id: 7, code: '9617.00', label: 'Stainless tumblers — China', tag: 'Section 301', savings: '$377', desc: 'Vacuum-flask vs stainless-article codes carry different rates' },
+  { id: 8, code: '6109.90', label: 'Cotton t-shirts — Bangladesh', tag: 'Misclassified', savings: '$1,302', desc: 'Synthetic code used for chief-weight cotton — 32% vs 16.5%' },
 ]
 
 const DEMO_TEXTS = {
@@ -123,8 +126,6 @@ Grand Total: USD 8,400.00
 Note: Bangladesh origin. No FTA. No Section 301.`,
 }
 
-const DEMO_ICONS = { 1: '🪑', 2: '👟', 3: '☕', 4: '⚙️', 5: '💊', 6: '🪵', 7: '🥤', 8: '👕' }
-
 const STEPS = [
   'Extracting invoice lines…',
   'Matching HTS codes against the USITC schedule…',
@@ -163,7 +164,54 @@ function friendlyError(err) {
   return 'Something went wrong. Please try again.'
 }
 
+function RecoveredAmount() {
+  const value = useCountUp(3392, { duration: 850, startDelay: 1650 })
+  return <span className="tally-amount">{formatUsd(value)}</span>
+}
+
+const TAPE_ITEMS = DEMOS.filter(d => d.savings !== 'Exposure').map(d => ({
+  from: d.code, label: d.label.split(' — ')[1], amount: d.savings,
+}))
+
+function RecoveryTape() {
+  const row = (key) => (
+    <span key={key} aria-hidden={key === 'b'}>
+      {TAPE_ITEMS.map((t, i) => (
+        <span className="tape-item" key={i}>
+          <span className="tape-strike">{t.from}</span>
+          <span>corrected</span>
+          <b>+{t.amount}</b>
+          <span className="tape-sep">· {t.label}</span>
+        </span>
+      ))}
+    </span>
+  )
+  return (
+    <div className="tape" role="marquee" aria-label="Sample recovered duty amounts from the demo scenarios">
+      <div className="tape-track">{row('a')}{row('b')}</div>
+    </div>
+  )
+}
+
+function StampSeal() {
+  return (
+    <svg className="stamp-seal" viewBox="0 0 120 120" aria-hidden="true">
+      <defs>
+        <path id="seal-arc" d="M 60,60 m -41,0 a 41,41 0 1,1 82,0 a 41,41 0 1,1 -82,0" />
+      </defs>
+      <circle cx="60" cy="60" r="54" fill="none" stroke="#0A5C3E" strokeWidth="2.5" opacity="0.85" />
+      <circle cx="60" cy="60" r="50" fill="none" stroke="#0A5C3E" strokeWidth="1" opacity="0.7" />
+      <circle cx="60" cy="60" r="30" fill="none" stroke="#0A5C3E" strokeWidth="1" opacity="0.7" />
+      <text fill="#0A5C3E" fontFamily="'IBM Plex Mono', monospace" fontSize="10.5" fontWeight="600" letterSpacing="2.6">
+        <textPath href="#seal-arc" startOffset="0">RE-VERIFIED · USITC HTS 2026 ·</textPath>
+      </text>
+      <path d="M 47,60 l 9,9 l 17,-18" fill="none" stroke="#0A5C3E" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export default function HomePage() {
+  usePageTitle()
   const [tab, setTab] = useState('demo')
   const [text, setText] = useState('')
   const [file, setFile] = useState(null)
@@ -251,12 +299,12 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--slate-50)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
         <Navbar />
         <div className="loading-outer">
           <div className="loading-card">
             <div className="loading-spinner-big" />
-            <div className="loading-title">Auditing Your Invoice</div>
+            <div className="loading-title">Auditing your invoice</div>
             <div className="loading-sub">Every finding is re-verified against the official USITC HTS 2026 schedule</div>
             <ul className="loading-steps">
               {STEPS.map((s, i) => (
@@ -273,74 +321,105 @@ export default function HomePage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--slate-50)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
       <Navbar />
 
       <section className="hero">
         <div className="hero-inner">
-          <h1 className="hero-title">You're probably overpaying tariffs.<br /><span>Find out in 60 seconds.</span></h1>
-          <p className="hero-sub">
-            TariffCheck audits your invoices against the full 29,755-code USITC tariff schedule, finds misclassifications
-            and missed FTA claims, computes exactly what you overpaid, and drafts a ready-to-file CBP protest — before
-            your 180-day window closes.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <a href="#analyze" className="btn-primary" style={{ padding: '13px 26px', fontSize: 15 }}>Audit an invoice — free</a>
-            <Link to="/hts-lookup" className="btn-secondary" style={{ padding: '13px 26px', fontSize: 15 }}>Look up any HTS code</Link>
-          </div>
-          <div className="hero-trust-chips">
-            <span className="hero-trust-chip">📊 Built on the complete 2026 USITC HTS — 29,755 codes</span>
-            <span className="hero-trust-chip">✓ Every AI finding re-verified against the official schedule</span>
-            <span className="hero-trust-chip">⚖ Misclassification drives ~42% of CBP penalties</span>
+          <div className="hero-grid">
+            <div className="hero-copy-in">
+              <div className="hero-eyebrow">Customs duty audit · 19 U.S.C. §1514</div>
+              <h1 className="hero-title">
+                Find the duty you overpaid. <em>Then take it back.</em>
+              </h1>
+              <p className="hero-sub">
+                TariffCheck audits your import invoices against all <strong>29,755 codes</strong> in
+                the official USITC tariff schedule, recomputes every dollar server-side, and drafts
+                the protest your broker files. You have <strong>180 days</strong> from liquidation.
+              </p>
+              <div className="hero-ctas">
+                <a href="#analyze" className="btn-primary" style={{ padding: '14px 28px', fontSize: 15 }}>Audit an invoice — free</a>
+                <Link to="/hts-lookup" className="btn-secondary" style={{ padding: '14px 28px', fontSize: 15 }}>Look up an HTS code</Link>
+              </div>
+              <div className="hero-facts">
+                <span className="hero-fact"><b>Official USITC HTS 2026</b> · 29,755 codes in-product</span>
+                <span className="hero-fact"><b>Server-side verification</b> on every finding</span>
+                <span className="hero-fact"><b>Invoices never stored</b> · stateless processing</span>
+              </div>
+            </div>
+
+            <div className="specimen" aria-label="Example audit finding: misclassified office chairs from Mexico, $3,392 recoverable">
+              <div className="specimen-head">
+                <span className="specimen-head-label">Audit specimen · Entry line 001</span>
+                <span className="specimen-sample-tag">Sample</span>
+              </div>
+              <div className="specimen-body">
+                <div className="spec-reveal-1">
+                  <div className="specimen-row">
+                    <span className="specimen-key">Merchandise</span>
+                    200 × Executive office chairs — Mexico · $64,000.00
+                  </div>
+                </div>
+                <div className="spec-reveal-2">
+                  <div className="specimen-code-row">
+                    <span className="code-struck">9403.90.8040</span>
+                    <span className="code-corrected">9403.10 + USMCA</span>
+                  </div>
+                  <div className="specimen-note">Parts code used for finished chairs · USMCA preference never claimed</div>
+                </div>
+                <div className="tally spec-reveal-3">
+                  <div className="tally-row">
+                    <span>Duty paid at entry</span><span className="leader" /><span className="tally-amount">$3,392.00</span>
+                  </div>
+                  <div className="tally-row">
+                    <span>Duty owed under USMCA</span><span className="leader" /><span className="tally-amount">$0.00</span>
+                  </div>
+                  <div className="tally-row recovered">
+                    <span className="tally-label">Recoverable via §1514 protest</span><span className="leader" /><RecoveredAmount />
+                  </div>
+                </div>
+              </div>
+              <div className="specimen-foot">
+                <span className="window-flag">Protest window: 180 days from liquidation</span>
+                Recomputed server-side against USITC HTS 2026 · Filed by the importer of record or a licensed broker
+              </div>
+              <StampSeal />
+            </div>
           </div>
         </div>
       </section>
 
+      <RecoveryTape />
+
       <section className="upload-section" id="analyze">
         <div className="upload-card">
-          <div className="upload-title">Audit Your Invoice</div>
-          <div className="upload-sub">Paste or upload a commercial invoice — or explore a sample scenario</div>
+          <div className="upload-kicker">Free audit — no signup</div>
+          <div className="upload-title">Audit your invoice</div>
+          <div className="upload-sub">Paste or upload a commercial invoice, or open a sample scenario to see a full audit.</div>
 
           {error && <div className="inline-error"><span>⚠</span><span>{error}</span></div>}
 
           <div className="tabs">
-            <button className={`tab-btn ${tab === 'demo' ? 'active' : ''}`} onClick={() => setTab('demo')}>⚡ Sample Scenarios</button>
-            <button className={`tab-btn ${tab === 'text' ? 'active' : ''}`} onClick={() => setTab('text')}>📝 Paste Text</button>
-            <button className={`tab-btn ${tab === 'file' ? 'active' : ''}`} onClick={() => setTab('file')}>📄 Upload PDF</button>
+            <button type="button" aria-pressed={tab === 'demo'} className={`tab-btn ${tab === 'demo' ? 'active' : ''}`} onClick={() => setTab('demo')}>Sample scenarios</button>
+            <button type="button" aria-pressed={tab === 'text'} className={`tab-btn ${tab === 'text' ? 'active' : ''}`} onClick={() => setTab('text')}>Paste text</button>
+            <button type="button" aria-pressed={tab === 'file'} className={`tab-btn ${tab === 'file' ? 'active' : ''}`} onClick={() => setTab('file')}>Upload PDF</button>
           </div>
 
           {tab === 'demo' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="ledger-list">
               {DEMOS.map(d => (
-                <button
-                  key={d.id}
-                  onClick={() => runDemo(d.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '16px 20px', background: 'var(--slate-50)',
-                    border: `1.5px solid var(--slate-200)`, borderRadius: 'var(--radius-md)',
-                    cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left',
-                    ...(activeDemo === d.id ? { borderColor: 'var(--blue)', background: 'var(--blue-light)' } : {}),
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--blue)'; e.currentTarget.style.background = 'var(--blue-light)' }}
-                  onMouseLeave={e => { if (activeDemo !== d.id) { e.currentTarget.style.borderColor = 'var(--slate-200)'; e.currentTarget.style.background = 'var(--slate-50)' } }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 10, background: d.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-                      {DEMO_ICONS[d.id]}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--slate-900)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        {d.label}
-                        <span className="badge-sample" style={{ fontSize: 9, padding: '2px 8px' }}>Sample data</span>
-                      </div>
-                      <div style={{ fontSize: 13, color: 'var(--slate-500)' }}>{d.desc}</div>
-                    </div>
+                <button key={d.id} onClick={() => runDemo(d.id)} className={`ledger-row ${activeDemo === d.id ? 'active' : ''}`}>
+                  <div className="ledger-row-main">
+                    <span className="ledger-row-code">{d.code}</span>
+                    <span style={{ minWidth: 0 }}>
+                      <span className="ledger-row-title">{d.label}</span>
+                      <span className="ledger-row-desc" style={{ display: 'block' }}>{d.desc}</span>
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 20, background: d.color + '18', color: d.color, border: `1px solid ${d.color}30` }}>{d.tag}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: d.color }}>{d.savings}</span>
-                    <span style={{ color: 'var(--slate-300)', fontSize: 18 }}>→</span>
+                  <div className="ledger-row-right">
+                    <span className="ledger-row-tag">{d.tag}</span>
+                    <span className={`ledger-row-amount ${d.savings === 'Exposure' ? 'risk' : ''}`}>{d.savings}</span>
+                    <span className="ledger-row-arrow">→</span>
                   </div>
                 </button>
               ))}
@@ -358,7 +437,7 @@ export default function HomePage() {
               <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {DEMOS.map(d => (
                   <button key={d.id} className="demo-link" onClick={() => setText(DEMO_TEXTS[d.id])}>
-                    {DEMO_ICONS[d.id]} {d.label}
+                    {d.label}
                   </button>
                 ))}
               </div>
@@ -372,14 +451,17 @@ export default function HomePage() {
             <>
               <div
                 className={`drop-zone ${dragging ? 'dragging' : ''}`}
+                role="button"
+                tabIndex={0}
+                aria-label="Upload an invoice PDF or text file"
                 onDragOver={e => { e.preventDefault(); setDragging(true) }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
                 onClick={() => fileRef.current.click()}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileRef.current.click() } }}
               >
-                <div className="drop-icon">{file ? '✅' : '📄'}</div>
                 <div className="drop-title">{file ? file.name : 'Drag and drop your invoice PDF here'}</div>
-                <div className="drop-sub">{file ? 'Click to change file' : 'or click to browse — PDF or TXT accepted'}</div>
+                <div className="drop-sub">{file ? 'Click to choose a different file' : 'or click to browse — PDF or TXT accepted'}</div>
                 <input ref={fileRef} type="file" accept=".pdf,.txt" onChange={e => setFile(e.target.files[0])} />
               </div>
               <button className="submit-btn" onClick={handleSubmit} disabled={!file}>
@@ -390,79 +472,74 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Broker banner */}
-      <section style={{ maxWidth: 780, margin: '0 auto', padding: '0 24px 40px' }}>
-        <Link
-          to="/brokers"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-            background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-            border: '1px solid var(--blue-mid)', borderRadius: 'var(--radius-lg)',
-            padding: '20px 26px', textDecoration: 'none',
-          }}
-        >
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--slate-900)' }}>Customs broker? Bulk-scan your clients' invoices →</div>
-            <div style={{ fontSize: 13, color: 'var(--slate-600)', marginTop: 4 }}>
-              Screen entire client portfolios against the official USITC schedule and turn declined protest work into a new fee line.
-            </div>
+      <section className="how-section">
+        <Reveal>
+          <div className="section-label">Sec. 01 — Process</div>
+          <h2 className="section-title">From invoice to protest letter</h2>
+        </Reveal>
+        <Reveal delay={120}>
+          <div className="steps-grid">
+            {[
+              { num: '01', title: 'Submit the invoice', desc: 'Paste a commercial invoice or upload a PDF. Include HTS codes, product descriptions, declared values, and country of origin.' },
+              { num: '02', title: 'Audit, then re-verify', desc: 'AI reviews every line for misclassification, missed FTA claims, and Section 301 exposure. Each finding is then recomputed against the complete 29,755-code USITC HTS 2026 schedule — an unverified number never reaches your report.' },
+              { num: '03', title: 'File the protest', desc: 'You receive a draft protest under 19 U.S.C. §1514, ready for the importer of record or your licensed broker to review and file. The window is 180 days from liquidation.' },
+            ].map(s => (
+              <div className="step-card" key={s.num}>
+                <div className="step-num">{s.num}</div>
+                <div className="step-title">{s.title}</div>
+                <div className="step-desc">{s.desc}</div>
+              </div>
+            ))}
           </div>
-          <span style={{ fontSize: 24 }}>🗂️</span>
-        </Link>
+        </Reveal>
       </section>
 
       <section className="niche-callout-section">
-        <div className="niche-callout">
-          <div className="niche-callout-icon">🪵</div>
-          <div className="niche-callout-content">
-            <h3 className="niche-callout-title">Furniture & Cabinet Importers: Vietnam and China Sourcing?</h3>
-            <div className="niche-callout-points">
-              <div className="niche-point">
-                <span className="niche-dot">•</span>
-                <span>Chapter 94 misclassification (9403.40 vs 9403.60 vs 9403.89) is the #1 error in furniture imports — same rate but wrong code creates audit exposure</span>
-              </div>
-              <div className="niche-point">
-                <span className="niche-dot">•</span>
-                <span>Vietnam-origin cabinets: No Section 301, but base rate misclassification still triggers CBP scrutiny</span>
-              </div>
-              <div className="niche-point">
-                <span className="niche-dot">•</span>
-                <span>China-origin furniture: 25% Section 301 (List 3) stacks on base rate — correct classification critical</span>
-              </div>
-              <div className="niche-point">
-                <span className="niche-dot">•</span>
-                <span>Marble/stone importers: polished countertops (6802.91) vs raw slabs (6802.21) — different rates, commonly confused</span>
-              </div>
-            </div>
+        <Reveal>
+          <div className="section-label" style={{ textAlign: 'left' }}>Sec. 02 — Findings</div>
+          <h2 className="niche-callout-title">Where overpayment hides</h2>
+          <p className="niche-callout-sub">
+            Four patterns account for most of the duty importers never should have paid. Every audit checks all of them, line by line.
+          </p>
+        </Reveal>
+        <Reveal delay={120} className="niche-callout-points">
+          <div className="niche-point">
+            <span className="niche-point-code">Ch. 94 — furniture</span>
+            Finished goods entered under parts codes (9403.90 vs 9403.10/.60) — the single most common furniture error, and a CBP audit trigger even when rates match.
           </div>
-        </div>
+          <div className="niche-point">
+            <span className="niche-point-code">FTA never claimed</span>
+            USMCA, KORUS, and 19 other free-trade preferences left unclaimed at entry — duty paid at the full MFN rate on goods that qualified for 0%.
+          </div>
+          <div className="niche-point">
+            <span className="niche-point-code">Section 301 stacking</span>
+            China-origin goods where a wrong base code pulls in a 25% List 3 surcharge — or keeps one that no longer applies after the 2025–26 rate changes.
+          </div>
+          <div className="niche-point">
+            <span className="niche-point-code">Material & use provisions</span>
+            Chief-weight fiber rules in apparel, principal-use provisions in machinery — distinctions that shift rates by 10–20 points and are easy to file wrong.
+          </div>
+        </Reveal>
       </section>
 
-      <section className="how-section">
-        <div className="section-label">How it works</div>
-        <h2 className="section-title">Three steps to reclaim your duties</h2>
-        <div className="steps-grid">
-          {[
-            { num: '01', icon: '📄', title: 'Upload Invoice', desc: 'Paste your commercial invoice or upload a PDF. Include HTS codes, product descriptions, declared values, and country of origin.' },
-            { num: '02', icon: '🔍', title: 'AI Audit + Verification', desc: 'Claude audits every line, then each finding is deterministically re-verified against the complete 29,755-code USITC HTS 2026 schedule — savings are recomputed server-side.' },
-            { num: '03', icon: '⚖️', title: 'Ready-to-File Protest', desc: 'Receive a draft CBP protest citing 19 U.S.C. 1514 for the importer of record or your licensed broker to review and file. You have 180 days from liquidation.' },
-          ].map(s => (
-            <div className="step-card" key={s.num}>
-              <div className="step-num">{s.num}</div>
-              <span className="step-icon">{s.icon}</span>
-              <div className="step-title">{s.title}</div>
-              <div className="step-desc">{s.desc}</div>
+      <section className="broker-band">
+        <Reveal className="broker-band-inner">
+          <div>
+            <div className="broker-band-title">Customs broker? Scan a client's last 90 days in minutes.</div>
+            <div className="broker-band-sub">
+              Batch-audit entire client portfolios against the official USITC schedule and turn declined protest work into a billable service line.
             </div>
-          ))}
-        </div>
+          </div>
+          <Link to="/brokers" className="btn-secondary" style={{ whiteSpace: 'nowrap' }}>Batch audit for brokers →</Link>
+        </Reveal>
       </section>
 
       <div className="trust-section">
         <div className="trust-badges">
-          <div className="trust-item">📊 Official USITC Tariff Data</div>
-          <div className="trust-item">⚖ 19 U.S.C. 1514 Compliant Drafts</div>
-          <div className="trust-item">🌎 USMCA and KORUS FTA Checks</div>
-          <div className="trust-item">🏛 CBP Form 19 Ready</div>
+          <div className="trust-item">Official USITC 2026 data</div>
+          <div className="trust-item">§1514-compliant drafts</div>
+          <div className="trust-item">USMCA · KORUS · 21 FTAs</div>
+          <div className="trust-item">CBP Form 19 ready</div>
         </div>
         <div className="trust-disclaimer">
           TariffCheck prepares filings; it does not file with CBP. All findings should be reviewed by the importer of

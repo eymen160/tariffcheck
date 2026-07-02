@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { htsSearch, landedCost, ApiError, isFeatureUnavailable } from '../lib/api'
 import { money, rate } from '../lib/format'
+import { usePageTitle } from '../lib/usePageTitle'
 
 const ORIGINS = ['China', 'Vietnam', 'India', 'Mexico', 'Canada', 'South Korea', 'Japan', 'Colombia', 'Other / not listed']
 
@@ -19,6 +20,8 @@ export default function CalculatorPage() {
   const [unavailable, setUnavailable] = useState(false)
   const debounce = useRef()
   const skipSearch = useRef(false)
+
+  usePageTitle('Landed Cost Calculator')
 
   useEffect(() => {
     clearTimeout(debounce.current)
@@ -72,11 +75,11 @@ export default function CalculatorPage() {
   const b = result?.breakdown
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--slate-50)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--paper)', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px 64px', width: '100%', flex: 1 }}>
-        <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.75px', color: 'var(--slate-900)', marginBottom: 6 }}>Landed Cost Calculator</h1>
+        <h1 style={{ fontSize: 30, letterSpacing: '-0.75px', color: 'var(--slate-900)', marginBottom: 6 }}>Landed Cost Calculator</h1>
         <p style={{ fontSize: 15, color: 'var(--slate-500)', marginBottom: 28 }}>
           Full duty stack for any shipment — MFN duty, Section 301, MPF and HMF — straight from the official
           USITC HTS 2026 schedule.
@@ -91,7 +94,7 @@ export default function CalculatorPage() {
               value={code}
               onChange={e => setCode(e.target.value)}
               placeholder="e.g. 9403.40.9060 — or search: kitchen cabinets"
-              style={{ width: '100%', padding: '12px 16px', fontSize: 15, border: '1.5px solid var(--slate-200)', borderRadius: 'var(--radius-sm)', outline: 'none', fontFamily: "'JetBrains Mono', monospace" }}
+              style={{ width: '100%', padding: '12px 16px', fontSize: 15, border: '1.5px solid var(--slate-200)', borderRadius: 'var(--radius-sm)', outline: 'none', fontFamily: 'var(--font-mono)' }}
             />
             {suggestions && suggestions.length > 0 && (
               <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 30, background: 'white', border: '1px solid var(--slate-200)', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-lg)', maxHeight: 280, overflowY: 'auto', marginTop: 4 }}>
@@ -102,8 +105,10 @@ export default function CalculatorPage() {
                     style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', background: 'white', border: 'none', borderBottom: '1px solid var(--slate-100)', cursor: 'pointer' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'var(--blue-light)' }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'white' }}
+                    onFocus={e => { e.currentTarget.style.background = 'var(--blue-light)' }}
+                    onBlur={e => { e.currentTarget.style.background = 'white' }}
                   >
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 700, color: 'var(--blue)' }}>{s.code}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--blue)' }}>{s.code}</span>
                     <span style={{ fontSize: 12.5, color: 'var(--slate-600)', marginLeft: 10 }}>
                       {String(s.description || '').slice(0, 90)}
                     </span>
@@ -148,7 +153,7 @@ export default function CalculatorPage() {
                       color: mode === m ? 'white' : 'var(--slate-600)',
                     }}
                   >
-                    {m === 'ocean' ? '🚢 Ocean' : '✈️ Air'}
+                    {m === 'ocean' ? 'Ocean' : 'Air'}
                   </button>
                 ))}
               </div>
@@ -176,7 +181,7 @@ export default function CalculatorPage() {
         {result && result.found && b && (
           <div className="card" style={{ marginBottom: 24 }}>
             <div style={{ marginBottom: 4, display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 800, color: 'var(--slate-900)' }}>{result.code}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 600, color: 'var(--slate-900)' }}>{result.code}</span>
               <span style={{ fontSize: 13, color: 'var(--slate-500)' }}>
                 {result.origin || 'Any origin'} · {money(result.value)} · {result.mode === 'air' ? 'Air' : 'Ocean'}
               </span>
@@ -220,7 +225,7 @@ export default function CalculatorPage() {
             {result.fta && (
               <div style={{ background: 'var(--green-light)', border: '1px solid var(--green-mid)', borderRadius: 'var(--radius-md)', padding: '14px 18px', marginTop: 18, fontSize: 14, color: 'var(--green)' }}>
                 <strong>✓ With {result.fta.form} under {result.fta.name}: save {money(result.fta.savings)}</strong>
-                <div style={{ fontSize: 12.5, marginTop: 4, color: '#047857' }}>
+                <div style={{ fontSize: 12.5, marginTop: 4, color: 'var(--ledger-deep)' }}>
                   Preferential rate {rate(result.fta.rate)} — duty drops to {money(result.fta.duty_with_fta)}.
                 </div>
               </div>
