@@ -1,7 +1,9 @@
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { usePageTitle } from '../lib/usePageTitle'
 
 export default function TermsPage() {
+  usePageTitle('Terms of Service')
   return (
     <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
       <Navbar />

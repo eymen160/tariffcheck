@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { analyzeBatch, isFeatureUnavailable } from '../lib/api'
 import { money, rate } from '../lib/format'
+import { usePageTitle } from '../lib/usePageTitle'
 
 const CHUNK_SIZE = 100
 
@@ -81,13 +82,13 @@ function csvEscape(v) {
 
 function ConfidencePill({ level }) {
   const map = {
-    high: { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' },
-    medium: { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
-    low: { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' },
+    high: 'badge-high',
+    medium: 'badge-medium',
+    low: 'badge-low',
   }
-  const s = map[level] || map.medium
+  const className = map[level] || map.medium
   return (
-    <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 9px', borderRadius: 20, background: s.bg, color: s.color, border: `1px solid ${s.border}`, whiteSpace: 'nowrap', textTransform: 'capitalize' }}>
+    <span className={className} style={{ whiteSpace: 'nowrap', textTransform: 'capitalize' }}>
       {level || 'medium'}
     </span>
   )
@@ -115,6 +116,8 @@ export default function BatchPage() {
   const [showOk, setShowOk] = useState(false)
   const [sort, setSort] = useState({ key: 'estimated_savings', dir: 'desc' })
   const fileRef = useRef()
+
+  usePageTitle('Batch Audit')
 
   const parsed = useMemo(() => (csvText.trim() ? parseCSV(csvText) : []), [csvText])
   const headers = parsed.length > 0 ? parsed[0] : []
@@ -258,14 +261,16 @@ export default function BatchPage() {
   const okRows = useMemo(() => (results ? results.filter(r => r.status === 'ok') : []), [results])
 
   const sortArrow = key => (sort.key === key ? (sort.dir === 'desc' ? ' ↓' : ' ↑') : '')
+  const ariaSort = key => (sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none')
+  const sortBtnStyle = { background: 'none', border: 'none', font: 'inherit', cursor: 'pointer', padding: 0, color: 'inherit', textTransform: 'inherit', letterSpacing: 'inherit' }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--slate-50)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--paper)', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
       <div style={{ maxWidth: 1080, margin: '0 auto', padding: '40px 24px 64px', width: '100%', flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 6 }}>
-          <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.75px', color: 'var(--slate-900)' }}>Batch Audit</h1>
+          <h1 style={{ fontSize: 30, letterSpacing: '-0.75px', color: 'var(--slate-900)' }}>Batch Audit</h1>
           {isSample && <span className="badge-sample">Sample data</span>}
         </div>
         <p style={{ fontSize: 15, color: 'var(--slate-500)', marginBottom: 28, maxWidth: 720 }}>
@@ -286,7 +291,7 @@ export default function BatchPage() {
 
           <textarea
             className="invoice-textarea"
-            style={{ minHeight: 140, fontFamily: "'JetBrains Mono', monospace", fontSize: 12.5 }}
+            style={{ minHeight: 140, fontFamily: 'var(--font-mono)', fontSize: 12.5 }}
             placeholder={'Paste CSV here — first row is headers, e.g.\nhts_code,description,declared_value,origin\n9403.40.9060,"Wooden kitchen cabinets",12000,China'}
             value={csvText}
             onChange={e => loadCsvString(e.target.value, false)}
@@ -301,7 +306,7 @@ export default function BatchPage() {
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 {headers.map((h, i) => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--slate-600)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h || `(column ${i + 1})`}</span>
+                    <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--slate-600)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h || `(column ${i + 1})`}</span>
                     <select
                       value={effectiveMapping[i] || ''}
                       onChange={e => setMapping(m => ({ ...m, [i]: e.target.value }))}
@@ -391,7 +396,7 @@ export default function BatchPage() {
                 <span style={{ color: 'var(--green)' }}>{money(summary.total_estimated_exposure)} estimated exposure</span>
               </div>
               {isSample && <span className="badge-sample">Sample data</span>}
-              <button className="btn-secondary" style={{ marginLeft: 'auto' }} onClick={downloadReport}>⬇ Download CSV report</button>
+              <button className="btn-secondary" style={{ marginLeft: 'auto' }} onClick={downloadReport}>Download report</button>
             </div>
 
             {skipped > 0 && (
@@ -405,12 +410,22 @@ export default function BatchPage() {
                 <table className="batch-table">
                   <thead>
                     <tr>
-                      <th onClick={() => toggleSort('row_id')}>Row{sortArrow('row_id')}</th>
-                      <th onClick={() => toggleSort('description')}>Description{sortArrow('description')}</th>
+                      <th aria-sort={ariaSort('row_id')}>
+                        <button type="button" style={sortBtnStyle} onClick={() => toggleSort('row_id')}>Row{sortArrow('row_id')}</button>
+                      </th>
+                      <th aria-sort={ariaSort('description')}>
+                        <button type="button" style={sortBtnStyle} onClick={() => toggleSort('description')}>Description{sortArrow('description')}</button>
+                      </th>
                       <th style={{ cursor: 'default' }}>Current → Suggested</th>
-                      <th onClick={() => toggleSort('rate_delta')}>Rate Δ{sortArrow('rate_delta')}</th>
-                      <th onClick={() => toggleSort('estimated_savings')}>Est. Savings{sortArrow('estimated_savings')}</th>
-                      <th onClick={() => toggleSort('confidence')}>Confidence{sortArrow('confidence')}</th>
+                      <th aria-sort={ariaSort('rate_delta')}>
+                        <button type="button" style={sortBtnStyle} onClick={() => toggleSort('rate_delta')}>Rate Δ{sortArrow('rate_delta')}</button>
+                      </th>
+                      <th aria-sort={ariaSort('estimated_savings')}>
+                        <button type="button" style={sortBtnStyle} onClick={() => toggleSort('estimated_savings')}>Est. Savings{sortArrow('estimated_savings')}</button>
+                      </th>
+                      <th aria-sort={ariaSort('confidence')}>
+                        <button type="button" style={sortBtnStyle} onClick={() => toggleSort('confidence')}>Confidence{sortArrow('confidence')}</button>
+                      </th>
                       <th style={{ cursor: 'default' }}>Verified</th>
                       <th style={{ cursor: 'default' }}>Note</th>
                     </tr>

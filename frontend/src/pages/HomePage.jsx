@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import Reveal from '../components/Reveal'
+import { useCountUp, formatUsd } from '../lib/useCountUp'
+import { usePageTitle } from '../lib/usePageTitle'
 import { analyzeInvoice, fetchDemo, ApiError } from '../lib/api'
 import { saveAudit, setLastResult, newAuditId, buildAuditSummary } from '../lib/audits'
 
@@ -161,6 +164,35 @@ function friendlyError(err) {
   return 'Something went wrong. Please try again.'
 }
 
+function RecoveredAmount() {
+  const value = useCountUp(3392, { duration: 850, startDelay: 1650 })
+  return <span className="tally-amount">{formatUsd(value)}</span>
+}
+
+const TAPE_ITEMS = DEMOS.filter(d => d.savings !== 'Exposure').map(d => ({
+  from: d.code, label: d.label.split(' — ')[1], amount: d.savings,
+}))
+
+function RecoveryTape() {
+  const row = (key) => (
+    <span key={key} aria-hidden={key === 'b'}>
+      {TAPE_ITEMS.map((t, i) => (
+        <span className="tape-item" key={i}>
+          <span className="tape-strike">{t.from}</span>
+          <span>corrected</span>
+          <b>+{t.amount}</b>
+          <span className="tape-sep">· {t.label}</span>
+        </span>
+      ))}
+    </span>
+  )
+  return (
+    <div className="tape" role="marquee" aria-label="Sample recovered duty amounts from the demo scenarios">
+      <div className="tape-track">{row('a')}{row('b')}</div>
+    </div>
+  )
+}
+
 function StampSeal() {
   return (
     <svg className="stamp-seal" viewBox="0 0 120 120" aria-hidden="true">
@@ -179,6 +211,7 @@ function StampSeal() {
 }
 
 export default function HomePage() {
+  usePageTitle()
   const [tab, setTab] = useState('demo')
   const [text, setText] = useState('')
   const [file, setFile] = useState(null)
@@ -294,7 +327,7 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-grid">
-            <div>
+            <div className="hero-copy-in">
               <div className="hero-eyebrow">Customs duty audit · 19 U.S.C. §1514</div>
               <h1 className="hero-title">
                 Find the duty you overpaid. <em>Then take it back.</em>
@@ -309,9 +342,9 @@ export default function HomePage() {
                 <Link to="/hts-lookup" className="btn-secondary" style={{ padding: '14px 28px', fontSize: 15 }}>Look up an HTS code</Link>
               </div>
               <div className="hero-facts">
-                <span className="hero-fact"><b>29,755</b> USITC codes in-product</span>
-                <span className="hero-fact"><b>Every finding</b> re-verified</span>
-                <span className="hero-fact"><b>No signup</b> for your first audit</span>
+                <span className="hero-fact"><b>Official USITC HTS 2026</b> · 29,755 codes in-product</span>
+                <span className="hero-fact"><b>Server-side verification</b> on every finding</span>
+                <span className="hero-fact"><b>Invoices never stored</b> · stateless processing</span>
               </div>
             </div>
 
@@ -342,11 +375,12 @@ export default function HomePage() {
                     <span>Duty owed under USMCA</span><span className="leader" /><span className="tally-amount">$0.00</span>
                   </div>
                   <div className="tally-row recovered">
-                    <span className="tally-label">Recoverable via §1514 protest</span><span className="leader" /><span className="tally-amount">$3,392.00</span>
+                    <span className="tally-label">Recoverable via §1514 protest</span><span className="leader" /><RecoveredAmount />
                   </div>
                 </div>
               </div>
               <div className="specimen-foot">
+                <span className="window-flag">Protest window: 180 days from liquidation</span>
                 Recomputed server-side against USITC HTS 2026 · Filed by the importer of record or a licensed broker
               </div>
               <StampSeal />
@@ -354,6 +388,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <RecoveryTape />
 
       <section className="upload-section" id="analyze">
         <div className="upload-card">
@@ -363,10 +399,10 @@ export default function HomePage() {
 
           {error && <div className="inline-error"><span>⚠</span><span>{error}</span></div>}
 
-          <div className="tabs" role="tablist">
-            <button role="tab" aria-selected={tab === 'demo'} className={`tab-btn ${tab === 'demo' ? 'active' : ''}`} onClick={() => setTab('demo')}>Sample scenarios</button>
-            <button role="tab" aria-selected={tab === 'text'} className={`tab-btn ${tab === 'text' ? 'active' : ''}`} onClick={() => setTab('text')}>Paste text</button>
-            <button role="tab" aria-selected={tab === 'file'} className={`tab-btn ${tab === 'file' ? 'active' : ''}`} onClick={() => setTab('file')}>Upload PDF</button>
+          <div className="tabs">
+            <button type="button" aria-pressed={tab === 'demo'} className={`tab-btn ${tab === 'demo' ? 'active' : ''}`} onClick={() => setTab('demo')}>Sample scenarios</button>
+            <button type="button" aria-pressed={tab === 'text'} className={`tab-btn ${tab === 'text' ? 'active' : ''}`} onClick={() => setTab('text')}>Paste text</button>
+            <button type="button" aria-pressed={tab === 'file'} className={`tab-btn ${tab === 'file' ? 'active' : ''}`} onClick={() => setTab('file')}>Upload PDF</button>
           </div>
 
           {tab === 'demo' && (
@@ -415,10 +451,14 @@ export default function HomePage() {
             <>
               <div
                 className={`drop-zone ${dragging ? 'dragging' : ''}`}
+                role="button"
+                tabIndex={0}
+                aria-label="Upload an invoice PDF or text file"
                 onDragOver={e => { e.preventDefault(); setDragging(true) }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
                 onClick={() => fileRef.current.click()}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileRef.current.click() } }}
               >
                 <div className="drop-title">{file ? file.name : 'Drag and drop your invoice PDF here'}</div>
                 <div className="drop-sub">{file ? 'Click to choose a different file' : 'or click to browse — PDF or TXT accepted'}</div>
@@ -433,29 +473,36 @@ export default function HomePage() {
       </section>
 
       <section className="how-section">
-        <div className="section-label">How it works</div>
-        <h2 className="section-title">From invoice to protest letter</h2>
-        <div className="steps-grid">
-          {[
-            { num: '01', title: 'Submit the invoice', desc: 'Paste a commercial invoice or upload a PDF. Include HTS codes, product descriptions, declared values, and country of origin.' },
-            { num: '02', title: 'Audit, then re-verify', desc: 'AI reviews every line for misclassification, missed FTA claims, and Section 301 exposure. Each finding is then recomputed against the complete 29,755-code USITC HTS 2026 schedule — an unverified number never reaches your report.' },
-            { num: '03', title: 'File the protest', desc: 'You receive a draft protest under 19 U.S.C. §1514, ready for the importer of record or your licensed broker to review and file. The window is 180 days from liquidation.' },
-          ].map(s => (
-            <div className="step-card" key={s.num}>
-              <div className="step-num">{s.num}</div>
-              <div className="step-title">{s.title}</div>
-              <div className="step-desc">{s.desc}</div>
-            </div>
-          ))}
-        </div>
+        <Reveal>
+          <div className="section-label">Sec. 01 — Process</div>
+          <h2 className="section-title">From invoice to protest letter</h2>
+        </Reveal>
+        <Reveal delay={120}>
+          <div className="steps-grid">
+            {[
+              { num: '01', title: 'Submit the invoice', desc: 'Paste a commercial invoice or upload a PDF. Include HTS codes, product descriptions, declared values, and country of origin.' },
+              { num: '02', title: 'Audit, then re-verify', desc: 'AI reviews every line for misclassification, missed FTA claims, and Section 301 exposure. Each finding is then recomputed against the complete 29,755-code USITC HTS 2026 schedule — an unverified number never reaches your report.' },
+              { num: '03', title: 'File the protest', desc: 'You receive a draft protest under 19 U.S.C. §1514, ready for the importer of record or your licensed broker to review and file. The window is 180 days from liquidation.' },
+            ].map(s => (
+              <div className="step-card" key={s.num}>
+                <div className="step-num">{s.num}</div>
+                <div className="step-title">{s.title}</div>
+                <div className="step-desc">{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
       </section>
 
       <section className="niche-callout-section">
-        <h2 className="niche-callout-title">Where overpayment hides</h2>
-        <p className="niche-callout-sub">
-          Four patterns account for most of the duty importers never should have paid. Every audit checks all of them, line by line.
-        </p>
-        <div className="niche-callout-points">
+        <Reveal>
+          <div className="section-label" style={{ textAlign: 'left' }}>Sec. 02 — Findings</div>
+          <h2 className="niche-callout-title">Where overpayment hides</h2>
+          <p className="niche-callout-sub">
+            Four patterns account for most of the duty importers never should have paid. Every audit checks all of them, line by line.
+          </p>
+        </Reveal>
+        <Reveal delay={120} className="niche-callout-points">
           <div className="niche-point">
             <span className="niche-point-code">Ch. 94 — furniture</span>
             Finished goods entered under parts codes (9403.90 vs 9403.10/.60) — the single most common furniture error, and a CBP audit trigger even when rates match.
@@ -472,11 +519,11 @@ export default function HomePage() {
             <span className="niche-point-code">Material & use provisions</span>
             Chief-weight fiber rules in apparel, principal-use provisions in machinery — distinctions that shift rates by 10–20 points and are easy to file wrong.
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <section className="broker-band">
-        <div className="broker-band-inner">
+        <Reveal className="broker-band-inner">
           <div>
             <div className="broker-band-title">Customs broker? Scan a client's last 90 days in minutes.</div>
             <div className="broker-band-sub">
@@ -484,7 +531,7 @@ export default function HomePage() {
             </div>
           </div>
           <Link to="/brokers" className="btn-secondary" style={{ whiteSpace: 'nowrap' }}>Batch audit for brokers →</Link>
-        </div>
+        </Reveal>
       </section>
 
       <div className="trust-section">

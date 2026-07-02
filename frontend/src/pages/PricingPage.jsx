@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import LeadForm from '../components/LeadForm'
+import { usePageTitle } from '../lib/usePageTitle'
 
 const TIERS = [
   {
     name: 'Free',
     price: '$0',
     period: '',
-    subtitle: 'PLG top-of-funnel for SMB importers',
+    subtitle: 'For importers checking their first entries',
     features: [
       'Unlimited HTS lookup',
       '2 invoice audits per month',
@@ -44,7 +45,7 @@ const TIERS = [
       'Bulk client-portfolio scanning',
       'White-label protest drafts',
       'API access',
-      'Optional 8% success-fee recovery via partner broker',
+      'Optional 8% success fee on managed recoveries (10% on Pro)',
       'Dedicated licensed-broker review tier',
     ],
     cta: 'lead',
@@ -59,19 +60,19 @@ function TierCard({ tier }) {
       className="card"
       style={{
         display: 'flex', flexDirection: 'column',
-        border: tier.highlight ? '2px solid var(--blue)' : '1px solid var(--slate-200)',
+        border: tier.highlight ? '2px solid var(--ledger)' : '1px solid var(--slate-200)',
         boxShadow: tier.highlight ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
         position: 'relative',
       }}
     >
       {tier.highlight && (
-        <span style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--blue)', color: 'white', fontSize: 11, fontWeight: 700, padding: '3px 14px', borderRadius: 20, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+        <span style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--ledger)', color: 'var(--sheet)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, padding: '3px 14px', borderRadius: 'var(--radius-sm)', letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
           MOST POPULAR
         </span>
       )}
       <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 6 }}>{tier.name}</div>
       <div style={{ marginBottom: 4 }}>
-        <span style={{ fontSize: 34, fontWeight: 800, color: 'var(--slate-900)', letterSpacing: '-1px' }}>{tier.price}</span>
+        <span style={{ fontFamily: 'var(--font-serif)', fontSize: 34, fontWeight: 700, color: 'var(--slate-900)', letterSpacing: '-1px' }}>{tier.price}</span>
         <span style={{ fontSize: 15, color: 'var(--slate-500)', fontWeight: 500 }}>{tier.period}</span>
       </div>
       <div style={{ fontSize: 12.5, color: 'var(--slate-500)', marginBottom: 18 }}>{tier.subtitle}</div>
@@ -98,13 +99,14 @@ function TierCard({ tier }) {
 }
 
 export default function PricingPage() {
+  usePageTitle('Pricing')
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--slate-50)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--paper)', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
       <div style={{ maxWidth: 1020, margin: '0 auto', padding: '48px 24px 64px', width: '100%', flex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <h1 style={{ fontSize: 34, fontWeight: 800, letterSpacing: '-1px', color: 'var(--slate-900)', marginBottom: 10 }}>Pricing</h1>
+          <h1 style={{ fontSize: 34, color: 'var(--slate-900)', marginBottom: 10 }}>Pricing</h1>
           <p style={{ fontSize: 16, color: 'var(--slate-500)', maxWidth: 560, margin: '0 auto' }}>
             Start free with the HTS lookup and invoice audits. Upgrade when the verified savings speak for themselves.
           </p>
@@ -115,7 +117,7 @@ export default function PricingPage() {
         </div>
 
         <div style={{ fontSize: 13, color: 'var(--slate-500)', textAlign: 'center', marginBottom: 10, lineHeight: 1.6 }}>
-          Optional success-fee recovery on Pro: 10% of verified recovery, filed via a partner broker, $1,500 minimum.
+          Optional success fees on managed recoveries filed via partner brokers: 10% on Pro, 8% on Enterprise (waived when your firm files). $1,500 minimum.
         </div>
         <div style={{ fontSize: 13, color: 'var(--slate-500)', textAlign: 'center', fontWeight: 600 }}>
           TariffCheck prepares filings; the importer of record or a licensed customs broker files them.

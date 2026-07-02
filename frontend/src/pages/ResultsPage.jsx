@@ -4,16 +4,17 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { getLastResult } from '../lib/audits'
 import { money, rate, date } from '../lib/format'
+import { usePageTitle } from '../lib/usePageTitle'
 
 function ConfidenceBadge({ level }) {
   const styles = {
-    high: { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7', label: '✓ High Confidence' },
-    medium: { bg: '#fef3c7', color: '#92400e', border: '#fcd34d', label: '~ Medium Confidence' },
-    low: { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5', label: '⚠ Low Confidence' },
+    high: { className: 'badge-high', label: 'High Confidence' },
+    medium: { className: 'badge-medium', label: 'Medium Confidence' },
+    low: { className: 'badge-low', label: 'Low Confidence' },
   }
   const s = styles[level] || styles.medium
   return (
-    <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 20, background: s.bg, color: s.color, border: `1px solid ${s.border}`, whiteSpace: 'nowrap' }}>
+    <span className={s.className} style={{ whiteSpace: 'nowrap' }}>
       {s.label}
     </span>
   )
@@ -50,12 +51,14 @@ export default function ResultsPage() {
   const [copied, setCopied] = useState(false)
   const [openCards, setOpenCards] = useState({})
 
+  usePageTitle('Audit Results')
+
   // Rehydrate: router state first, then the sessionStorage copy (survives refresh).
   const data = location.state?.data || getLastResult()
 
   if (!data) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--slate-50)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
         <Navbar />
         <div className="error-outer">
           <div className="error-card">
@@ -95,6 +98,8 @@ export default function ResultsPage() {
     navigator.clipboard.writeText(protest_letter).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
+    }).catch(() => {
+      setCopied(false)
     })
   }
 
@@ -135,7 +140,7 @@ export default function ResultsPage() {
         <button className="back-btn" onClick={() => navigate('/')}>
           ← New Analysis
         </button>
-        <div className="results-heading">Duty Savings Analysis</div>
+        <h1 className="results-heading">Duty Savings Analysis</h1>
       </div>
 
       <div className="results-body">
@@ -156,7 +161,7 @@ export default function ResultsPage() {
               ✓ {verifiedCount} of {totalCount} findings verified against USITC HTS 2026
             </span>
           )}
-          <span className="summary-chip amber">⏰ {protest_deadline_note || '180 days from liquidation to file a protest'}</span>
+          <span className="summary-chip amber">{protest_deadline_note || '180 days from liquidation to file a protest'}</span>
           {isDemo && <span className="badge-sample" style={{ marginLeft: 'auto' }}>Sample data</span>}
         </div>
 
@@ -211,7 +216,7 @@ export default function ResultsPage() {
                   </div>
 
                   {f.verified === false && f.verification_note && (
-                    <div style={{ background: 'var(--amber-light)', border: '1px solid #FDE68A', borderRadius: 8, padding: '9px 13px', marginBottom: 14, fontSize: 12.5, color: 'var(--amber)', lineHeight: 1.55 }}>
+                    <div style={{ background: 'var(--amber-light)', border: '1px solid #E3D3A8', borderRadius: 'var(--radius-sm)', padding: '9px 13px', marginBottom: 14, fontSize: 12.5, color: 'var(--amber)', lineHeight: 1.55 }}>
                       {f.verification_note}
                     </div>
                   )}
@@ -255,8 +260,8 @@ export default function ResultsPage() {
                   )}
 
                   {f.classification_risk === true && (!f.savings || f.savings === 0) && (
-                    <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, padding: '10px 14px', marginTop: 8, fontSize: 13, color: '#9a3412' }}>
-                      ⚠️ <strong>Audit Risk:</strong> Current classification may be incorrect even though rate is the same. Incorrect codes trigger CBP flags on future shipments. Correct for future entries.
+                    <div style={{ background: 'var(--amber-light)', border: '1px solid #E3D3A8', borderRadius: 'var(--radius-sm)', padding: '10px 14px', marginTop: 8, fontSize: 13, color: 'var(--amber)' }}>
+                      <span aria-hidden="true">⚠</span> <strong>Audit Risk:</strong> Current classification may be incorrect even though rate is the same. Incorrect codes trigger CBP flags on future shipments. Correct for future entries.
                     </div>
                   )}
 
@@ -363,8 +368,8 @@ export default function ResultsPage() {
                 <span className="ready-badge">Draft — ready for review</span>
               </div>
             </div>
-            <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', color: '#92400e', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
-              ⚠️ Protest deadline: 180 days from your liquidation date
+            <div style={{ background: 'var(--amber-light)', border: '1px solid #E3D3A8', color: 'var(--amber)', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
+              <span aria-hidden="true">⚠</span> Protest deadline: 180 days from your liquidation date
             </div>
             <div className="letter-card">
               <div className="letter-card-header">
@@ -401,11 +406,11 @@ export default function ResultsPage() {
         )}
 
         {/* CAPE / IEEPA info card */}
-        <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 12, padding: '20px 24px', marginTop: 8, marginBottom: 24 }}>
-          <div style={{ fontWeight: 700, color: '#92400e', marginBottom: 8 }}>A separate track: IEEPA tariff refunds</div>
-          <p style={{ fontSize: 13, color: '#78350f', margin: 0, lineHeight: 1.6 }}>
+        <div style={{ background: 'var(--amber-light)', border: '1px solid #E3D3A8', borderRadius: 'var(--radius-md)', padding: '20px 24px', marginTop: 8, marginBottom: 24 }}>
+          <div style={{ fontWeight: 700, color: 'var(--amber)', marginBottom: 8 }}>A separate track: IEEPA tariff refunds</div>
+          <p style={{ fontSize: 13, color: 'var(--amber)', margin: 0, lineHeight: 1.6 }}>
             If you paid tariffs imposed under IEEPA in 2025, CBP is refunding those separately through the CAPE system after the courts voided them. That refund track is independent of the HTS misclassification savings shown here.{' '}
-            <a href="/cape-refund" style={{ color: '#92400e', fontWeight: 600 }}>Check your IEEPA eligibility →</a>
+            <Link to="/cape-refund" style={{ color: 'var(--amber)', fontWeight: 600 }}>Check your IEEPA eligibility →</Link>
           </p>
         </div>
 
