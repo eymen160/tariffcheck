@@ -38,3 +38,6 @@ public/
 
 # Local agent config
 .claude/
+
+# Vite build output (Vercel builds from source)
+frontend/dist/
