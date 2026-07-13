@@ -1,0 +1,1281 @@
+{
+ "meta": {
+  "generated": "2026-07-13",
+  "status": "ACTIVE as of July 2026",
+  "headings": {
+   "9903.88.69": "USTR-granted exclusions per U.S. note 20(vvv), Ch.99 subch. III. Effective 2024-06-15 through 2026-11-09. No Section 301 duty for covered products.",
+   "9903.88.70": "Solar manufacturing equipment exclusions per U.S. note 20(www). Effective 2024-01-01 through 2026-11-09."
+  },
+  "sources": [
+   "https://hts.usitc.gov/reststop/exportList?from=0101&to=9999&format=JSON (HTS lines carrying \"See 9903.88.69/.70\" footnotes, current release)",
+   "https://hts.usitc.gov/reststop/file?release=currentRelease&filename=Chapter%2099 (U.S. notes 20(vvv)/(www) full exclusion descriptions)"
+  ],
+  "caveats": [
+   "CRITICAL: most exclusions are limited by narrative product descriptions in note 20(vvv)/(www), NOT whole tariff lines. A product must match the note description, not merely the HTS number, to claim the exclusion.",
+   "This file lists the HTS statistical lines the USITC has annotated with an exclusion footnote; it is a pointer index, not the legal text of each exclusion.",
+   "All earlier exclusion rounds (9903.88.05-.68) have expired; only 9903.88.69 and 9903.88.70 remain in effect, through 2026-11-09."
+  ]
+ },
+ "entries": [
+  {
+   "htsno": "0304.72.50.00",
+   "hts8": "03047250",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "0304.83.10.15",
+   "hts8": "03048310",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Sole"
+  },
+  {
+   "htsno": "0304.83.10.20",
+   "hts8": "03048310",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Flounder"
+  },
+  {
+   "htsno": "0304.83.50.15",
+   "hts8": "03048350",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Sole"
+  },
+  {
+   "htsno": "0304.83.50.20",
+   "hts8": "03048350",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Flounder"
+  },
+  {
+   "htsno": "0304.83.50.90",
+   "hts8": "03048350",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "0505.10.00.50",
+   "hts8": "05051000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Feathers"
+  },
+  {
+   "htsno": "0505.10.00.55",
+   "hts8": "05051000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Down"
+  },
+  {
+   "htsno": "1605.10.20.10",
+   "hts8": "16051020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "King crab"
+  },
+  {
+   "htsno": "1605.10.20.22",
+   "hts8": "16051020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "C. opilio (small)"
+  },
+  {
+   "htsno": "1605.10.20.30",
+   "hts8": "16051020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Dungeness"
+  },
+  {
+   "htsno": "1605.10.20.90",
+   "hts8": "16051020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "2805.11.00.00",
+   "hts8": "28051100",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Sodium"
+  },
+  {
+   "htsno": "2917.12.50.00",
+   "hts8": "29171250",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "2929.90.50.95",
+   "hts8": "29299050",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3401.19.00.00",
+   "hts8": "34011900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3808.94.50.10",
+   "hts8": "38089450",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Wipes, other than paper wipes or nonwoven wipes, impregnated with alcohol or other disinfectants"
+  },
+  {
+   "htsno": "3815.11.00.00",
+   "hts8": "38151100",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "With nickel or nickel compounds as the active substance"
+  },
+  {
+   "htsno": "3815.19.00.00",
+   "hts8": "38151900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3906.90.50.00",
+   "hts8": "39069050",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3913.10.00.00",
+   "hts8": "39131000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Alginic acid, its salts and esters"
+  },
+  {
+   "htsno": "3919.10.20.55",
+   "hts8": "39191020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3919.90.50.40",
+   "hts8": "39199050",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Transparent tape"
+  },
+  {
+   "htsno": "3919.90.50.60",
+   "hts8": "39199050",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3920.62.00.90",
+   "hts8": "39206200",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3923.21.00.95",
+   "hts8": "39232100",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "3923.50.00.00",
+   "hts8": "39235000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Stoppers, lids, caps and other closures"
+  },
+  {
+   "htsno": "3926.90.99.89",
+   "hts8": "39269099",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "4202.92.31.20",
+   "hts8": "42029231",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Backpacks (670)"
+  },
+  {
+   "htsno": "5007.20.00.65",
+   "hts8": "50072000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "More than 127 cm in width"
+  },
+  {
+   "htsno": "5007.20.00.85",
+   "hts8": "50072000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "5504.10.00.00",
+   "hts8": "55041000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of viscose rayon"
+  },
+  {
+   "htsno": "5603.92.00.70",
+   "hts8": "56039200",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Nonwoven articles, ready for use and packaged for industrial, institutional or retail sale, whether or not separated, perforated or impregnated, not e"
+  },
+  {
+   "htsno": "5603.92.00.95",
+   "hts8": "56039200",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other (223)"
+  },
+  {
+   "htsno": "5603.93.00.90",
+   "hts8": "56039300",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other (223)"
+  },
+  {
+   "htsno": "6001.10.20.00",
+   "hts8": "60011020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of man-made fibers (224)"
+  },
+  {
+   "htsno": "6111.20.60.70",
+   "hts8": "61112060",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other (239)"
+  },
+  {
+   "htsno": "6210.10.50.10",
+   "hts8": "62101050",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Surgical or isolation gowns"
+  },
+  {
+   "htsno": "6210.10.50.90",
+   "hts8": "62101050",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "6302.10.00.20",
+   "hts8": "63021000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other (666)"
+  },
+  {
+   "htsno": "6302.31.90.40",
+   "hts8": "63023190",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Pillowcovers (369)"
+  },
+  {
+   "htsno": "6307.90.98.91",
+   "hts8": "63079098",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "6505.00.80.15",
+   "hts8": "65050080",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Nonwoven disposable headgear without peaks or visors"
+  },
+  {
+   "htsno": "6506.10.60.30",
+   "hts8": "65061060",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Motorcycle helmets"
+  },
+  {
+   "htsno": "6506.10.60.45",
+   "hts8": "65061060",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Athletic, recreational and sporting headgear"
+  },
+  {
+   "htsno": "6802.99.00.90",
+   "hts8": "68029900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "6909.11.20.00",
+   "hts8": "69091120",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Machinery parts"
+  },
+  {
+   "htsno": "7007.19.00.00",
+   "hts8": "70071900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "7009.10.00.00",
+   "hts8": "70091000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Rear-view mirrors for vehicles"
+  },
+  {
+   "htsno": "7016.10.00.00",
+   "hts8": "70161000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Glass cubes and other glass smallwares, whether or not on a backing, for mosaics or similar decorative purposes"
+  },
+  {
+   "htsno": "7326.90.86.88",
+   "hts8": "73269086",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8205.51.30.30",
+   "hts8": "82055130",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Kitchen and table implements"
+  },
+  {
+   "htsno": "8407.90.90.10",
+   "hts8": "84079090",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Gas (natural or liquid propane (LP)) engines"
+  },
+  {
+   "htsno": "8413.30.90.90",
+   "hts8": "84133090",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8414.30.80.30",
+   "hts8": "84143080",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "For motor vehicles"
+  },
+  {
+   "htsno": "8414.30.80.60",
+   "hts8": "84143080",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Exceeding 1 horsepower but not exceeding 3 horsepower"
+  },
+  {
+   "htsno": "8414.59.65.40",
+   "hts8": "84145965",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Suitable for use with motor vehicles"
+  },
+  {
+   "htsno": "8414.59.65.60",
+   "hts8": "84145965",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Centrifugal"
+  },
+  {
+   "htsno": "8418.50.00.80",
+   "hts8": "84185000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8419.90.30.00",
+   "hts8": "84199030",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of heat exchange units"
+  },
+  {
+   "htsno": "8420.99.90.00",
+   "hts8": "84209990",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8421.21.00.00",
+   "hts8": "84212100",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "For filtering or purifying water"
+  },
+  {
+   "htsno": "8421.39.01.15",
+   "hts8": "84213901",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8421.39.01.90",
+   "hts8": "84213901",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8421.99.01.40",
+   "hts8": "84219901",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Parts of machinery and apparatus for filtering or purifying water"
+  },
+  {
+   "htsno": "8424.89.90.00",
+   "hts8": "84248990",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8424.90.90.80",
+   "hts8": "84249090",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8425.31.01.00",
+   "hts8": "84253101",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Powered by electric motor"
+  },
+  {
+   "htsno": "8431.20.00.00",
+   "hts8": "84312000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of machinery of heading 8427"
+  },
+  {
+   "htsno": "8436.80.00.90",
+   "hts8": "84368000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8436.99.00.90",
+   "hts8": "84369900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8452.10.00.90",
+   "hts8": "84521000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8473.30.11.80",
+   "hts8": "84733011",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8473.30.51.00",
+   "hts8": "84733051",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8481.90.90.20",
+   "hts8": "84819090",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Valve bodies"
+  },
+  {
+   "htsno": "8481.90.90.40",
+   "hts8": "84819090",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8483.50.90.40",
+   "hts8": "84835090",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Grooved pulleys"
+  },
+  {
+   "htsno": "8486.10.00.00",
+   "hts8": "84861000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.70"
+   ],
+   "description": "Machines and apparatus for the manufacture of boules or wafers"
+  },
+  {
+   "htsno": "8486.20.00.00",
+   "hts8": "84862000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.70"
+   ],
+   "description": "Machines and apparatus for the manufacture of semiconductor devices or of electronic integrated circuits"
+  },
+  {
+   "htsno": "8486.40.00.30",
+   "hts8": "84864000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.70"
+   ],
+   "description": "For lifting, handling, loading or unloading of boules, wafers, semiconductor devices, electronic integrated circuits and flat panel displays"
+  },
+  {
+   "htsno": "8501.10.40.20",
+   "hts8": "85011040",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "AC"
+  },
+  {
+   "htsno": "8501.10.40.60",
+   "hts8": "85011040",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8501.10.60.80",
+   "hts8": "85011060",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8501.31.20.00",
+   "hts8": "85013120",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Exceeding 37.5 W but not exceeding 74.6 W"
+  },
+  {
+   "htsno": "8501.31.40.00",
+   "hts8": "85013140",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Exceeding 74.6 W but not exceeding 735 W"
+  },
+  {
+   "htsno": "8501.40.40.20",
+   "hts8": "85014040",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Gear motors"
+  },
+  {
+   "htsno": "8501.40.40.40",
+   "hts8": "85014040",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8501.51.40.40",
+   "hts8": "85015140",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8501.53.80.40",
+   "hts8": "85015380",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Not exceeding 373 kW"
+  },
+  {
+   "htsno": "8504.40.95.80",
+   "hts8": "85044095",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8504.90.75.00",
+   "hts8": "85049075",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8511.40.00.00",
+   "hts8": "85114000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Starter motors and dual purpose starter-generators"
+  },
+  {
+   "htsno": "8516.29.00.90",
+   "hts8": "85162900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8524.11.90.00",
+   "hts8": "85241190",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8529.90.13.00",
+   "hts8": "85299013",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8534.00.00.20",
+   "hts8": "85340000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "With 3 or more layers of conducting materials"
+  },
+  {
+   "htsno": "8534.00.00.40",
+   "hts8": "85340000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8536.30.80.00",
+   "hts8": "85363080",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8536.50.70.00",
+   "hts8": "85365070",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Electronic AC switches consisting of optically coupled input and output circuits (insulated thyristor AC switches); electronic switches, including tem"
+  },
+  {
+   "htsno": "8536.90.40.00",
+   "hts8": "85369040",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Terminals, electrical splices and electrical couplings; wafer probers"
+  },
+  {
+   "htsno": "8537.10.91.70",
+   "hts8": "85371091",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8543.70.45.00",
+   "hts8": "85437045",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8543.70.91.00",
+   "hts8": "85437091",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Digital signal processing apparatus capable of connecting to a wired or wireless network for the mixing of sound"
+  },
+  {
+   "htsno": "8543.70.98.60",
+   "hts8": "85437098",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8544.42.20.00",
+   "hts8": "85444220",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of a kind used for telecommunications"
+  },
+  {
+   "htsno": "8544.42.90.90",
+   "hts8": "85444290",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "8607.21.10.00",
+   "hts8": "86072110",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "For vehicles of heading 8605 or 8606"
+  },
+  {
+   "htsno": "8708.40.75.70",
+   "hts8": "87084075",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Steel forgings"
+  },
+  {
+   "htsno": "8711.10.00.00",
+   "hts8": "87111000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "With internal combustion piston engine of a cylinder capacity not exceeding 50 cc"
+  },
+  {
+   "htsno": "8716.40.00.00",
+   "hts8": "87164000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other trailers and semi-trailers"
+  },
+  {
+   "htsno": "9004.90.00.10",
+   "hts8": "90049000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Safety glasses or safety goggles"
+  },
+  {
+   "htsno": "9004.90.00.90",
+   "hts8": "90049000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9005.10.00.40",
+   "hts8": "90051000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other prism binoculars"
+  },
+  {
+   "htsno": "9015.80.80.80",
+   "hts8": "90158080",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9018.11.90.00",
+   "hts8": "90181190",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9018.12.00.00",
+   "hts8": "90181200",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Ultrasonic scanning apparatus"
+  },
+  {
+   "htsno": "9018.19.95.30",
+   "hts8": "90181995",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Basal metabolism and blood pressure apparatus"
+  },
+  {
+   "htsno": "9018.19.95.50",
+   "hts8": "90181995",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other apparatus"
+  },
+  {
+   "htsno": "9018.19.95.60",
+   "hts8": "90181995",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Parts and accessories"
+  },
+  {
+   "htsno": "9018.90.30.00",
+   "hts8": "90189030",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Anesthetic instruments and appliances and parts and accessories thereof"
+  },
+  {
+   "htsno": "9018.90.60.00",
+   "hts8": "90189060",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Electro-surgical instruments and appliances, other than extracorporeal shock wave lithotripters; all the foregoing and parts and accessories thereof"
+  },
+  {
+   "htsno": "9022.12.00.00",
+   "hts8": "90221200",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Computed tomography apparatus"
+  },
+  {
+   "htsno": "9022.14.00.00",
+   "hts8": "90221400",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other, for medical, surgical or veterinary uses"
+  },
+  {
+   "htsno": "9022.90.40.00",
+   "hts8": "90229040",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of X-ray tubes"
+  },
+  {
+   "htsno": "9022.90.60.00",
+   "hts8": "90229060",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of apparatus based on the use of X-rays"
+  },
+  {
+   "htsno": "9025.19.80.10",
+   "hts8": "90251980",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Infrared thermometers of a kind described in statistical note 2 of this chapter"
+  },
+  {
+   "htsno": "9025.19.80.20",
+   "hts8": "90251980",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9025.19.80.85",
+   "hts8": "90251980",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9027.10.20.00",
+   "hts8": "90271020",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Electrical"
+  },
+  {
+   "htsno": "9030.90.46.00",
+   "hts8": "90309046",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9032.10.00.30",
+   "hts8": "90321000",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Designed for wall mounting"
+  },
+  {
+   "htsno": "9401.61.60.11",
+   "hts8": "94016160",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other household"
+  },
+  {
+   "htsno": "9401.71.00.31",
+   "hts8": "94017100",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9401.79.00.35",
+   "hts8": "94017900",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9401.91.15.00",
+   "hts8": "94019115",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Of seats of a kind used for motor vehicles"
+  },
+  {
+   "htsno": "9401.91.90.90",
+   "hts8": "94019190",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9401.99.10.85",
+   "hts8": "94019910",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other"
+  },
+  {
+   "htsno": "9403.99.50.05",
+   "hts8": "94039950",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "For toddler beds, cribs, bassinets and cradles"
+  },
+  {
+   "htsno": "9404.90.10.60",
+   "hts8": "94049010",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other fill (369)"
+  },
+  {
+   "htsno": "9404.90.10.90",
+   "hts8": "94049010",
+   "level": "10-digit",
+   "exclusion_heading": [
+    "9903.88.69"
+   ],
+   "description": "Other (369)"
+  }
+ ]
+}

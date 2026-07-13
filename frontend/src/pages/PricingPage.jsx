@@ -3,9 +3,58 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import LeadForm from '../components/LeadForm'
-import { usePageTitle } from '../lib/usePageTitle'
+import { usePageMeta } from '../lib/usePageMeta'
 
+// Broker-first ordering: the channel tiers lead, the importer self-serve
+// lane follows. The $795 audit-only tier exists to close the $349→$1,750
+// dead zone competitors' ~$749 classification-only tiers anchor into.
 const TIERS = [
+  {
+    name: 'Broker Audit',
+    price: '$795',
+    period: '/mo',
+    subtitle: 'For brokerage firms — audit-only, your license files',
+    features: [
+      'Batch portfolio scanning (ACE ES-003 CSV/Excel in)',
+      'SPI-aware screen — never flags programs you claimed',
+      'Per-entry protest windows from liquidation dates',
+      'Remedy-routed drafts: §1514, PSC, 1520(d)',
+      'Verified findings + API key for your office',
+      'No success fee — recovery revenue is yours',
+    ],
+    cta: 'lead',
+    highlight: true,
+  },
+  {
+    name: 'Enterprise / Broker+',
+    price: 'from $1,750',
+    period: '/mo',
+    subtitle: 'For brokerages and high-volume importers',
+    features: [
+      'Unlimited entries and seats',
+      'White-label remedy drafts',
+      'Client workspaces + API access',
+      'Dedicated licensed-broker review tier',
+      'Optional 8% success fee on managed recoveries',
+    ],
+    cta: 'lead',
+    highlight: false,
+  },
+  {
+    name: 'Pro',
+    price: '$349',
+    period: '/mo',
+    subtitle: 'Self-serve for importers · $299/mo billed annually',
+    features: [
+      '300 entries per month',
+      '3 seats',
+      'Full verified findings',
+      '3 remedy packages/mo, then $149 each',
+      'Full-catalog rate alerts',
+    ],
+    cta: 'lead',
+    highlight: false,
+  },
   {
     name: 'Free',
     price: '$0',
@@ -18,37 +67,6 @@ const TIERS = [
       'Landed-cost calculator',
     ],
     cta: 'free',
-    highlight: false,
-  },
-  {
-    name: 'Pro',
-    price: '$349',
-    period: '/mo',
-    subtitle: '$299/mo billed annually',
-    features: [
-      '300 entries per month',
-      '3 seats',
-      'Full verified findings',
-      '3 §1514 protest packages/mo, then $149 each',
-      'Full-catalog rate alerts',
-    ],
-    cta: 'lead',
-    highlight: true,
-  },
-  {
-    name: 'Enterprise / Broker',
-    price: 'from $1,750',
-    period: '/mo',
-    subtitle: 'For brokerages and high-volume importers',
-    features: [
-      'Unlimited entries and seats',
-      'Bulk client-portfolio scanning',
-      'White-label protest drafts',
-      'API access',
-      'Optional 8% success fee on managed recoveries (10% on Pro)',
-      'Dedicated licensed-broker review tier',
-    ],
-    cta: 'lead',
     highlight: false,
   },
 ]
@@ -65,11 +83,6 @@ function TierCard({ tier }) {
         position: 'relative',
       }}
     >
-      {tier.highlight && (
-        <span style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--ledger)', color: 'var(--sheet)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, padding: '3px 14px', borderRadius: 'var(--radius-sm)', letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-          MOST POPULAR
-        </span>
-      )}
       <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 6 }}>{tier.name}</div>
       <div style={{ marginBottom: 4 }}>
         <span style={{ fontFamily: 'var(--font-serif)', fontSize: 34, fontWeight: 700, color: 'var(--slate-900)', letterSpacing: '-1px' }}>{tier.price}</span>
@@ -99,7 +112,7 @@ function TierCard({ tier }) {
 }
 
 export default function PricingPage() {
-  usePageTitle('Pricing')
+  usePageMeta({ title: 'Pricing', description: 'Published, flat pricing: free HTS lookup, $349 Pro for importers, $795 Broker Audit, Enterprise from $1,750. No demo call required.', path: '/pricing' })
   return (
     <div style={{ minHeight: '100vh', background: 'var(--paper)', display: 'flex', flexDirection: 'column' }}>
       <Navbar />

@@ -64,7 +64,8 @@ Demo responses are the built-in demo payloads passed through the same verifier, 
   "verification": {
     "source": "USITC HTS 2026 (29,755 codes)",
     "verified_count": 3,
-    "total_count": 4
+    "total_count": 4,
+    "suppressed_count": 1
   },
   "meta": {
     "demo": false,
@@ -86,6 +87,7 @@ Field semantics:
 | `total_savings` | Sum of **verified** savings only, recomputed server-side |
 | `protest_letter` | Always present; generated **after** verification, so it only contains verified numbers |
 | `verification` | Always present on 200 |
+| `verification.suppressed_count` | Findings dropped because the suggested code shares the current code's 8-digit subheading with an identical effective rate (same code reformatted / statistical-suffix shuffle — nothing to protest) |
 | `meta` | Always present on 200; `demo` is `true` iff served from `demo_id` mock data |
 
 ### Errors
@@ -394,3 +396,51 @@ GET /api/hts-search?q=wooden+furniture&limit=25
 | Status | Body |
 |---|---|
 | 400 | `{"error": "Query must be at least 2 characters", "results": []}` |
+
+---
+
+## v3.1 additions (July 2026) — remedy routing, entry facts, ES-003 fields
+
+All changes below are **additive and backward compatible**: existing requests keep working; new fields are optional.
+
+### POST /api/analyze — optional entry facts
+
+Accepts three optional fields (form fields with a file upload, or JSON keys with `text`):
+
+| Field | Example | Effect |
+|---|---|---|
+| `entry_date` | `2025-09-01` | Enables the 19 U.S.C. 1520(d) one-year FTA window and the PSC 300-day window |
+| `liquidation_status` | `liquidated` \| `not_liquidated` | Selects the classification vehicle: §1514 protest vs ACE PSC |
+| `liquidation_date` | `2026-06-01` | Computes the real §1514 deadline (liquidation + 180 days) |
+
+The response gains a `remedy_summary` block and the letter adapts to it (PSC request when unliquidated; expired-window advisory when the 180-day clock has run; §1514 protest with the computed deadline otherwise):
+
+```json
+"remedy_summary": {
+  "liquidation_status": "liquidated",
+  "classification_vehicle": "1514",
+  "deadlines": {"psc": null, "protest_1514": "2026-11-28", "fta_1520d": "2026-09-01"},
+  "notes": ["..."]
+}
+```
+
+Per-finding `remedy` values: `"1514"` (reclassification, protestable), `"1520d"` (unclaimed FTA preference — carved out of the protest into a 1520(d) advisory block), or `null`.
+
+### POST /api/analyze-batch — ACE ES-003 row fields
+
+Each row additionally accepts: `entry_no`, `line_no`, `entry_date`, `liquidation_date`, `liquidation_status`, `duty_paid`, `spi_claimed`. Effects:
+
+- `spi_claimed` present → the row is **never** flagged `missed_fta` (the program was claimed).
+- `liquidation_date` → per-row `protest_by`, `protest_days_left`, `protest_window_open`.
+- `liquidation_status` → per-row `remedy_vehicle`: `"psc"` (unliquidated) or `"1514"` (liquidated).
+- `duty_paid` + `declared_value` → savings computed from actual dollars paid instead of schedule deltas.
+- Origins may be ISO codes (`CN`, `MX`, `TR`) or names in any common spelling; the normalized value is echoed as `origin_normalized`.
+- Rows whose rate is a specific/compound duty (e.g. ¢/kg) now return `confidence: "low"` with an explicit "NOT quantified" note instead of a silent `high`.
+
+### Section 301 — line level
+
+Section 301 rates are now applied at **line level** from the USITC "China Tariffs" table (10,391 covered 8-digit subheadings incl. all four-year-review increases in force July 2026; dataset: `backend/data/section301.json`, provenance in `section301_REPORT.md`). Codes whose coverage is limited to specific statistical lines are flagged as estimates in `verification_note` / landed-cost `s301_note`. Suspended List 4B codes correctly carry **no** additional duty.
+
+### Auth (pilot)
+
+Setting `TARIFFCHECK_API_KEYS` (comma-separated `key:FirmName` pairs) enables `X-API-Key` authentication: valid keys bypass the anonymous per-IP rate limit and usage is logged per firm. Setting `ALLOWED_ORIGINS` pins CORS. `LEADS_WEBHOOK_URL` forwards `/api/leads` submissions to a durable inbox; the leads endpoint also accepts `firm`, `entries_per_month`, `software` and a `website` honeypot field.

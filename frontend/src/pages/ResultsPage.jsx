@@ -86,6 +86,7 @@ export default function ResultsPage() {
     verification = null,
     meta = null,
     protest_deadline_note = '',
+    remedy_summary = null,
   } = data
 
   const isDemo = Boolean(meta && meta.demo)
@@ -93,6 +94,7 @@ export default function ResultsPage() {
   const itemsWithSavings = findings.filter(f => f.savings > 0)
   const verifiedCount = verification ? verification.verified_count : findings.filter(f => f.verified === true).length
   const totalCount = verification ? verification.total_count : findings.length
+  const suppressedCount = verification?.suppressed_count || 0
 
   function copyLetter() {
     navigator.clipboard.writeText(protest_letter).then(() => {
@@ -161,9 +163,40 @@ export default function ResultsPage() {
               ✓ {verifiedCount} of {totalCount} findings verified against USITC HTS 2026
             </span>
           )}
-          <span className="summary-chip amber">{protest_deadline_note || '180 days from liquidation to file a protest'}</span>
+          {suppressedCount > 0 && (
+            <span className="summary-chip">
+              {suppressedCount} no-impact suggestion{suppressedCount !== 1 ? 's' : ''} filtered (same subheading, same rate)
+            </span>
+          )}
+          <span className="summary-chip amber">
+            {remedy_summary?.deadlines?.protest_1514
+              ? `Protest deadline: ${remedy_summary.deadlines.protest_1514} (180 days from liquidation)`
+              : remedy_summary?.classification_vehicle === 'psc'
+                ? `Not yet liquidated — file as ACE PSC${remedy_summary?.deadlines?.psc ? ` by ${remedy_summary.deadlines.psc}` : ''}`
+                : (protest_deadline_note || '180 days from liquidation to file a protest')}
+          </span>
           {isDemo && <span className="badge-sample" style={{ marginLeft: 'auto' }}>Sample data</span>}
         </div>
+
+        {/* Remedy routing: which legal vehicle applies to THIS entry */}
+        {remedy_summary && remedy_summary.notes && remedy_summary.notes.length > 0 && (
+          <div className="disclaimer" role="note" style={{ marginTop: 12 }}>
+            <strong style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Remedy routing — {remedy_summary.classification_vehicle === 'psc'
+                ? 'ACE Post Summary Correction'
+                : remedy_summary.classification_vehicle === '1514_expired'
+                  ? 'protest window may be closed'
+                  : remedy_summary.classification_vehicle === '1514'
+                    ? '§1514 protest'
+                    : 'liquidation status needed'}
+            </strong>
+            <ul style={{ margin: '6px 0 0', paddingLeft: 18 }}>
+              {remedy_summary.notes.map((n, i) => (
+                <li key={i} style={{ marginTop: 4 }}>{n}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Savings Banner */}
         <div className="savings-banner">
