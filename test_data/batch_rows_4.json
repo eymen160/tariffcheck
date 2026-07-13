@@ -1,0 +1,685 @@
+{
+  "rows": [
+    {
+      "row_id": 301,
+      "hts_code": "7013.99.9090",
+      "description": "glass bird ornaments",
+      "declared_value": 4480.0
+    },
+    {
+      "row_id": 302,
+      "hts_code": "7010.90.50",
+      "description": "Revocation of NY N036984, NY N110556, NY N094595, NY N266863, NY N260440, HQ 950426, and HQ 957982; tariff classification of glassware imported with lid; household decorative article.",
+      "declared_value": 49565.0
+    },
+    {
+      "row_id": 303,
+      "hts_code": "7013.99.9090",
+      "description": "decorative glass box",
+      "declared_value": 22400.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 304,
+      "hts_code": "9403.20.0050",
+      "description": "Revocation of NY N310710; Classification of Metal Storage Lockers and Cabinets for Garage Use",
+      "declared_value": 67056.0
+    },
+    {
+      "row_id": 305,
+      "hts_code": "8306.29.0000",
+      "description": "decorative vase",
+      "declared_value": 56742.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 306,
+      "hts_code": "7013.42.4000",
+      "description": "glass water bottle with aluminum shell",
+      "declared_value": 11050.0
+    },
+    {
+      "row_id": 307,
+      "hts_code": "7013.49.2090",
+      "description": "glass container",
+      "declared_value": 54264.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 308,
+      "hts_code": "9403.60.80",
+      "description": "Tariff classification of fireplace mantels with built-in electric fireplaces",
+      "declared_value": 24247.3,
+      "origin": "China"
+    },
+    {
+      "row_id": 309,
+      "hts_code": "7009.92.1090",
+      "description": "two framed glass mirrors",
+      "declared_value": 63531.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 310,
+      "hts_code": "8424.20.1000",
+      "description": "three-piece oil pump and vinegar bottle set",
+      "declared_value": 39225.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 311,
+      "hts_code": "7013.99.2000",
+      "description": "glass nail file",
+      "declared_value": 25984.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 312,
+      "hts_code": "7013.99.5090",
+      "description": "four decorative glass pumpkins",
+      "declared_value": 40768.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 313,
+      "hts_code": "7013.99.5090",
+      "description": "mirrored vanity tray",
+      "declared_value": 51520.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 314,
+      "hts_code": "3926.90.9989",
+      "description": "molded plastic handbag",
+      "declared_value": 8172,
+      "origin": "China"
+    },
+    {
+      "row_id": 315,
+      "hts_code": "6307.90.9891",
+      "description": "embroidered bag charm",
+      "declared_value": 10554.3,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 316,
+      "hts_code": "4202.32.1000",
+      "description": "passport wallets",
+      "declared_value": 60575,
+      "origin": "China"
+    },
+    {
+      "row_id": 317,
+      "hts_code": "4202.22.8100",
+      "description": "children\u2019s novelty handbags",
+      "declared_value": 44650.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 318,
+      "hts_code": "4202.32.1000",
+      "description": "identification card case",
+      "declared_value": 40412,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 319,
+      "hts_code": "6307.90.9891",
+      "description": "textile bag charms",
+      "declared_value": 10945.2,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 320,
+      "hts_code": "6307.90.9891",
+      "description": "replaceable handbag strap",
+      "declared_value": 11466.4,
+      "origin": "China"
+    },
+    {
+      "row_id": 321,
+      "hts_code": "4202.32.9300",
+      "description": "lipstick case",
+      "declared_value": 40225,
+      "origin": "China"
+    },
+    {
+      "row_id": 322,
+      "hts_code": "7326.20.0090",
+      "description": "rings",
+      "declared_value": 26666.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 323,
+      "hts_code": "7117.90.9000",
+      "description": "handbag charms",
+      "declared_value": 46375.0,
+      "origin": "Bangladesh"
+    },
+    {
+      "row_id": 324,
+      "hts_code": "4202.22.1500",
+      "description": "handbags",
+      "declared_value": 47329.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 325,
+      "hts_code": "4202.32.9300",
+      "description": "coin purse with a keyring",
+      "declared_value": 5452,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 326,
+      "hts_code": "4202.92.3131",
+      "description": "tote bag",
+      "declared_value": 4945.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 327,
+      "hts_code": "7326.90.3500",
+      "description": "shot glass and flask sets",
+      "declared_value": 41715.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 328,
+      "hts_code": "4202.31.6000",
+      "description": "card holder",
+      "declared_value": 2327,
+      "origin": "China"
+    },
+    {
+      "row_id": 329,
+      "hts_code": "4202.32.1000",
+      "description": "coin purse with charms",
+      "declared_value": 10861,
+      "origin": "Indonesia"
+    },
+    {
+      "row_id": 330,
+      "hts_code": "4202.32.9300",
+      "description": "coin purse with a keyring",
+      "declared_value": 40269,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 331,
+      "hts_code": "4202.22.1500",
+      "description": "handbag with a removable charm",
+      "declared_value": 26790.0,
+      "origin": "Bangladesh"
+    },
+    {
+      "row_id": 332,
+      "hts_code": "7117.90.9000",
+      "description": "origin",
+      "declared_value": 29150.0
+    },
+    {
+      "row_id": 333,
+      "hts_code": "6307.90.98",
+      "description": "Tariff Classification of Children\u2019s Mats",
+      "declared_value": 19545.0
+    },
+    {
+      "row_id": 334,
+      "hts_code": "7116.20.0500",
+      "description": "two bag charms",
+      "declared_value": 31108.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 335,
+      "hts_code": "4202.32.1000",
+      "description": "two magnetic card cases",
+      "declared_value": 2274,
+      "origin": "China"
+    },
+    {
+      "row_id": 336,
+      "hts_code": "5609.00.3000",
+      "description": "Classification and country of origin determination for a bag charm; 19 CFR 102.21(c)(2); tariff shift",
+      "declared_value": 17940.0
+    },
+    {
+      "row_id": 337,
+      "hts_code": "7326.90.3500",
+      "description": "pocket flask and a pocket tool",
+      "declared_value": 11330.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 338,
+      "hts_code": "7018.90.5000",
+      "description": "two glass beaded handbags",
+      "declared_value": 39159.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 339,
+      "hts_code": "7117.19.9000",
+      "description": "bag charm",
+      "declared_value": 46720.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 340,
+      "hts_code": "4202.22.8100",
+      "description": "four handbags",
+      "declared_value": 65189.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 341,
+      "hts_code": "4202.21.6000",
+      "description": "five handbags",
+      "declared_value": 49158.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 342,
+      "hts_code": "4202.32.1000",
+      "description": "Affirmation of NY N312428; tariff classification of a coin purse and school supplies",
+      "declared_value": 2695,
+      "origin": "China"
+    },
+    {
+      "row_id": 343,
+      "hts_code": "7113.19.5091",
+      "description": "lapel pins",
+      "declared_value": 42992.48,
+      "origin": "China"
+    },
+    {
+      "row_id": 344,
+      "hts_code": "4420.90.8000",
+      "description": "wooden bookends",
+      "declared_value": 60529,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 345,
+      "hts_code": "3926.90.3500",
+      "description": "bead set",
+      "declared_value": 8434,
+      "origin": "China"
+    },
+    {
+      "row_id": 346,
+      "hts_code": "4420.90.8000",
+      "description": "Dead ofrenda altar",
+      "declared_value": 15663,
+      "origin": "China"
+    },
+    {
+      "row_id": 347,
+      "hts_code": "8409.91.5085",
+      "description": "tensioner assembly",
+      "declared_value": 19627.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 348,
+      "hts_code": "7307.19.3060",
+      "description": "ductile fitting",
+      "declared_value": 12753.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 349,
+      "hts_code": "9817.00.96",
+      "description": "Eligibility for duty-free treatment under Nairobi Protocol concerning the Neria\u2122 Guard Infusion Set",
+      "declared_value": 5010,
+      "origin": "Denmark"
+    },
+    {
+      "row_id": 350,
+      "hts_code": "3004.39.0055",
+      "description": "Testosterone Gel in dosage form",
+      "declared_value": 4693.64,
+      "origin": "China"
+    },
+    {
+      "row_id": 351,
+      "hts_code": "8206.00.0000",
+      "description": "hand tool set",
+      "declared_value": 10133
+    },
+    {
+      "row_id": 352,
+      "hts_code": "8479.89.9599",
+      "description": "portable oil extractor and collection system",
+      "declared_value": 21793.2,
+      "origin": "Spain"
+    },
+    {
+      "row_id": 353,
+      "hts_code": "3303.00.3000",
+      "description": "Item No. 102608-BCR Whipped Vanilla Fragrance Mist and Item No. 104375-BCR Cherry Blossom Fragrance Mist",
+      "declared_value": 34750.0
+    },
+    {
+      "row_id": 354,
+      "hts_code": "8409.91.5085",
+      "description": "timing chain tensioning assembly",
+      "declared_value": 20660.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 355,
+      "hts_code": "8409.91.5085",
+      "description": "hydraulic lash adjuster and roller rocker arm assembly",
+      "declared_value": 23759.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 356,
+      "hts_code": "9506.69.6020",
+      "description": "training balls",
+      "declared_value": 66240.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 357,
+      "hts_code": "8481.30.9000",
+      "description": "valve",
+      "declared_value": 8651,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 358,
+      "hts_code": "8481.80.9045",
+      "description": "temperature control assembly",
+      "declared_value": 43104.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 359,
+      "hts_code": "8529.90.8700",
+      "description": "camera parts imported separately and imported together as a video scope camera",
+      "declared_value": 10334
+    },
+    {
+      "row_id": 360,
+      "hts_code": "8518.30.2000",
+      "description": "headphone assembly",
+      "declared_value": 59228.0,
+      "origin": "Philippines"
+    },
+    {
+      "row_id": 361,
+      "hts_code": "8544.60.2000",
+      "description": "side mount electrical conductor assemblies",
+      "declared_value": 39765.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 362,
+      "hts_code": "8544.42.9090",
+      "description": "receptacle subassembly",
+      "declared_value": 46353.6,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 363,
+      "hts_code": "8544.49.3080",
+      "description": "data cables",
+      "declared_value": 67414.0,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 364,
+      "hts_code": "3910.00.0000",
+      "description": "silicone grease",
+      "declared_value": 37510.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 365,
+      "hts_code": "6106.20.2010",
+      "description": "women\u2019s upper body garment",
+      "declared_value": 20597.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 366,
+      "hts_code": "9401.79.0015",
+      "description": "seats",
+      "declared_value": 46200.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 367,
+      "hts_code": "9401.79.0015",
+      "description": "combination collapsible seat and collapsible wagon",
+      "declared_value": 53130.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 368,
+      "hts_code": "9506.99.6080",
+      "description": "climbing torque nuts",
+      "declared_value": 24397.0,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 369,
+      "hts_code": "6114.30.3070",
+      "description": "girl\u2019s single leg legging",
+      "declared_value": 48347.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 370,
+      "hts_code": "6402.19.90",
+      "description": "Revocation of NY N336132; Tariff Classification of Men\u2019s Footwear",
+      "declared_value": 3780.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 371,
+      "hts_code": "3924.10.4000",
+      "description": "plastic water bottle",
+      "declared_value": 68757.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 372,
+      "hts_code": "9305.20.8060",
+      "description": "muzzle brakes",
+      "declared_value": 35714.0,
+      "origin": "Sweden"
+    },
+    {
+      "row_id": 373,
+      "hts_code": "6114.30.3070",
+      "description": "woman\u2019s knit garment",
+      "declared_value": 66942.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 374,
+      "hts_code": "9305.10.2080",
+      "description": "unfinished firearm suppressor blanks",
+      "declared_value": 48298.5,
+      "origin": "New Zealand"
+    },
+    {
+      "row_id": 375,
+      "hts_code": "6206.90.0040",
+      "description": "woman\u2019s blouse",
+      "declared_value": 61125.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 376,
+      "hts_code": "3902.90.00",
+      "description": "Application for Further Review of Protest No. 3901-18-100410; Classification of Styrene-Isoprene Block Copolymer",
+      "declared_value": 65205.0
+    },
+    {
+      "row_id": 377,
+      "hts_code": "9620.00.7000",
+      "description": "streaming set",
+      "declared_value": 10961,
+      "origin": "China"
+    },
+    {
+      "row_id": 378,
+      "hts_code": "6106.20.2010",
+      "description": "women\u2019s blouses",
+      "declared_value": 63707.0,
+      "origin": "Jordan"
+    },
+    {
+      "row_id": 379,
+      "hts_code": "8414.80.1685",
+      "description": "air compressor",
+      "declared_value": 30145.5,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 380,
+      "hts_code": "4202.92.3131",
+      "description": "duffel bag",
+      "declared_value": 69230.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 381,
+      "hts_code": "9404.90.2090",
+      "description": "stadium cushion/blanket combination",
+      "declared_value": 66980.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 382,
+      "hts_code": "6307.90.9891",
+      "description": "Affirmation of NY N323080; Tariff Classification and USMCA Eligibility of a Roll-up Blanket",
+      "declared_value": 18242.0
+    },
+    {
+      "row_id": 383,
+      "hts_code": "9506.99.6080",
+      "description": "\u201cPickleball Retriever Tube\u201d",
+      "declared_value": 58238.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 384,
+      "hts_code": "6114.30.2010",
+      "description": "women\u2019s lined bodysuit",
+      "declared_value": 26033.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 385,
+      "hts_code": "8207.90.1500",
+      "description": "multifunctional bit",
+      "declared_value": 40904,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 386,
+      "hts_code": "7307.19.9080",
+      "description": "Application for Further Review of Protest No. 200617101281; B&K, LLC",
+      "declared_value": 16350.0
+    },
+    {
+      "row_id": 387,
+      "hts_code": "8467.99.0190",
+      "description": "backing plate adapter",
+      "declared_value": 26979.0,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 388,
+      "hts_code": "7326.90.8688",
+      "description": "segmented screw clamps",
+      "declared_value": 45835.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 389,
+      "hts_code": "4016.93.5050",
+      "description": "well seal kit",
+      "declared_value": 39237.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 390,
+      "hts_code": "4821.10.2000",
+      "description": "paper labels",
+      "declared_value": 34848.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 391,
+      "hts_code": "9403.60.8040",
+      "description": "tariff classification, United States-Mexico-Canada Trade Agreement (USMCA), and country of origin of wooden furniture.",
+      "declared_value": 56682.0
+    },
+    {
+      "row_id": 392,
+      "hts_code": "7326.90.8688",
+      "description": "Aeolien Vibration Damper",
+      "declared_value": 41715.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 393,
+      "hts_code": "9031.80.8085",
+      "description": "origin, and eligibility under the United States-Mexico-Canada Agreement (USMCA) of a dynamometer",
+      "declared_value": 15532.4
+    },
+    {
+      "row_id": 394,
+      "hts_code": "7318.21.0090",
+      "description": "stainless-steel washer",
+      "declared_value": 44835.0,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 395,
+      "hts_code": "4911.10.0080",
+      "description": "tariff classification and United States-Mexico-Canada Agreement (USMCA) eligibility of advertising signage",
+      "declared_value": 13314.0
+    },
+    {
+      "row_id": 396,
+      "hts_code": "9505.90.6000",
+      "description": "costume",
+      "declared_value": 62328.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 397,
+      "hts_code": "3926.90.9989",
+      "description": "classification, marking, country of origin, and United States-Mexico-Canada Trade Agreement (\u201cUSMCA\u201d) eligibility of a plastic clamping tool.",
+      "declared_value": 25883
+    },
+    {
+      "row_id": 398,
+      "hts_code": "9505.90.6000",
+      "description": "costume",
+      "declared_value": 67032.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 399,
+      "hts_code": "8302.10.3000",
+      "description": "Request for Further Review of Protest No. 1803-25-102577; Tariff Classification of Certain Hinges",
+      "declared_value": 57475.0
+    },
+    {
+      "row_id": 400,
+      "hts_code": "9019.10.20",
+      "description": "Revocation of NY N334409 (August 17, 2023); NY 817807 (January 25, 1996); and NY 817397 (January 11, 1996); Classification of \u201cSpa Covers\u201d and \u201cSpa Cover Lifters\u201d",
+      "declared_value": 59938.0
+    }
+  ]
+}

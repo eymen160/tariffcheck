@@ -1,0 +1,690 @@
+{
+  "rows": [
+    {
+      "row_id": 1,
+      "hts_code": "3926.20.9050",
+      "description": "boot band",
+      "declared_value": 10918.5,
+      "origin": "China"
+    },
+    {
+      "row_id": 2,
+      "hts_code": "6402.19.9031",
+      "description": "baseball shoe",
+      "declared_value": 36000.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 3,
+      "hts_code": "6402.99.9005",
+      "description": "footwear",
+      "declared_value": 37296.0,
+      "origin": "Slovenia"
+    },
+    {
+      "row_id": 4,
+      "hts_code": "6406.10.6500",
+      "description": "leather boot upper",
+      "declared_value": 61656.0,
+      "origin": "Dominican Republic"
+    },
+    {
+      "row_id": 5,
+      "hts_code": "3924.90.5650",
+      "description": "plastic shoe tree",
+      "declared_value": 9972.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 6,
+      "hts_code": "6404.11.9050",
+      "description": "woman\u2019s cycling shoe",
+      "declared_value": 18002.6,
+      "origin": "China"
+    },
+    {
+      "row_id": 7,
+      "hts_code": "6404.11.8590",
+      "description": "various footwear styles",
+      "declared_value": 44088.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 8,
+      "hts_code": "5907.00.6000",
+      "description": "two leather flocked fabrics",
+      "declared_value": 40110.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 9,
+      "hts_code": "6402.19.9031",
+      "description": "man\u2019s golf shoe",
+      "declared_value": 55800.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 10,
+      "hts_code": "6307.90.9891",
+      "description": "various footwear styles",
+      "declared_value": 39090.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 11,
+      "hts_code": "6406.20.0000",
+      "description": "classification, country of origin, and marking of four DIY Crochet Shoe Kits",
+      "declared_value": 52503.0
+    },
+    {
+      "row_id": 12,
+      "hts_code": "6404.19.3630",
+      "description": "various footwear styles",
+      "declared_value": 54264.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 13,
+      "hts_code": "6404.19.3760",
+      "description": "various footwear styles",
+      "declared_value": 53312.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 14,
+      "hts_code": "8308.90.6000",
+      "description": "steel strapping hardware",
+      "declared_value": 43171.0,
+      "origin": "Poland"
+    },
+    {
+      "row_id": 15,
+      "hts_code": "9817.00.96",
+      "description": "Articles for the handicapped; Subheading 9817.00.96; Elevate Sstep Foot Drop Sock",
+      "declared_value": 40695
+    },
+    {
+      "row_id": 16,
+      "hts_code": "9021.39.0000",
+      "description": "foot prostheses and their individual components",
+      "declared_value": 19162.24,
+      "origin": "Sweden"
+    },
+    {
+      "row_id": 17,
+      "hts_code": "6405.90.9060",
+      "description": "waterproof boot",
+      "declared_value": 44250.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 18,
+      "hts_code": "6402.99.8031",
+      "description": "tariff classification and status under the Dominican Republic-Central America-United States Free Trade Agreement (DR-CAFTA), of men\u2019s footwear produced in El Salvador.",
+      "declared_value": 10101.0
+    },
+    {
+      "row_id": 19,
+      "hts_code": "6406.20.0000",
+      "description": "classification, country of origin, marking, and trade program eligibility of a DIY Crochet Shoe Kit",
+      "declared_value": 57276.0
+    },
+    {
+      "row_id": 20,
+      "hts_code": "5903.10.20",
+      "description": "Application for Further Review of Protest No. 1704-22-105466; Tariff Classification of Plastic-Coated Textile Fabrics",
+      "declared_value": 33497.0
+    },
+    {
+      "row_id": 21,
+      "hts_code": "6404.11.9020",
+      "description": "man\u2019s sneaker",
+      "declared_value": 56947.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 22,
+      "hts_code": "9802.00.5060",
+      "description": "-importation into the United States provided the documentary requirements of 19 CFR 181.64 are satisfied. The duties cited above are current as of this ruling\u2019s issuance. Duty rates are provided for y",
+      "declared_value": 2740
+    },
+    {
+      "row_id": 23,
+      "hts_code": "3926.90.99",
+      "description": "Application for Further Review of Protest No. 5301-23-108958; Classification of Certain Restroom Dispenser Assemblies and Air Freshener Dispenser Covers",
+      "declared_value": 15091
+    },
+    {
+      "row_id": 24,
+      "hts_code": "6404.19.9090",
+      "description": "boy\u2019s slip-on shoe",
+      "declared_value": 48552.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 25,
+      "hts_code": "6402.91.5050",
+      "description": "protective footwear",
+      "declared_value": 48960.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 26,
+      "hts_code": "6401.92.9060",
+      "description": "various molded footwear",
+      "declared_value": 16932.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 27,
+      "hts_code": "4420.19.0000",
+      "description": "printed wood block d\u00e9cor",
+      "declared_value": 19656.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 28,
+      "hts_code": "9406.10.0000",
+      "description": "prefabricated home structure",
+      "declared_value": 68820.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 29,
+      "hts_code": "9401.61.6011",
+      "description": "sofa sectional storage console",
+      "declared_value": 64853.6,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 30,
+      "hts_code": "8302.50.0000",
+      "description": "steel TV wall mount bracket",
+      "declared_value": 56870.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 31,
+      "hts_code": "6802.99.0090",
+      "description": "Desert Atlas stone",
+      "declared_value": 69948.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 32,
+      "hts_code": "6802.93.0010",
+      "description": "Copenhagen stone",
+      "declared_value": 37387.98,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 33,
+      "hts_code": "7608.20.0030",
+      "description": "aluminum alloy profiles, fittings, and tubes",
+      "declared_value": 8020.0,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 34,
+      "hts_code": "8302.50.0000",
+      "description": "aluminum bracket and ladder stabilizers",
+      "declared_value": 25850.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 35,
+      "hts_code": "9403.89.6015",
+      "description": "locker kits",
+      "declared_value": 40362.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 36,
+      "hts_code": "9403.91.0080",
+      "description": "table furniture component",
+      "declared_value": 22650.0,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 37,
+      "hts_code": "6802.99.0090",
+      "description": "White Spring stone",
+      "declared_value": 33634.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 38,
+      "hts_code": "8302.50.0000",
+      "description": "steel wall-mounted racks",
+      "declared_value": 61570.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 39,
+      "hts_code": "9403.99.9020",
+      "description": "metal furniture components",
+      "declared_value": 50362.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 40,
+      "hts_code": "9403.10.0040",
+      "description": "computer server cabinets returned to the United States (U.S.)",
+      "declared_value": 41736.0
+    },
+    {
+      "row_id": 41,
+      "hts_code": "9403.60.8093",
+      "description": "wooden furniture",
+      "declared_value": 4723.5,
+      "origin": "China"
+    },
+    {
+      "row_id": 42,
+      "hts_code": "9401.71.0011",
+      "description": "seats",
+      "declared_value": 51584.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 43,
+      "hts_code": "9403.20.0050",
+      "description": "metal furniture",
+      "declared_value": 27456.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 44,
+      "hts_code": "4420.19.0000",
+      "description": "patriotic wall signs",
+      "declared_value": 30996.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 45,
+      "hts_code": "7326.90.8688",
+      "description": "steel drainage building materials",
+      "declared_value": 29870.0,
+      "origin": "Ukraine"
+    },
+    {
+      "row_id": 46,
+      "hts_code": "6809.90.0000",
+      "description": "plaster drawer/cabinet pulls",
+      "declared_value": 42441.0,
+      "origin": "Poland"
+    },
+    {
+      "row_id": 47,
+      "hts_code": "9817.00.96",
+      "description": "Eligibility for duty-free treatment under Nairobi Protocol concerning toilet lifting device",
+      "declared_value": 8870,
+      "origin": "Malaysia"
+    },
+    {
+      "row_id": 48,
+      "hts_code": "6802.99.0090",
+      "description": "Via Lactea stone",
+      "declared_value": 36448.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 49,
+      "hts_code": "6802.99.0090",
+      "description": "Silver Grey stone",
+      "declared_value": 10854.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 50,
+      "hts_code": "4420.19.0000",
+      "description": "fiberboard d\u00e9cor items",
+      "declared_value": 37044.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 51,
+      "hts_code": "9406.90.0130",
+      "description": "tariff classification prefabricated structure",
+      "declared_value": 53213.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 52,
+      "hts_code": "9403.89.6015",
+      "description": "outdoor patio furniture",
+      "declared_value": 42966.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 53,
+      "hts_code": "9403.20.0082",
+      "description": "metal furniture",
+      "declared_value": 35904.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 54,
+      "hts_code": "9403.20.0050",
+      "description": "metal furniture",
+      "declared_value": 64416.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 55,
+      "hts_code": "6802.93.0010",
+      "description": "Branco Dunas stone",
+      "declared_value": 20309.52,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 56,
+      "hts_code": "8481.90.9085",
+      "description": "coolant manifold assembly",
+      "declared_value": 31180.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 57,
+      "hts_code": "8543.70.9860",
+      "description": "hybrid coupler",
+      "declared_value": 65412.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 58,
+      "hts_code": "9019.10.2090",
+      "description": "Classification and eligibility for duty-free treatment under Nairobi Protocol concerning certain parts of robotic medical device",
+      "declared_value": 33878.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 59,
+      "hts_code": "8505.90.7501",
+      "description": "solenoid housing and a valve stem",
+      "declared_value": 38451.0,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 60,
+      "hts_code": "8479.89.9599",
+      "description": "electric vessel fin stabilizer systems and a vessel steering system",
+      "declared_value": 4693.92,
+      "origin": "Italy"
+    },
+    {
+      "row_id": 61,
+      "hts_code": "7616.99.5190",
+      "description": "spray shield",
+      "declared_value": 18256.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 62,
+      "hts_code": "8708.99.8180",
+      "description": "cooling manifold",
+      "declared_value": 11666.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 63,
+      "hts_code": "8903.99.2110",
+      "description": "metal boat hull",
+      "declared_value": 5709.57,
+      "origin": "China"
+    },
+    {
+      "row_id": 64,
+      "hts_code": "8713.90.0060",
+      "description": "motorized wheelchair",
+      "declared_value": 49451.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 65,
+      "hts_code": "8473.30.1180",
+      "description": "PCBs for use with braille eReaders",
+      "declared_value": 60785,
+      "origin": "China"
+    },
+    {
+      "row_id": 66,
+      "hts_code": "8807.30.0030",
+      "description": "rotary geared actuator",
+      "declared_value": 62532.8,
+      "origin": "United States"
+    },
+    {
+      "row_id": 67,
+      "hts_code": "8537.20.00",
+      "description": "Tariff classification of steel cube for batteries fitted with electrical apparatus.",
+      "declared_value": 9920.0
+    },
+    {
+      "row_id": 68,
+      "hts_code": "8421.99.0180",
+      "description": "Homestyle Aspen Oxygen Concentrator",
+      "declared_value": 44428.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 69,
+      "hts_code": "8543.40.0040",
+      "description": "electric vaporizer kit and components",
+      "declared_value": 34602.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 70,
+      "hts_code": "8543.40.0040",
+      "description": "vaporizer kits and parts",
+      "declared_value": 35332.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 71,
+      "hts_code": "9811.00.60",
+      "description": "plastic demonstration unit",
+      "declared_value": 2448,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 72,
+      "hts_code": "8528.59.2500",
+      "description": "multimedia receiver",
+      "declared_value": 18839.6,
+      "origin": "Thailand"
+    },
+    {
+      "row_id": 73,
+      "hts_code": "9031.90.9195",
+      "description": "digital torpedo level body",
+      "declared_value": 62568.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 74,
+      "hts_code": "8543.70.9860",
+      "description": "programmable autonomous racecar",
+      "declared_value": 45425.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 75,
+      "hts_code": "8415.90.8045",
+      "description": "air conditioning fittings",
+      "declared_value": 33429.0,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 76,
+      "hts_code": "8708.29.5160",
+      "description": "United States-Mexico-Canada Agreement (USMCA) of an insulating panel",
+      "declared_value": 33764.0
+    },
+    {
+      "row_id": 77,
+      "hts_code": "8708.80.6590",
+      "description": "stabilizer link",
+      "declared_value": 65274.0
+    },
+    {
+      "row_id": 78,
+      "hts_code": "8481.80.9025",
+      "description": "active grille shutter",
+      "declared_value": 68248.0,
+      "origin": "Thailand"
+    },
+    {
+      "row_id": 79,
+      "hts_code": "7304.51.5060",
+      "description": "high-pressure diesel fuel injection tubes",
+      "declared_value": 39609.0,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 80,
+      "hts_code": "8708.99.8180",
+      "description": "bicycle hitch racks",
+      "declared_value": 39910.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 81,
+      "hts_code": "7306.50.5050",
+      "description": "alloy steel pipes",
+      "declared_value": 48024.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 82,
+      "hts_code": "8708.93.6000",
+      "description": "clutch",
+      "declared_value": 23984.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 83,
+      "hts_code": "8512.90.9000",
+      "description": "RE The tariff classification of automotive windshield wiper blades",
+      "declared_value": 56508.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 84,
+      "hts_code": "8708.80.6590",
+      "description": "control arms",
+      "declared_value": 36894.0
+    },
+    {
+      "row_id": 85,
+      "hts_code": "8708.80.6590",
+      "description": "steel collars",
+      "declared_value": 35002.0,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 86,
+      "hts_code": "8708.29.5160",
+      "description": "automotive components",
+      "declared_value": 61656.0,
+      "origin": "Poland"
+    },
+    {
+      "row_id": 87,
+      "hts_code": "8708.99.8180",
+      "description": "front subframe and control arms",
+      "declared_value": 32235.0,
+      "origin": "Poland"
+    },
+    {
+      "row_id": 88,
+      "hts_code": "8708.91.5000",
+      "description": "radiator, intercooler, header tank, boost pipes, and a fuel tank",
+      "declared_value": 22400.0,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 89,
+      "hts_code": "9403.20.0086",
+      "description": "metal furniture",
+      "declared_value": 21120.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 90,
+      "hts_code": "8708.80.6590",
+      "description": "steering knuckle assembly.",
+      "declared_value": 5203.0
+    },
+    {
+      "row_id": 91,
+      "hts_code": "8708.80.6590",
+      "description": "pull bars",
+      "declared_value": 47300.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 92,
+      "hts_code": "8512.20.2040",
+      "description": "LED auxiliary/driving light for motor vehicles",
+      "declared_value": 42966.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 93,
+      "hts_code": "4202.92.4500",
+      "description": "tote bag",
+      "declared_value": 33626.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 94,
+      "hts_code": "6307.90.9891",
+      "description": "Classification and eligibility under the United States-Mexico-Canada Agreement (USMCA) of retractable screen",
+      "declared_value": 37787.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 95,
+      "hts_code": "7610.10.0020",
+      "description": "adjustable aluminum door sill",
+      "declared_value": 35770.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 96,
+      "hts_code": "4421.99.9880",
+      "description": "structural timber frame kit",
+      "declared_value": 64757.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 97,
+      "hts_code": "7312.10.3012",
+      "description": "Affirmation of NY N354221; Classification of Nonalloy Steel Prestressed Concrete (PC) Strands",
+      "declared_value": 20424.0
+    },
+    {
+      "row_id": 98,
+      "hts_code": "8302.41.6080",
+      "description": "steel awning brackets",
+      "declared_value": 35244.0,
+      "origin": "Argentina"
+    },
+    {
+      "row_id": 99,
+      "hts_code": "8204.11.0060",
+      "description": "Allen keys",
+      "declared_value": 2427,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 100,
+      "hts_code": "8418.99.8050",
+      "description": "leveler nut assembly",
+      "declared_value": 37332.0,
+      "origin": "China"
+    }
+  ]
+}

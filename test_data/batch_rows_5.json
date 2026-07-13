@@ -1,0 +1,684 @@
+{
+  "rows": [
+    {
+      "row_id": 401,
+      "hts_code": "3923.21.0095",
+      "description": "polyethylene pet waste bags",
+      "declared_value": 49914.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 402,
+      "hts_code": "3921.90.1500",
+      "description": "metallized polyethylene terephthalate (PET) radiant barrier sheets",
+      "declared_value": 56406.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 403,
+      "hts_code": "4823.69.0020",
+      "description": "disposable cups",
+      "declared_value": 45687.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 404,
+      "hts_code": "8708.99.8180",
+      "description": "pet transport crates",
+      "declared_value": 8596.0,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 405,
+      "hts_code": "3920.10.0000",
+      "description": "printed and unprinted film from Columbia",
+      "declared_value": 28002.0
+    },
+    {
+      "row_id": 406,
+      "hts_code": "3920.10.0000",
+      "description": "printed and unprinted film from Columbia",
+      "declared_value": 52055.0
+    },
+    {
+      "row_id": 407,
+      "hts_code": "2106.90.9998",
+      "description": "origin, marking and status under the United States-Australia Free Trade Agreement (UAFTA) of a dietary supplement",
+      "declared_value": 12368.0
+    },
+    {
+      "row_id": 408,
+      "hts_code": "9603.90.8050",
+      "description": "pet toothbrush set",
+      "declared_value": 52440.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 409,
+      "hts_code": "8305.90.6000",
+      "description": "wire spool and wire binding spines",
+      "declared_value": 69806.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 410,
+      "hts_code": "8305.90.6000",
+      "description": "wire spool and wire binding spines",
+      "declared_value": 4342.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 411,
+      "hts_code": "8305.90.6000",
+      "description": "wire spool and wire binding spines",
+      "declared_value": 17368.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 412,
+      "hts_code": "7607.20.1000",
+      "description": "origin, and status under the United States-Mexico-Canada Trade Agreement (USMCA) of flexible laminated wrapping products",
+      "declared_value": 59598.0
+    },
+    {
+      "row_id": 413,
+      "hts_code": "3926.40.0090",
+      "description": "craft kit",
+      "declared_value": 41932.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 414,
+      "hts_code": "9404.90.2030",
+      "description": "orthopedic sleeping pillow",
+      "declared_value": 41764.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 415,
+      "hts_code": "9404.90.2030",
+      "description": "orthopedic travel pillow",
+      "declared_value": 66980.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 416,
+      "hts_code": "2835.10.0000",
+      "description": "Aluminum Hypophosphite",
+      "declared_value": 28449.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 417,
+      "hts_code": "7607.20.1000",
+      "description": "flexible laminated aluminum foil-plastic product",
+      "declared_value": 67424.0,
+      "origin": "France"
+    },
+    {
+      "row_id": 418,
+      "hts_code": "3920.62.0050",
+      "description": "origin for metallized, coated polyethylene terephthalate (PET) film",
+      "declared_value": 37752.0
+    },
+    {
+      "row_id": 419,
+      "hts_code": "9817.00.96",
+      "description": "eligibility of long term hemodialysis catheters under the Nairobi Protocol from an undisclosed country",
+      "declared_value": 60129
+    },
+    {
+      "row_id": 420,
+      "hts_code": "9026.20.4000",
+      "description": "Hemodialysis System Console components",
+      "declared_value": 46055.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 421,
+      "hts_code": "3920.10.0000",
+      "description": "printed polyethylene film",
+      "declared_value": 13642.0,
+      "origin": "France"
+    },
+    {
+      "row_id": 422,
+      "hts_code": "9018.39.0050",
+      "description": "Arterial Venous Fistula Needle Sets under the Nairobi Protocol Treatment",
+      "declared_value": 36859.0,
+      "origin": "Indonesia"
+    },
+    {
+      "row_id": 423,
+      "hts_code": "8419.40.00",
+      "description": "Revocation of HQ H322641; Classification of a plastic recycling plant",
+      "declared_value": 8718.03
+    },
+    {
+      "row_id": 424,
+      "hts_code": "9817.00.96",
+      "description": "eligibility of long term hemodialysis catheters under the Nairobi Protocol treatment",
+      "declared_value": 15372,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 425,
+      "hts_code": "4911.10.0080",
+      "description": "wall display signs and product display signs",
+      "declared_value": 52305.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 426,
+      "hts_code": "4819.20.0040",
+      "description": "Application for Further Review of Protest No. 5301-23-109515; Tariff classification of folding paperboard cosmetic package",
+      "declared_value": 60193
+    },
+    {
+      "row_id": 427,
+      "hts_code": "3305.30.0000",
+      "description": "Hair Mousse and Hair Spray",
+      "declared_value": 25278.0,
+      "origin": "Turkey"
+    },
+    {
+      "row_id": 428,
+      "hts_code": "3504.00.1000",
+      "description": "LFX Synthetic Protein Isolate",
+      "declared_value": 20493.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 429,
+      "hts_code": "3401.11.5000",
+      "description": "Pumice Power Foot Scrub",
+      "declared_value": 5874.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 430,
+      "hts_code": "7616.99.5190",
+      "description": "aluminum cosmetic containers",
+      "declared_value": 42217.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 431,
+      "hts_code": "7612.10.0000",
+      "description": "collapsible aluminum tubes",
+      "declared_value": 56105.0,
+      "origin": "France"
+    },
+    {
+      "row_id": 432,
+      "hts_code": "3824.99.2900",
+      "description": "cosmetic ingredients",
+      "declared_value": 13585.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 433,
+      "hts_code": "2918.19.6000",
+      "description": "DL-Malic acid (CAS No. 6915-15-7) and L-Malic acid (CAS No. 97-67-6) imported in bulk form",
+      "declared_value": 22470.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 434,
+      "hts_code": "3304.99.5000",
+      "description": "Turmeric Roll Cleanser Party Kit",
+      "declared_value": 39445.0
+    },
+    {
+      "row_id": 435,
+      "hts_code": "6307.90.9891",
+      "description": "knot wrap",
+      "declared_value": 27363.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 436,
+      "hts_code": "9603.30.6000",
+      "description": "nail art tool",
+      "declared_value": 68152.32,
+      "origin": "China"
+    },
+    {
+      "row_id": 437,
+      "hts_code": "9603.30.6000",
+      "description": "four makeup brushes with case",
+      "declared_value": 15655.68,
+      "origin": "China"
+    },
+    {
+      "row_id": 438,
+      "hts_code": "4202.92.3131",
+      "description": "trifold toiletry bag with plastic bottles",
+      "declared_value": 53406.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 439,
+      "hts_code": "3923.30.0090",
+      "description": "pouch, plastic bottles, and hair ties",
+      "declared_value": 3607.2,
+      "origin": "China"
+    },
+    {
+      "row_id": 440,
+      "hts_code": "3307.49.0000",
+      "description": "room spray, reed diffuser, and candle",
+      "declared_value": 43378.0,
+      "origin": "Turkey"
+    },
+    {
+      "row_id": 441,
+      "hts_code": "9603.30.6000",
+      "description": "two painting sets",
+      "declared_value": 35147.52,
+      "origin": "China"
+    },
+    {
+      "row_id": 442,
+      "hts_code": "4202.92.3131",
+      "description": "toiletry bag",
+      "declared_value": 31648.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 443,
+      "hts_code": "9603.30.6000",
+      "description": "five makeup brushes with holder",
+      "declared_value": 57404.16,
+      "origin": "China"
+    },
+    {
+      "row_id": 444,
+      "hts_code": "4819.50.4040",
+      "description": "Modification of NY N302628; tariff classification of a paperboard cosmetic container with sleeve",
+      "declared_value": 63468.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 445,
+      "hts_code": "3304.91.0050",
+      "description": "bronzer and a highlighter",
+      "declared_value": 67900.0,
+      "origin": "Italy"
+    },
+    {
+      "row_id": 446,
+      "hts_code": "4202.11.0030",
+      "description": "flight bag and pouch",
+      "declared_value": 70528.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 447,
+      "hts_code": "8301.20.0060",
+      "description": "metal latch/lock assemblies",
+      "declared_value": 14374.8,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 448,
+      "hts_code": "8716.10.0030",
+      "description": "mobile housing trailer",
+      "declared_value": 27310.84,
+      "origin": "Denmark"
+    },
+    {
+      "row_id": 449,
+      "hts_code": "9403.99.90",
+      "description": "Application for Further Review of Protest No 530123109507; Classification of removable cart shelves",
+      "declared_value": 15210.0
+    },
+    {
+      "row_id": 450,
+      "hts_code": "8708.29.5160",
+      "description": "license plate moulding",
+      "declared_value": 39636.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 451,
+      "hts_code": "7616.99.1000",
+      "description": "aluminum frame",
+      "declared_value": 13692.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 452,
+      "hts_code": "3926.90.9989",
+      "description": "passport holder gift set",
+      "declared_value": 60041,
+      "origin": "China"
+    },
+    {
+      "row_id": 453,
+      "hts_code": "3926.90.9989",
+      "description": "passport holder gift set",
+      "declared_value": 40007,
+      "origin": "China"
+    },
+    {
+      "row_id": 454,
+      "hts_code": "8507.60.0020",
+      "description": "battery pack",
+      "declared_value": 62315.2,
+      "origin": "China"
+    },
+    {
+      "row_id": 455,
+      "hts_code": "8708.29.5160",
+      "description": "Rooftop Platform Rack for passenger vehicles",
+      "declared_value": 38168.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 456,
+      "hts_code": "8505.11.0070",
+      "description": "hat clip",
+      "declared_value": 60996.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 457,
+      "hts_code": "8707.10.0020",
+      "description": "vehicle cab and chassis",
+      "declared_value": 45078.88,
+      "origin": "South Africa"
+    },
+    {
+      "row_id": 458,
+      "hts_code": "8708.29.5160",
+      "description": "kayak carrier",
+      "declared_value": 3082.8,
+      "origin": "China"
+    },
+    {
+      "row_id": 459,
+      "hts_code": "8708.29.5125",
+      "description": "accessory panel kit with or without a cargo rack",
+      "declared_value": 27892.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 460,
+      "hts_code": "8716.80.50",
+      "description": "Tariff Classification of a \u201csmart\u201d shopping cart",
+      "declared_value": 27807.0
+    },
+    {
+      "row_id": 461,
+      "hts_code": "8708.29.5160",
+      "description": "United States-Mexico-Canada Agreement (USMCA) of a truck cargo rack",
+      "declared_value": 17616.0,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 462,
+      "hts_code": "8518.22.0000",
+      "description": "Subwoofer Speaker Assembly",
+      "declared_value": 13274.0,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 463,
+      "hts_code": "4602.19.1800",
+      "description": "classification, country of origin, and marking of baskets and totes from Ghana",
+      "declared_value": 43524.0
+    },
+    {
+      "row_id": 464,
+      "hts_code": "8708.29.5160",
+      "description": "rooftop racks",
+      "declared_value": 11450.4,
+      "origin": "China"
+    },
+    {
+      "row_id": 465,
+      "hts_code": "8711.60.0090",
+      "description": "bicycle and two pedal assist electric bicycles",
+      "declared_value": 69800.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 466,
+      "hts_code": "4202.12.2120",
+      "description": "Classification and Eligibility of the United States-Mexico-Canada Trade Agreement (USMCA) for Suitcases",
+      "declared_value": 36225.0,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 467,
+      "hts_code": "6307.90.9891",
+      "description": "suitcase flex dividers",
+      "declared_value": 61241.0,
+      "origin": "Czech Republic"
+    },
+    {
+      "row_id": 468,
+      "hts_code": "6307.90.9891",
+      "description": "suitcase lining set",
+      "declared_value": 52120.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 469,
+      "hts_code": "9401.61.4011",
+      "description": "seat",
+      "declared_value": 28952.5,
+      "origin": "China"
+    },
+    {
+      "row_id": 470,
+      "hts_code": "9706.90.0060",
+      "description": "clock",
+      "declared_value": 44464.0,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 471,
+      "hts_code": "9706.10.0060",
+      "description": "manuscript",
+      "declared_value": 46555.8,
+      "origin": "Spain"
+    },
+    {
+      "row_id": 472,
+      "hts_code": "9113.90.8000",
+      "description": "watch straps",
+      "declared_value": 60621,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 473,
+      "hts_code": "8517.62.0090",
+      "description": "Smart Watches",
+      "declared_value": 26311.68,
+      "origin": "China"
+    },
+    {
+      "row_id": 474,
+      "hts_code": "9102.91.40",
+      "description": "watch chokers",
+      "declared_value": 63986.0
+    },
+    {
+      "row_id": 475,
+      "hts_code": "9102.91.80",
+      "description": "bracelet and a watch head",
+      "declared_value": 11063.0
+    },
+    {
+      "row_id": 476,
+      "hts_code": "9102.11.45",
+      "description": "analog wrist watches made in the Philippines and interchangeable watch\u00a0straps made in China",
+      "declared_value": 37880.0
+    },
+    {
+      "row_id": 477,
+      "hts_code": "9102.91.20",
+      "description": "ring watch",
+      "declared_value": 58604.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 478,
+      "hts_code": "9113.90.8000",
+      "description": "silicone based Apple watch bands/straps",
+      "declared_value": 5208,
+      "origin": "China"
+    },
+    {
+      "row_id": 479,
+      "hts_code": "9209.99.8000",
+      "description": "cymbal blanks",
+      "declared_value": 25193,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 480,
+      "hts_code": "9205.90.4060",
+      "description": "Irish whistle",
+      "declared_value": 49963.0,
+      "origin": "Australia"
+    },
+    {
+      "row_id": 481,
+      "hts_code": "9205.90.4080",
+      "description": "wooden alphorn",
+      "declared_value": 32329.0,
+      "origin": "Switzerland"
+    },
+    {
+      "row_id": 482,
+      "hts_code": "9027.90.5695",
+      "description": "glucose monitor patches",
+      "declared_value": 41916.6,
+      "origin": "China"
+    },
+    {
+      "row_id": 483,
+      "hts_code": "3926.90.99",
+      "description": "Tariff Classification, Country of Origin, and USMCA Eligibility of a Jewelry Organizer Tray and Drawer Organizer Kit",
+      "declared_value": 10294
+    },
+    {
+      "row_id": 484,
+      "hts_code": "9207.10.0075",
+      "description": "music production devices",
+      "declared_value": 8568.34,
+      "origin": "Malaysia"
+    },
+    {
+      "row_id": 485,
+      "hts_code": "9209.92.8000",
+      "description": "tariff classification the \u201cStringprotech\u201d",
+      "declared_value": 55147.4,
+      "origin": "China"
+    },
+    {
+      "row_id": 486,
+      "hts_code": "8505.11.0010",
+      "description": "bar magnet",
+      "declared_value": 8641.1,
+      "origin": "China"
+    },
+    {
+      "row_id": 487,
+      "hts_code": "8543.70.9860",
+      "description": "electronic music controller",
+      "declared_value": 36340.0
+    },
+    {
+      "row_id": 488,
+      "hts_code": "8543.70.9820",
+      "description": "effects pedal",
+      "declared_value": 23621.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 489,
+      "hts_code": "8543.70.9100",
+      "description": "electric music interfaces",
+      "declared_value": 52693.0
+    },
+    {
+      "row_id": 490,
+      "hts_code": "8543.70.9100",
+      "description": "electric music interfaces",
+      "declared_value": 18170.0
+    },
+    {
+      "row_id": 491,
+      "hts_code": "9705.10.0020",
+      "description": "Congo",
+      "declared_value": 25063.54
+    },
+    {
+      "row_id": 492,
+      "hts_code": "9205.90.1800",
+      "description": "concertina",
+      "declared_value": 38207.0,
+      "origin": "Ireland"
+    },
+    {
+      "row_id": 493,
+      "hts_code": "8543.70.9860",
+      "description": "sensors",
+      "declared_value": 25438.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 494,
+      "hts_code": "9209.92.8000",
+      "description": "guitar headstock support tool",
+      "declared_value": 63741.8,
+      "origin": "China"
+    },
+    {
+      "row_id": 495,
+      "hts_code": "9205.90.4080",
+      "description": "wooden Alphorn",
+      "declared_value": 52902.0,
+      "origin": "Switzerland"
+    },
+    {
+      "row_id": 496,
+      "hts_code": "9207.90.0080",
+      "description": "digital hi-hat",
+      "declared_value": 59943.6,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 497,
+      "hts_code": "9208.10.0000",
+      "description": "\u201cHappy Loop\u201d music box with note cards",
+      "declared_value": 29900.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 498,
+      "hts_code": "9207.10.0055",
+      "description": "Noorlander Menuett III, an electronic digital organ and bench",
+      "declared_value": 14773.0,
+      "origin": "Netherlands"
+    },
+    {
+      "row_id": 499,
+      "hts_code": "9505.90.6000",
+      "description": "textile decorations",
+      "declared_value": 56448.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 500,
+      "hts_code": "9207.90.0040",
+      "description": "acoustic electric guitar",
+      "declared_value": 18316.1,
+      "origin": "Mexico"
+    }
+  ]
+}

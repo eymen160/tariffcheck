@@ -1,0 +1,57 @@
+COMMERCIAL INVOICE
+
+Seller: Global Exports Ltd. (Brazil)
+Buyer: Peachtree Imports LLC, Atlanta, GA, USA
+Country of Origin: Brazil
+Invoice Date: July 10, 2026
+Invoice No: GX-2026-1609
+
+Item 1:
+HTS Code: 6802.99.0090
+Description: Desert Atlas stone
+Total Declared Value: $60,510.00 USD
+(Source: CBP ruling N356980, 2026-06-22)
+
+Item 2:
+HTS Code: 6802.93.0010
+Description: Copenhagen stone
+Total Declared Value: $2,435.00 USD
+(Source: CBP ruling N356983, 2026-06-22)
+
+Item 3:
+HTS Code: 6802.99.0090
+Description: White Spring stone
+Total Declared Value: $40,525.00 USD
+(Source: CBP ruling N353775, 2026-06-02)
+
+Item 4:
+HTS Code: 6802.99.0090
+Description: Via Lactea stone
+Total Declared Value: $2,641.00 USD
+(Source: CBP ruling N355376, 2026-05-22)
+
+Item 5:
+HTS Code: 6802.99.0090
+Description: Silver Grey stone
+Total Declared Value: $40,690.00 USD
+(Source: CBP ruling N355375, 2026-05-21)
+
+Item 6:
+HTS Code: 6802.93.0010
+Description: Branco Dunas stone
+Total Declared Value: $40,824.00 USD
+(Source: CBP ruling N355043, 2026-05-12)
+
+Item 7:
+HTS Code: 8479.20.0000
+Description: mechanical screw press oil extraction machinery line
+Total Declared Value: $25,294.00 USD
+(Source: CBP ruling N359842, 2026-04-09)
+
+Item 8:
+HTS Code: 9506.99.5500
+Description: fiberglass swimming pool shells
+Total Declared Value: $1,058.00 USD
+(Source: CBP ruling N357680, 2026-02-03)
+
+Total Invoice Value: $213,977.00 USD

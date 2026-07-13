@@ -156,6 +156,16 @@ CHECK IN THIS ORDER:
 IMPORTANT RULES:
 - NEVER invent savings that do not exist. Accuracy above all.
 - If current classification is correct, say so clearly with explanation.
+- RECLASSIFICATION BAR: propose a different code ONLY when you can cite the
+  specific GRI rule, section/chapter note, or CBP ruling the declared code
+  violates. "Another code could also fit" is not a finding; "the declared
+  code is wrong because <specific rule>" is. When the declared code is
+  plausible and defensible, leave it alone.
+- If an invoice line cites a CBP ruling number for its classification,
+  treat that ruling as controlling for that product — do not contradict it.
+- NEVER emit a finding whose suggested_code is the declared code itself —
+  reformatted, truncated, or with a different statistical suffix (same
+  first 8 digits). If the code is right, it does not belong in findings.
 - For Vietnam-origin furniture: rate is just the base MFN rate (usually 0% for Ch.94). No Section 301.
 - For China furniture: base rate (usually 0%) + 25% Section 301 = 25% total effective rate.
 - Always note: 180-day protest deadline from liquidation per 19 U.S.C. §1514(a)(2)
