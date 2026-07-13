@@ -102,19 +102,26 @@ def verify_findings(analysis, origin_hint=None):
         eff_sug = round((fta_rate if fta_rate is not None else sug_rate) + s301_sug, 4)
         declared_value = float(f.get("declared_value") or 0)
 
-        # Same-subheading suppression: the model sometimes "suggests" the very
+        # Same-subheading handling: the model sometimes "suggests" the very
         # code already on the line — truncated, reformatted, or with a shuffled
-        # statistical suffix. Rates are set at the 8-digit subheading, so when
-        # both codes share it AND the effective rates are identical (Section
-        # 301 can differ at 10 digits, so dollars are checked, not assumed)
-        # there is nothing to protest and the finding is dropped.
+        # statistical suffix. That is never a real reclassification, so the
+        # finding is re-anchored on the declared code itself; whatever dollars
+        # remain are program recovery (unclaimed FTA / wrong 301) on a
+        # correctly classified line. If nothing remains, drop the finding.
         cur_digits = re.sub(r"\D", "", str(f.get("hts_code") or ""))
         sug_digits = re.sub(r"\D", "", sug["code"])
         if (cur is not None and len(cur_digits) >= 8
-                and cur_digits[:8] == sug_digits[:8] and eff_cur == eff_sug):
-            suppressed += 1
-            kept.pop()
-            continue
+                and cur_digits[:8] == sug_digits[:8]):
+            sug = cur
+            f["suggested_code"] = cur["code"]
+            sug_rate = cur_rate
+            s301_sug, s301_sug_est = s301_cur, s301_cur_est
+            _fta_name, fta_rate = fta_rate_for_code(f["suggested_code"], origin)
+            eff_sug = round((fta_rate if fta_rate is not None else sug_rate) + s301_sug, 4)
+            if eff_cur == eff_sug:
+                suppressed += 1
+                kept.pop()
+                continue
         official_savings = round(max(0.0, (eff_cur - eff_sug) / 100.0) * declared_value, 2)
 
         # Overwrite the model's arithmetic with ours; record the delta.

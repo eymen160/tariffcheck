@@ -274,3 +274,23 @@ def test_real_reclassification_not_suppressed():
     assert len(analysis["findings"]) == 1
     assert analysis["verification"]["suppressed_count"] == 0
     assert analysis["findings"][0]["verified"] is True
+
+
+def test_same_subheading_with_fta_becomes_program_finding():
+    # Model dressed an unclaimed-USMCA opportunity as a "reclassification"
+    # 8708.29.5160 → 8708.29.51 (same subheading, 2.5% MFN, USMCA free).
+    # The finding must survive re-anchored on the declared code with the
+    # FTA dollars intact and routed to 1520(d) — not suppressed, not a
+    # phantom code change.
+    analysis = _analysis(
+        hts_code="8708.29.5160", suggested_code="8708.29.51",
+        current_rate=2.5, suggested_rate=2.5, savings=250,
+    )
+    analysis["country_of_origin"] = "Mexico"
+    analysis = verify_findings(analysis)
+    f = analysis["findings"][0]
+    assert analysis["verification"]["suppressed_count"] == 0
+    assert f["verified"] is True
+    assert f["suggested_code"] == "8708.29.51"      # canonical current code
+    assert f["savings"] == 250.0                     # 2.5% of 10000 via USMCA
+    assert f["remedy"] == "1520d"

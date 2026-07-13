@@ -163,9 +163,12 @@ IMPORTANT RULES:
   plausible and defensible, leave it alone.
 - If an invoice line cites a CBP ruling number for its classification,
   treat that ruling as controlling for that product — do not contradict it.
-- NEVER emit a finding whose suggested_code is the declared code itself —
+- NEVER present the declared code itself as a misclassification —
   reformatted, truncated, or with a different statistical suffix (same
-  first 8 digits). If the code is right, it does not belong in findings.
+  first 8 digits) is still the same classification, not a finding.
+- Unclaimed FTA preference or wrongly applied Section 301 on a CORRECTLY
+  classified line IS a finding: keep suggested_code equal to the declared
+  code and put the program savings in the numbers.
 - For Vietnam-origin furniture: rate is just the base MFN rate (usually 0% for Ch.94). No Section 301.
 - For China furniture: base rate (usually 0%) + 25% Section 301 = 25% total effective rate.
 - Always note: 180-day protest deadline from liquidation per 19 U.S.C. §1514(a)(2)
