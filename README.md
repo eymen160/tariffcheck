@@ -2,14 +2,14 @@
 
 > **Live:** https://tariffcheck-zeta.vercel.app · Born at **Hacklanta 2026**, built by Eymen Keyvan, Esat Sarac, Selcuk Kandemir
 
-US importers overpay an estimated **$26 billion a year** in customs duties through HTS misclassification, unclaimed FTA preferences, and wrongly applied Section 301 rates — and misclassification drives ~42% of CBP penalties. TariffCheck is the AI misclassification auditor for importers and the customs brokers who file for them: it reads any invoice or batch of entry lines, audits every line with Claude, deterministically re-verifies each finding against the complete **29,755-code official USITC HTS 2026 schedule** that ships inside the product, and hands back a ready-to-file **19 U.S.C. §1514 protest letter**. We prepare the filing; you or your licensed broker files it.
+US importers systematically overpay customs duties — every number here is from a public government source, not a vendor estimate: **$509.7B of 2024 US imports entered with no USMCA claim** (USITC DataWeb), only **~3,750 filers produce all ~45,000 CBP protests a year** while the long tail of ~330K importers lets the window close (CBP, 87 FR 34894), and the tariff schedule was revised **32 times in 2025**, so yesterday's correct code goes stale. TariffCheck is the AI duty auditor for importers and the customs brokers who file for them: it reads any invoice or batch of entry lines, audits every line with Claude, deterministically re-verifies each finding against the complete **29,755-code official USITC HTS 2026 schedule** that ships inside the product, and hands back a broker-ready remedy package — a **19 U.S.C. §1514 protest draft** for misclassifications, with unclaimed FTA preferences routed to their correct vehicle (a 19 U.S.C. 1520(d) claim). We prepare the filing; you or your licensed broker files it.
 
 ## How It Works
 
 1. **Upload** — a commercial invoice (PDF or pasted text), or a batch of entry lines for broker portfolio scans.
 2. **AI audit** — Claude analyzes every line with the official USITC rates injected at inference time (grounding block + structured outputs): misclassifications, missed FTA/USMCA claims, Section 301 exposure, with a legal basis per finding.
 3. **Deterministic USITC verification** — every finding is re-checked against the in-process 29,755-code schedule. Rates and savings are recomputed server-side; unverifiable findings are labeled, never hidden. A hallucinated number cannot reach the letter.
-4. **Protest letter** — a ready-to-file §1514 letter generated from verified numbers only, for the importer of record or a licensed broker to file.
+4. **Remedy package** — a broker-ready §1514 protest draft generated from verified numbers only (misclassification findings), with unclaimed FTA preferences routed to a 19 U.S.C. 1520(d) claim note; the importer of record or a licensed broker completes and files.
 
 ## Features
 

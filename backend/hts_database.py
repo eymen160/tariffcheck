@@ -580,10 +580,9 @@ SECTION_301_BY_CHAPTER = {
 # FTA COUNTRIES
 # ─────────────────────────────────────────────
 FTA_COUNTRIES = {
-    "canada": {"name": "USMCA", "form": "CBP Form 434", "rate": 0.0},
-    "mexico": {"name": "USMCA", "form": "CBP Form 434", "rate": 0.0},
-    "south korea": {"name": "KORUS", "form": "CBP Form 3461 with KORUS cert", "rate": 0.0},
-    "korea": {"name": "KORUS", "form": "CBP Form 3461 with KORUS cert", "rate": 0.0},
+    "canada": {"name": "USMCA", "form": "USMCA certification of origin (9 data elements, no prescribed form)", "rate": 0.0},
+    "mexico": {"name": "USMCA", "form": "USMCA certification of origin (9 data elements, no prescribed form)", "rate": 0.0},
+    "south korea": {"name": "KORUS", "form": "KORUS certification of origin + supporting records", "rate": 0.0},
     "australia": {"name": "US-Australia FTA", "form": "Importer certification", "rate": 0.0},
     "chile": {"name": "US-Chile FTA", "form": "Importer certification", "rate": 0.0},
     "singapore": {"name": "US-Singapore FTA", "form": "Importer certification", "rate": 0.0},
@@ -602,6 +601,96 @@ FTA_COUNTRIES = {
     "costa rica": {"name": "CAFTA-DR", "form": "Importer certification", "rate": 0.0},
     "dominican republic": {"name": "CAFTA-DR", "form": "Importer certification", "rate": 0.0},
 }
+
+# ─────────────────────────────────────────────
+# COUNTRY NORMALIZATION
+# ACE/ABI exports carry ISO codes ("CN", "MX"); invoices carry many spellings.
+# Substring matching caused real bugs ("North Korea" contained "korea" and
+# matched KORUS; ISO codes matched nothing and silently produced 0% Section
+# 301 / no FTA). Every consumer of an origin string goes through
+# normalize_country() first.
+# ─────────────────────────────────────────────
+COUNTRY_ALIASES = {
+    # canonical -> aliases. Canonical keys match FTA_COUNTRIES /
+    # COUNTRY_PROGRAMS keys where applicable. Short (2-3 letter) aliases are
+    # matched EXACTLY only, never as substrings.
+    "china": ["cn", "chn", "prc", "peoples republic of china", "people s republic of china", "pr china", "mainland china"],
+    "hong kong": ["hk", "hkg"],
+    "taiwan": ["tw", "twn", "chinese taipei"],
+    "mexico": ["mx", "mex", "united mexican states"],
+    "canada": ["ca", "can"],
+    "south korea": ["kr", "kor", "korea", "republic of korea", "korea republic", "korea south", "s korea"],
+    "north korea": ["kp", "prk", "dprk", "korea north", "democratic people s republic of korea"],
+    "vietnam": ["vn", "vnm", "viet nam"],
+    "india": ["in", "ind"],
+    "turkey": ["tr", "tur", "turkiye", "republic of turkiye", "republic of turkey"],
+    "bangladesh": ["bd", "bgd"],
+    "indonesia": ["id", "idn"],
+    "thailand": ["th", "tha"],
+    "malaysia": ["my", "mys"],
+    "japan": ["jp", "jpn"],
+    "australia": ["au", "aus"],
+    "bahrain": ["bh", "bhr"],
+    "chile": ["cl", "chl"],
+    "colombia": ["co", "col"],
+    "israel": ["il", "isr"],
+    "jordan": ["jo", "jor"],
+    "morocco": ["ma", "mar"],
+    "oman": ["om", "omn"],
+    "panama": ["pa", "pan"],
+    "peru": ["pe", "per"],
+    "singapore": ["sg", "sgp"],
+    "guatemala": ["gt", "gtm"],
+    "honduras": ["hn", "hnd"],
+    "nicaragua": ["ni", "nic"],
+    "el salvador": ["sv", "slv"],
+    "costa rica": ["cr", "cri"],
+    "dominican republic": ["do", "dom"],
+    "italy": ["it", "ita"],
+    "germany": ["de", "deu"],
+    "spain": ["es", "esp"],
+    "france": ["fr", "fra"],
+    "united kingdom": ["gb", "uk", "gbr", "great britain", "england"],
+    "brazil": ["br", "bra"],
+    "pakistan": ["pk", "pak"],
+    "cambodia": ["kh", "khm"],
+    "philippines": ["ph", "phl"],
+}
+
+_ALIAS_EXACT = {}
+for _canon, _aliases in COUNTRY_ALIASES.items():
+    _ALIAS_EXACT[_canon] = _canon
+    for _a in _aliases:
+        _ALIAS_EXACT[_a] = _canon
+
+# Phrase-searchable names (>= 4 chars only, so ISO codes can never match as
+# substrings of e.g. "america"), longest first so "north korea" beats "korea".
+_ALIAS_PHRASES = sorted(
+    ((a, c) for a, c in _ALIAS_EXACT.items() if len(a) >= 4),
+    key=lambda pair: -len(pair[0]),
+)
+
+
+def normalize_country(origin):
+    """Map any origin spelling (ISO code, full name, 'Made in X' string) to a
+    canonical lowercase country name, or None if unrecognized."""
+    if not origin:
+        return None
+    # Strip accents ("Türkiye" -> "turkiye", "México" -> "mexico") before
+    # reducing to a-z words.
+    s = _unicodedata.normalize("NFKD", str(origin))
+    s = "".join(ch for ch in s if not _unicodedata.combining(ch)).lower()
+    s = _re.sub(r"[^a-z]+", " ", s).strip()
+    s = _re.sub(r"\s+", " ", s)
+    if not s:
+        return None
+    if s in _ALIAS_EXACT:
+        return _ALIAS_EXACT[s]
+    for phrase, canon in _ALIAS_PHRASES:
+        if _re.search(r"(?<![a-z])" + _re.escape(phrase) + r"(?![a-z])", s):
+            return canon
+    return None
+
 
 # Countries with NO FTA (important to flag explicitly)
 NON_FTA_COUNTRIES = {
@@ -674,6 +763,7 @@ COMMON_MISCLASSIFICATIONS = {
 import gzip as _gzip
 import json as _json
 import re as _re
+import unicodedata as _unicodedata
 from pathlib import Path as _Path
 
 _DB_PATH = _Path(__file__).parent / "data" / "hts_db.json.gz"
@@ -690,10 +780,10 @@ FTA_PROGRAMS = {
     "E": "CBERA", "E*": "CBERA",
 }
 
-# country (lowercase substring) -> HTS special-column program codes
+# canonical country name (see normalize_country) -> HTS special-column codes
 COUNTRY_PROGRAMS = {
     "canada": ["S", "S+"], "mexico": ["S", "S+"],
-    "korea": ["KR"], "australia": ["AU"], "bahrain": ["BH"],
+    "south korea": ["KR"], "australia": ["AU"], "bahrain": ["BH"],
     "chile": ["CL"], "colombia": ["CO"], "israel": ["IL"],
     "jordan": ["JO"], "morocco": ["MA"], "oman": ["OM"],
     "panama": ["PA"], "peru": ["PE"], "singapore": ["SG"],
@@ -809,36 +899,96 @@ def fta_rate_for_code(code, country_of_origin):
     if not rec:
         return None, None
     special = rec.get("special_rates") or {}
-    origin = str(country_of_origin or "").lower()
-    for country, programs in COUNTRY_PROGRAMS.items():
-        if country in origin:
-            for prog in programs:
-                if prog in special:
-                    return FTA_PROGRAMS.get(prog, prog), special[prog]
+    canon = normalize_country(country_of_origin)
+    if canon is None:
+        return None, None
+    for prog in COUNTRY_PROGRAMS.get(canon, []):
+        if prog in special:
+            return FTA_PROGRAMS.get(prog, prog), special[prog]
     return None, None
 
 
-def get_section_301_rate(hts_code, country_of_origin):
-    """Get Section 301 rate for China-origin goods."""
-    if not country_of_origin or "china" not in str(country_of_origin).lower():
-        return 0.0
+# Optional line-level Section 301 dataset (8-digit HTS -> rate). When
+# backend/data/section301.json exists, it is authoritative; otherwise the
+# chapter-level table below is used and results are flagged as ESTIMATES —
+# the flag must survive all the way into user-facing verification notes.
+_S301_PATH = _Path(__file__).resolve().parent / "data" / "section301.json"
+try:
+    with open(_S301_PATH, encoding="utf-8") as _fh:
+        _S301_DATA = _json.load(_fh)
+    S301_LINE_LEVEL = {
+        _normalize(k): float(v)
+        for k, v in (_S301_DATA.get("rates_by_hts8") or {}).items()
+    }
+    # 8-digit lines whose Section 301 coverage is limited to specific
+    # 10-digit statistical lines / described subsets — never assert a rate
+    # for these without a manual check.
+    S301_PARTIAL = {
+        _normalize(k) for k in (_S301_DATA.get("partial_stat_level") or {})
+    }
+    S301_SOURCE = "USITC China Tariffs table (line level)"
+except (OSError, ValueError):
+    _S301_DATA = None
+    S301_LINE_LEVEL = {}
+    S301_PARTIAL = set()
+    S301_SOURCE = "chapter-level estimate"
+
+# 6-digit rollup for short inputs: (rate, uniform_across_lines)
+_S301_BY6 = {}
+for _k, _v in S301_LINE_LEVEL.items():
+    six = _k[:6]
+    prev = _S301_BY6.get(six)
+    if prev is None:
+        _S301_BY6[six] = (_v, True)
+    elif prev[0] != _v:
+        _S301_BY6[six] = (max(prev[0], _v), False)
+
+
+def get_section_301(hts_code, country_of_origin):
+    """Section 301 additional duty for China-origin goods.
+    Returns (rate, estimated): estimated=True means the figure could not be
+    verified at line level (partial statistical coverage, ambiguous short
+    code, or chapter-level fallback) and must be labeled wherever it affects
+    a dollar figure. Line-level data (USITC China Tariffs table) is
+    authoritative and takes precedence over the curated overlay."""
+    if normalize_country(country_of_origin) != "china":
+        return 0.0, False
     if not hts_code:
-        return 0.0
+        return 0.0, False
+    digits = _normalize(hts_code)
+    if S301_LINE_LEVEL:
+        if len(digits) >= 8:
+            hit = S301_LINE_LEVEL.get(digits[:8])
+            if hit is not None:
+                return hit, digits[:8] in S301_PARTIAL
+            if digits[:8] in S301_PARTIAL:
+                return 0.0, True  # covered only for some stat lines — flag it
+            return 0.0, False
+        six = _S301_BY6.get(digits[:6])
+        if six is not None:
+            rate, uniform = six
+            return rate, not uniform
+        return 0.0, False
     code_data = lookup_hts(hts_code)
     if code_data and "section_301_china" in code_data:
-        return code_data["section_301_china"]
-    chapter = str(hts_code)[:2]
-    return SECTION_301_BY_CHAPTER.get(chapter, 0.0)
+        return float(code_data["section_301_china"]), False
+    chapter = digits[:2]
+    return SECTION_301_BY_CHAPTER.get(chapter, 0.0), True
+
+
+def get_section_301_rate(hts_code, country_of_origin):
+    """Back-compat wrapper: rate only."""
+    return get_section_301(hts_code, country_of_origin)[0]
 
 
 def check_fta(country_of_origin):
     """Check FTA eligibility. Returns (fta_name, preferential_rate, form_required) or None."""
-    if not country_of_origin:
+    canon = normalize_country(country_of_origin)
+    if canon is None:
         return None, None, None
-    country_lower = str(country_of_origin).lower().strip()
-    for country, data in FTA_COUNTRIES.items():
-        if country in country_lower:
-            return data["name"], data["rate"], data["form"]
+    data = FTA_COUNTRIES.get(canon)
+    if data:
+        return data["name"], data["rate"], data["form"]
     return None, None, None
 
 

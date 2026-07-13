@@ -13,7 +13,9 @@ from hts_database import (
     check_fta,
     get_misclassification_hints,
     get_section_301_rate,
+    normalize_country,
 )
+from remedy import normalize_liquidation_status, protest_window
 from verifier import VERIFICATION_SOURCE
 
 MAX_BATCH_ROWS = 100
@@ -83,6 +85,41 @@ def audit_row(row, index):
     origin = str(row.get("origin") or "").strip() or None
     declared_value = _parse_value(row.get("declared_value"))
 
+    # Optional ACE ES-003 / entry-summary fields. With them, findings become
+    # protestable artifacts: real deadlines, no false missed-FTA accusations
+    # on lines where the broker already claimed the program (SPI).
+    entry_no = str(row.get("entry_no") or "").strip() or None
+    line_no = str(row.get("line_no") or "").strip() or None
+    entry_date = str(row.get("entry_date") or "").strip() or None
+    liquidation_date = str(row.get("liquidation_date") or "").strip() or None
+    liquidation_status = normalize_liquidation_status(
+        row.get("liquidation_status")
+        or ("liquidated" if liquidation_date else "")
+    )
+    duty_paid = _parse_value(row.get("duty_paid"))
+    spi_claimed = str(row.get("spi_claimed") or "").strip() or None
+
+    protest_by, protest_days_left, protest_open = protest_window(liquidation_date)
+
+    def _entry_fields():
+        return {
+            "entry_no": entry_no,
+            "line_no": line_no,
+            "entry_date": entry_date,
+            "liquidation_status": liquidation_status,
+            "protest_by": protest_by,
+            "protest_days_left": protest_days_left,
+            "protest_window_open": protest_open,
+            "remedy_vehicle": (
+                "psc" if liquidation_status == "not_liquidated"
+                else "1514" if liquidation_status == "liquidated"
+                else None
+            ),
+            "spi_claimed": spi_claimed,
+            "duty_paid": duty_paid,
+            "origin_normalized": normalize_country(origin),
+        }
+
     if not raw_code:
         raise BatchValidationError("invalid_row", f"Row {row_id}: hts_code is required.")
 
@@ -114,6 +151,7 @@ def audit_row(row, index):
             "confidence": "low",
             "verified": True,
             "note": "HTS code not found in the USITC 2026 schedule — entry may be rejected or misfiled.",
+            **_entry_fields(),
         }
 
     current_code = rec["code"]
@@ -140,7 +178,17 @@ def audit_row(row, index):
         "confidence": "high",
         "verified": True,
         "note": None,
+        **_entry_fields(),
     }
+
+    # Specific/compound duties (e.g. '1¢/kg') can't be quantified from the
+    # ad-valorem math here. Never let that pass silently as a confident "ok".
+    if current_rate is None:
+        result.update(
+            confidence="low",
+            note="Rate is a specific/compound duty (not ad-valorem) — duty "
+                 "exposure NOT quantified by this screen; manual review required.",
+        )
 
     # 1) Curated misclassification patterns (description-keyed).
     for hint in get_misclassification_hints(current_code, description or ""):
@@ -151,7 +199,11 @@ def audit_row(row, index):
         sug_s301 = get_section_301_rate(suggested["code"], origin)
         total_suggested = round(sug_rate + sug_s301, 4)
         savings = 0
-        if declared_value is not None and total_current is not None:
+        if duty_paid is not None and declared_value is not None:
+            # Actual dollars beat schedule deltas when the export includes them.
+            suggested_duty = round(total_suggested / 100.0 * declared_value, 2)
+            savings = round(max(0.0, duty_paid - suggested_duty), 2)
+        elif declared_value is not None and total_current is not None:
             savings = round(max(0.0, (total_current - total_suggested) / 100.0) * declared_value, 2)
         result.update(
             status="flagged",
@@ -166,8 +218,10 @@ def audit_row(row, index):
         return result
 
     # 2) Missed FTA: the origin qualifies for a program with a lower rate
-    #    than the effective paid rate on this exact code.
-    if origin and current_rate is not None and current_rate > 0:
+    #    than the effective paid rate on this exact code. NEVER flag a line
+    #    where the broker already claimed a program (SPI present) — falsely
+    #    accusing a broker of missing a claim they made kills a pilot.
+    if origin and current_rate is not None and current_rate > 0 and not spi_claimed:
         fta_name, fta_rate = fta_rate_for_code(current_code, origin)
         if fta_rate is None:
             country_name, country_rate, _form = check_fta(origin)
@@ -176,7 +230,10 @@ def audit_row(row, index):
         if fta_rate is not None and fta_rate < current_rate:
             total_suggested = round(fta_rate + s301, 4)
             savings = 0
-            if declared_value is not None:
+            if duty_paid is not None and declared_value is not None:
+                suggested_duty = round(total_suggested / 100.0 * declared_value, 2)
+                savings = round(max(0.0, duty_paid - suggested_duty), 2)
+            elif declared_value is not None:
                 savings = round(max(0.0, (total_current - total_suggested) / 100.0) * declared_value, 2)
             result.update(
                 status="flagged",
@@ -187,7 +244,9 @@ def audit_row(row, index):
                 estimated_savings=savings,
                 confidence="high",
                 note=f"Origin qualifies for {fta_name} preferential rate "
-                     f"({fta_rate}% vs {current_rate}% MFN) — claim the program on entry or protest.",
+                     f"({fta_rate}% vs {current_rate}% MFN). Not claimed at entry: "
+                     "recover via 19 U.S.C. 1520(d) within 1 year of importation "
+                     "(NOT a §1514 protest); claim the program on future entries.",
             )
             return result
 

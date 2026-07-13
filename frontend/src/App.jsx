@@ -9,6 +9,10 @@ import SavingsPage from './pages/SavingsPage'
 import BrokersPage from './pages/BrokersPage'
 import PricingPage from './pages/PricingPage'
 import TermsPage from './pages/TermsPage'
+import MethodologyPage from './pages/MethodologyPage'
+import SecurityPage from './pages/SecurityPage'
+import AboutPage from './pages/AboutPage'
+import PrivacyPage from './pages/PrivacyPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
@@ -24,6 +28,10 @@ export default function App() {
       <Route path="/brokers" element={<BrokersPage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/terms" element={<TermsPage />} />
+      <Route path="/methodology" element={<MethodologyPage />} />
+      <Route path="/security" element={<SecurityPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )

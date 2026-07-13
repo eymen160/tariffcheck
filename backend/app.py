@@ -21,8 +21,10 @@ from hts_database import (
     get_misclassification_hint,
     get_misclassification_hints,
     get_section_301_rate,
+    get_section_301,
 )
 from verifier import verify_findings, VERIFICATION_SOURCE
+from remedy import build_remedy_summary
 from batch_audit import run_batch_audit, BatchValidationError
 
 load_dotenv()
@@ -38,7 +40,19 @@ log = logging.getLogger("tariffcheck")
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload cap
-CORS(app, origins="*")
+
+# CORS: pin to product origins via ALLOWED_ORIGINS (comma-separated). When
+# unset we keep the historical wide-open default so a missing env var can't
+# take the public API down — but production should always set it: origins="*"
+# lets any third-party site drive the Claude-spending /api/analyze endpoint
+# from its visitors' browsers.
+_allowed_origins = [
+    o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()
+]
+CORS(app, origins=_allowed_origins or "*")
+if not _allowed_origins:
+    logging.getLogger("tariffcheck").warning(
+        "ALLOWED_ORIGINS not set — CORS is wide open; set it in production.")
 
 def api_error(status, code, message, headers=None, **extra):
     """Shared error shape: {"error": <machine_code>, "message": <human sentence>}.
@@ -74,6 +88,24 @@ def _client_ip():
     if forwarded:
         return forwarded.split(",")[0].strip()
     return request.remote_addr or "unknown"
+
+
+def api_key_firm():
+    """Pilot-grade API-key auth: TARIFFCHECK_API_KEYS holds comma-separated
+    "key:FirmName" pairs. A valid X-API-Key identifies the firm and bypasses
+    the anonymous per-IP rate limit (their usage is logged per firm instead).
+    No env var → feature off, everything stays anonymous+rate-limited."""
+    raw = os.getenv("TARIFFCHECK_API_KEYS", "").strip()
+    if not raw:
+        return None
+    supplied = (request.headers.get("X-API-Key") or "").strip()
+    if not supplied:
+        return None
+    for pair in raw.split(","):
+        key, _, firm = pair.strip().partition(":")
+        if key and key == supplied:
+            return firm or "unnamed"
+    return None
 
 
 def check_rate_limit():
@@ -364,14 +396,67 @@ def analyze_with_claude(invoice_text):
         raise ModelResponseError(f"Unparseable model output: {e}") from e
 
 
-def generate_protest_letter(findings, total_savings, fta_type=None):
+def generate_protest_letter(findings, total_savings, fta_type=None, remedy_summary=None):
     # Only verified findings may reach the legal artifact — every number below
     # was recomputed server-side against the USITC schedule by verify_findings.
-    protestable = [
+    # Remedy routing: unclaimed FTA preferences are NOT protestable under
+    # §1514 (CBP rejects them; the exclusive vehicle is 19 U.S.C. 1520(d)),
+    # so they are carved out of the protest into a separate advisory block.
+    # Entry-level vehicle selection (remedy_summary) then decides whether the
+    # classification corrections travel as a §1514 protest (liquidated), an
+    # ACE PSC (not yet liquidated), or an expired-window advisory.
+    verified = [
         f for f in (findings or [])
         if f.get('verified') and f.get('savings', 0) > 0
     ]
-    if not protestable or total_savings == 0:
+    protestable = [f for f in verified if f.get('remedy', '1514') == '1514']
+    fta_claims = [f for f in verified if f.get('remedy') == '1520d']
+
+    protest_total = round(sum(f.get('savings', 0) for f in protestable), 2)
+    fta_total = round(sum(f.get('savings', 0) for f in fta_claims), 2)
+
+    vehicle = (remedy_summary or {}).get('classification_vehicle') or '1514'
+    deadlines = (remedy_summary or {}).get('deadlines') or {}
+
+    fta_deadline_line = ""
+    if deadlines.get('fta_1520d'):
+        fta_deadline_line = f"\n1520(d) filing deadline for this entry: {deadlines['fta_1520d']}."
+
+    fta_text = ""
+    if fta_claims:
+        fta_items = "\n".join(
+            f"- HTS {f.get('suggested_code')}: unclaimed preference worth ${f.get('savings', 0):,.2f}"
+            for f in fta_claims
+        )
+        fta_text = f"""UNCLAIMED FTA PREFERENCES — NOT PART OF THIS PROTEST:
+The following recoverable amounts arise from free-trade-agreement preferences
+that were not claimed at entry. These are not protestable under 19 U.S.C.
+§1514; the exclusive vehicle is a post-importation claim under 19 U.S.C.
+1520(d), filed within ONE YEAR of the date of importation with a valid
+certification of origin. Ask your licensed customs broker to file the 1520(d)
+claim separately.{fta_deadline_line}
+{fta_items}
+Estimated FTA recovery: ${fta_total:,.2f}"""
+
+    signature = """This document is a draft prepared with TariffCheck and verified against the
+official USITC HTS 2026 schedule. It must be reviewed, completed (entry
+numbers, liquidation dates, protestant details), and filed by the importer of
+record or a licensed customs broker. TariffCheck does not file with CBP and
+does not act as the importer's representative.
+
+Submitted by (importer of record / licensed customs broker):
+
+Name: ______________________________  IOR / License No.: ____________________
+
+Signature: _________________________  Date: _________________________________"""
+
+    if not protestable or protest_total == 0:
+        if fta_claims:
+            return f"""No §1514 protest basis identified — the classifications reviewed appear correct.
+
+{fta_text}
+
+{signature}"""
         return "No protest needed — current classification appears correct."
 
     items = "\n".join([
@@ -379,11 +464,45 @@ def generate_protest_letter(findings, total_savings, fta_type=None):
         for f in protestable
     ])
 
-    fta_text = ""
-    if fta_type:
-        fta_text = f"Furthermore, as goods qualifying under {fta_type}, duty-free treatment applies. "
+    if vehicle == 'psc':
+        psc_line = ""
+        if deadlines.get('psc'):
+            psc_line = f" PSC filing deadline for this entry (300 days from entry): {deadlines['psc']}."
+        body = f"""To: U.S. Customs and Border Protection
+(via ACE Post Summary Correction)
 
-    return f"""To: U.S. Customs and Border Protection
+Re: Request for Post Summary Correction — Tariff Classification
+
+This entry has NOT yet liquidated, so the correct vehicle for these classification corrections is an ACE Post Summary Correction (19 U.S.C. 1501), filed within 300 days of the entry date and at least 15 days before the scheduled liquidation date.{psc_line} A protest under 19 U.S.C. §1514 is not yet available and would be premature.
+
+The following corrections are requested:
+{items}
+
+The total duty reduction from the corrected classifications amounts to ${protest_total:,.2f}. Corrected rates were verified against the official USITC HTS 2026 schedule."""
+    elif vehicle == '1514_expired':
+        expired_line = ""
+        if deadlines.get('protest_1514'):
+            expired_line = f" The 180-day window from the reported liquidation date appears to have closed on {deadlines['protest_1514']}."
+        body = f"""ADVISORY — PROTEST WINDOW APPEARS CLOSED
+
+The classification findings below are verified against the USITC HTS 2026 schedule, but based on the liquidation information provided, the 19 U.S.C. §1514 protest deadline for this entry appears to have passed.{expired_line} Confirm the actual liquidation date on the ACE courtesy notice before abandoning the claim — and review current entries so the same overpayment stops recurring.
+
+Findings (for review, not for filing):
+{items}
+
+Verified overpayment identified: ${protest_total:,.2f}."""
+    else:
+        deadline_line = ""
+        if deadlines.get('protest_1514'):
+            deadline_line = f"\n\nProtest filing deadline (180 days from the reported liquidation date): {deadlines['protest_1514']}."
+        elif vehicle == 'unknown':
+            deadline_line = (
+                "\n\nIMPORTANT: liquidation status was not provided. Confirm this "
+                "entry has liquidated before filing — a §1514 protest filed "
+                "before liquidation is invalid; if the entry is still open, "
+                "file these corrections as an ACE Post Summary Correction instead."
+            )
+        body = f"""To: U.S. Customs and Border Protection
 Port Director
 
 Re: Protest of Tariff Classification
@@ -395,11 +514,12 @@ Pursuant to 19 U.S.C. §1514(a)(2), the importer hereby protests the tariff clas
 The following misclassifications were identified:
 {items}
 
-{fta_text}The total overpayment of duties amounts to ${total_savings:,.2f}. We respectfully request that CBP reliquidate these entries under the correct HTS classifications and refund the excess duties paid within the statutory timeframe.
+The total overpayment of duties subject to this protest amounts to ${protest_total:,.2f}. We respectfully request that CBP reliquidate these entries under the correct HTS classifications and refund the excess duties paid within the statutory timeframe.{deadline_line}"""
 
-Respectfully submitted,
-Authorized Importer Representative
-TariffCheck Analysis System"""
+    if fta_text:
+        body += f"\n\n{fta_text}"
+
+    return f"{body}\n\n{signature}"
 
 
 MIN_INVOICE_CHARS = 20
@@ -432,13 +552,17 @@ def analyze():
             }}
             return jsonify(payload)
 
-        wait = check_rate_limit()
-        if wait is not None:
-            return api_error(
-                429, "rate_limited",
-                "Too many analyses from this address. Please wait a minute and retry.",
-                headers={"Retry-After": str(wait)},
-            )
+        firm = api_key_firm()
+        if firm is None:
+            wait = check_rate_limit()
+            if wait is not None:
+                return api_error(
+                    429, "rate_limited",
+                    "Too many analyses from this address. Please wait a minute and retry.",
+                    headers={"Retry-After": str(wait)},
+                )
+        else:
+            log.info(json.dumps({"event": "api_key.analyze", "firm": firm}))
 
         invoice_text = ""
         if request.files and 'file' in request.files:
@@ -477,6 +601,21 @@ def analyze():
                 "HTS codes, values, and country of origin.",
             )
 
+        # Optional entry facts drive the remedy router: without a liquidation
+        # status we cannot know whether the correct vehicle is a PSC (pre-
+        # liquidation) or a §1514 protest (post-liquidation, 180-day clock).
+        def _entry_fact(key):
+            v = request.form.get(key)
+            if v is None and request.is_json:
+                v = (request.get_json(silent=True) or {}).get(key)
+            return v
+
+        entry_facts = {
+            "entry_date": _entry_fact("entry_date"),
+            "liquidation_date": _entry_fact("liquidation_date"),
+            "liquidation_status": _entry_fact("liquidation_status"),
+        }
+
         # Log request (no invoice content for privacy)
         log.info(f"[ANALYZE] length={len(invoice_text)} chars")
 
@@ -514,10 +653,13 @@ def analyze():
         # the official USITC schedule BEFORE the protest letter is generated,
         # so the legal artifact only ever contains verified numbers.
         analysis = verify_findings(analysis)
+        remedy_summary = build_remedy_summary(**entry_facts)
+        analysis['remedy_summary'] = remedy_summary
         analysis['protest_letter'] = generate_protest_letter(
             analysis.get('findings', []),
             analysis.get('total_savings', 0),
-            analysis.get('fta_type')
+            analysis.get('fta_type'),
+            remedy_summary=remedy_summary,
         )
         analysis['meta'] = {
             "demo": False,
@@ -582,12 +724,17 @@ def landed_cost():
         mfn_rate = 0.0
     mfn_duty = round(value * mfn_rate / 100.0, 2)
 
-    s301_rate = get_section_301_rate(code, origin)
+    s301_rate, s301_estimated = get_section_301(code, origin)
     s301_duty = round(value * s301_rate / 100.0, 2)
-    s301_note = (
-        "Chapter-level estimate — confirm the exact Section 301 list for this "
-        "code before relying on it."
-    ) if s301_rate > 0 else None
+    if s301_estimated:
+        s301_note = (
+            "Estimate — Section 301 coverage for this code could not be "
+            "verified at line level; confirm before relying on it."
+        )
+    elif s301_rate > 0:
+        s301_note = "Line-level per the USITC China Tariffs table."
+    else:
+        s301_note = None
 
     mpf = round(min(max(value * MPF_RATE / 100.0, MPF_MIN), MPF_MAX), 2)
     hmf = round(value * HMF_RATE / 100.0, 2) if mode == 'ocean' else 0.0
@@ -642,20 +789,57 @@ def landed_cost():
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
+def _forward_lead(payload):
+    """Best-effort push to a durable inbox (Slack-compatible or any JSON
+    webhook) so leads survive ephemeral serverless logs. Configure
+    LEADS_WEBHOOK_URL in the environment; without it we fall back to logging
+    only. Never blocks or fails the user-facing request."""
+    url = os.getenv("LEADS_WEBHOOK_URL", "").strip()
+    if not url:
+        return False
+    try:
+        import urllib.request
+        lines = [f"*New TariffCheck lead* — {payload.get('source') or 'site'}"]
+        for k in ("email", "firm", "entries_per_month", "software", "context"):
+            if payload.get(k):
+                lines.append(f"{k}: {payload[k]}")
+        body = json.dumps({"text": "\n".join(lines), "lead": payload}).encode()
+        req = urllib.request.Request(
+            url, data=body, headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=4)
+        return True
+    except Exception:
+        log.exception("lead webhook forward failed")
+        return False
+
+
 @app.route('/api/leads', methods=['POST'])
 def leads():
-    """Stateless email-capture stub: validate, log a structured line, store
-    nothing. The log stream is the inbox until there's a real CRM."""
+    """Email capture with broker-qualification fields. Every lead is logged
+    AND forwarded to LEADS_WEBHOOK_URL (Slack/webhook) so a brokerage
+    principal requesting access can never silently evaporate with log
+    retention."""
     data = request.get_json(silent=True) or {}
+
+    # Honeypot: real users never fill the hidden "website" field.
+    if str(data.get('website', '') or '').strip():
+        return jsonify({"ok": True, "message": "Thanks — we'll be in touch."})
+
     email = str(data.get('email', '') or '').strip()
     if not _EMAIL_RE.match(email):
         return api_error(400, "invalid_email", "Provide a valid email address.")
-    log.info(json.dumps({
+
+    payload = {
         "event": "lead.captured",
         "email": email,
         "source": str(data.get('source', '') or '')[:100],
         "context": str(data.get('context', '') or '')[:500],
-    }))
+        "firm": str(data.get('firm', '') or '')[:200],
+        "entries_per_month": str(data.get('entries_per_month', '') or '')[:50],
+        "software": str(data.get('software', '') or '')[:100],
+    }
+    payload["forwarded"] = _forward_lead(payload)
+    log.info(json.dumps(payload))
     return jsonify({"ok": True, "message": "Thanks — we'll be in touch."})
 
 
@@ -680,21 +864,21 @@ MOCK_DEMOS = {
                 "hts_code": "6404.19.3560",
                 "description": "Athletic shoes, outer sole rubber/plastics, textile upper, size 6-13",
                 "current_rate": 37.5,
-                "suggested_code": "6404.11.2060",
+                "suggested_code": "6404.11.9060",
                 "suggested_rate": 20.0,
                 "declared_value": 44000,
                 "savings": 7700,
-                "explanation": "Footwear designed for athletic/sports use with rubber outer soles and textile uppers is specifically classified under HTS 6404.11 (sports footwear) at 20%, not the general 6404.19 category at 37.5%. The product description and intended use clearly indicate these are athletic shoes requiring the more specific classification."
+                "explanation": "Footwear designed for athletic/sports use with rubber outer soles and textile uppers, valued over $12/pair, is specifically classified under HTS 6404.11.90 (sports footwear, valued over $12/pair) at 20%, not the general 6404.19 category at 37.5%. The product description, unit value ($22/pair) and intended use clearly indicate these are athletic shoes requiring the more specific classification."
             },
             {
-                "hts_code": "6404.19.9060",
+                "hts_code": "6404.19.3960",
                 "description": "Walking shoes, outer sole rubber, mesh textile upper, casual",
                 "current_rate": 37.5,
-                "suggested_code": "6404.11.2060",
+                "suggested_code": "6404.11.9060",
                 "suggested_rate": 20.0,
                 "declared_value": 18000,
                 "savings": 3150,
-                "explanation": "Mesh-upper walking shoes with rubber soles qualify as sports footwear under 6404.11 at 20%. The current classification under 6404.19 at 37.5% overstates duty by 17.5 percentage points."
+                "explanation": "Mesh-upper athletic-style walking shoes with rubber soles, valued over $12/pair, qualify as sports footwear under 6404.11.90 at 20%. The current classification under 6404.19 at 37.5% overstates duty by 17.5 percentage points. Note: CBP construes 'sports footwear' narrowly — athletic-use construction must be documented."
             }
         ],
         "total_savings": 10850, "fta_eligible": False, "fta_type": None, "country_of_origin": "Vietnam",
@@ -702,16 +886,16 @@ MOCK_DEMOS = {
     },
     "3": {
         "findings": [{
-            "hts_code": "8419.89.1000",
+            "hts_code": "8419.89.9585",
             "description": "Industrial coffee roasting machines + replacement drum assemblies",
-            "current_rate": 4.5,
+            "current_rate": 4.2,
             "suggested_code": "8419.89.1000",
             "suggested_rate": 0.0,
             "declared_value": 96400,
-            "savings": 4338,
-            "explanation": "The goods are correctly classified under HTS 8419.89.1000. However, the importer failed to claim US-Colombia Trade Promotion Agreement (CTPA) preferential duty-free treatment. As goods wholly originating in Colombia, these machines qualify for a 0% preferential rate under CTPA, reducing duties from 4.5% to 0%."
+            "savings": 4049,
+            "explanation": "The broker entered these roasters under the catch-all provision 8419.89.95 (other machinery, other) at 4.2%. Industrial machinery for the preparation or manufacture of food or drink — which coffee roasting equipment is — is specifically provided for under HTS 8419.89.10 at 0% (Free). GRI Rule 1: the more specific heading controls."
         }],
-        "total_savings": 4338, "fta_eligible": True, "fta_type": "US-Colombia CTPA", "country_of_origin": "Colombia",
+        "total_savings": 4049, "fta_eligible": False, "fta_type": None, "country_of_origin": "Colombia",
         "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Miami\n\nRe: Protest — US-Colombia FTA Preference Not Applied\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the failure to apply US-Colombia Trade Promotion Agreement (CTPA) preferential duty rates.\n\nThe imported industrial coffee roasting equipment (HTS 8419.89.1000) originates in Colombia and qualifies for duty-free treatment under the US-Colombia CTPA, which entered into force May 15, 2012. The importer inadvertently paid the 4.5% general rate rather than the 0% CTPA preferential rate.\n\nCertificate of origin documentation confirming Colombian origin is attached. Total duties overpaid: $4,338.\n\nWe request reliquidation at the 0% CTPA preferential rate and full refund of excess duties.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     },
     "4": {
@@ -727,14 +911,14 @@ MOCK_DEMOS = {
                 "explanation": "Transmission housings originating in South Korea qualify for duty-free treatment under the US-Korea Free Trade Agreement (KORUS) pursuant to 19 U.S.C. 3805. The KORUS preferential rate for HTS 8708.99 is 0% vs the 2.5% general rate. KORUS preference was not claimed at entry."
             },
             {
-                "hts_code": "8483.40.5000",
-                "description": "Gear boxes and speed reducers for automotive applications",
-                "current_rate": 2.8,
-                "suggested_code": "8483.40.5000",
+                "hts_code": "8409.99.9190",
+                "description": "Engine components — cylinder liners and valve assemblies, automotive",
+                "current_rate": 2.5,
+                "suggested_code": "8409.99.9190",
                 "suggested_rate": 0.0,
                 "declared_value": 31500,
-                "savings": 882,
-                "explanation": "Gear boxes of South Korean origin qualify for KORUS duty-free treatment. The 2.8% general rate applied at entry should be 0% under KORUS. Certificate of origin required."
+                "savings": 788,
+                "explanation": "Engine components of South Korean origin qualify for KORUS duty-free treatment. The 2.5% general rate applied at entry should be 0% under KORUS. Certification of origin required."
             }
         ],
         "total_savings": 1970, "fta_eligible": True, "fta_type": "KORUS", "country_of_origin": "South Korea",
@@ -745,12 +929,12 @@ MOCK_DEMOS = {
             {
                 "hts_code": "8477.80.0000",
                 "description": "Pharmaceutical tablet coating machines + fluid bed dryer/granulator systems",
-                "current_rate": 3.5,
+                "current_rate": 3.1,
                 "suggested_code": "8479.89.9499",
                 "suggested_rate": 0.0,
                 "declared_value": 203000,
-                "savings": 7105,
-                "explanation": "Pharmaceutical processing equipment (tablet coaters and fluid bed dryers) is more specifically classified under HTS 8479.89.9499 (other machinery for making pharmaceutical products) at 0% duty, not the general 8477.80 category for plastics/rubber machinery at 3.5%. The principal use of this equipment in pharmaceutical manufacturing governs its classification under GRI principal use rules."
+                "savings": 6293,
+                "explanation": "Pharmaceutical processing equipment (tablet coaters and fluid bed dryers) is more specifically classified under HTS 8479.89.9499 (other machinery for making pharmaceutical products) at 0% duty, not the plastics/rubber machinery category 8477.80 at 3.1%. The principal use of this equipment in pharmaceutical manufacturing governs its classification under GRI principal use rules."
             }
         ],
         "total_savings": 7105, "fta_eligible": False, "fta_type": None, "country_of_origin": "India",
@@ -782,7 +966,7 @@ MOCK_DEMOS = {
                 "current_rate": 4.3,
                 "section_301_rate": 0.0,
                 "total_current_rate": 4.3,
-                "suggested_code": "8302.49.6055",
+                "suggested_code": "8302.42.3065",
                 "suggested_rate": 3.9,
                 "section_301_applies_suggested": False,
                 "total_suggested_rate": 3.9,
@@ -790,7 +974,7 @@ MOCK_DEMOS = {
                 "savings": 36,
                 "classification_risk": False,
                 "confidence": "medium",
-                "explanation": "Cabinet installation brackets sold separately may be more correctly classified as hardware under 8302.49 (drawer slides/mounting hardware) at 3.9% rather than furniture parts under 9403.90 at 4.3%. Small savings but correct classification is important.",
+                "explanation": "Cabinet installation brackets sold separately may be more correctly classified as base-metal furniture hardware under 8302.42.30 at 3.9% rather than furniture parts under 9403.90 at 4.3%. Small savings but correct classification is important.",
                 "legal_basis": "Chapter 83 Note vs Chapter 94 Note 2 — parts sold separately may fall to Ch.83",
                 "action_required": "Review with customs broker for binding ruling"
             }
@@ -823,20 +1007,20 @@ MOCK_DEMOS = {
                 "savings": 377,
                 "classification_risk": False,
                 "confidence": "high",
-                "explanation": "Most stainless steel tumblers are classified under 7323.93.0060 (stainless steel household articles) at 2% base rate, NOT 9617.00.9000 (vacuum flasks) at 7.2%. While the tumbler may be double-walled, CBP rulings generally require a true vacuum seal for 9617 classification. Under 7323.93, China Section 301 List 3 adds 25%, for a total of 27% — but this is still lower than 7.2% under 9617 if no Section 301 applies there. IMPORTANT: Verify whether the Section 301 rate applies to 9617 for your specific product before filing protest.",
-                "legal_basis": "GRI Rule 1, Chapter 96 Note; CBP administrative rulings on tumbler classification",
-                "action_required": "Verify with customs broker — binding ruling recommended for large volumes"
+                "explanation": "Most stainless steel tumblers without a true vacuum seal are classified under 7323.93.0060 (stainless steel household articles) at 2% base rate, NOT 9617.00.9000 (vacuum flasks) at 7.2%. Crucially, 7323.93 sits on the SUSPENDED Section 301 List 4B — no additional China duty applies (verified at line level against the USITC China Tariffs table). The reclassification is a clean 5.2-point recovery: $377 on this entry.",
+                "legal_basis": "GRI Rule 1, Chapter 96 Note; CBP administrative rulings on tumbler classification; USITC China Tariffs table (List 4B suspended)",
+                "action_required": "Review with your customs broker — binding ruling recommended for recurring volumes"
             }
         ],
         "total_savings": 377,
         "fta_eligible": False,
         "fta_type": None,
         "country_of_origin": "China",
-        "section_301_applies": True,
-        "section_301_rate": 25.0,
+        "section_301_applies": False,
+        "section_301_rate": 0.0,
         "protest_deadline_note": "180 days from liquidation date per 19 U.S.C. §1514(a)(2)",
         "cape_eligible": False,
-        "cape_note": "IEEPA refunds do not apply here. Section 301 tariffs remain in effect.",
+        "cape_note": "IEEPA refunds do not apply here. Neither 9617.00.90 nor 7323.93 carries Section 301 (List 4B is suspended).",
         "disclaimer": "TariffCheck analysis is for informational purposes only.",
         "protest_letter": "To: U.S. Customs and Border Protection\nPort Director, Port of Long Beach\n\nRe: Protest of Tariff Classification — China-origin Stainless Tumblers\n\nPursuant to 19 U.S.C. 1514(a)(2), the importer protests the classification of stainless steel insulated tumblers under HTS 9617.00.9000 at 7.2%.\n\nThe imported merchandise consists of powder-coated, double-walled stainless steel tumblers without a true vacuum-seal mechanism. Per CBP administrative rulings, articles of this construction are more specifically classified under HTS 7323.93.0060 (stainless steel household articles, table/kitchen) at 2%. Even with Section 301 List 3 stacking (25%) on China-origin goods, the total effective rate of 27% under 7323.93 produces a net savings versus 7.2% under 9617 in cases where Section 301 does not apply to the 9617 classification.\n\nProduct sample, technical drawings, and supplier specification sheets are attached. The importer requests CBP confirm classification via binding ruling for future shipments. Total overpayment on this entry: $377.\n\nRespectfully submitted,\nAuthorized Importer Representative\nTariffCheck Analysis System"
     },
@@ -878,8 +1062,12 @@ MOCK_DEMOS = {
 # Demo payloads go through the SAME deterministic verifier as live analyses,
 # at import time — demo numbers are provably schedule-consistent, and every
 # demo response carries per-finding verified flags + a verification block.
+# The protest letter is then REGENERATED from the verified findings, so a
+# demo letter can never claim a figure the verification block just refuted.
 for _demo in MOCK_DEMOS.values():
     verify_findings(_demo)
+    _demo["protest_letter"] = generate_protest_letter(
+        _demo.get("findings"), _demo.get("total_savings"), _demo.get("fta_type"))
 
 
 @app.route('/demo', methods=['GET'])

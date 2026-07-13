@@ -4,18 +4,21 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Reveal from '../components/Reveal'
 import { useCountUp, formatUsd } from '../lib/useCountUp'
-import { usePageTitle } from '../lib/usePageTitle'
+import { usePageMeta } from '../lib/usePageMeta'
 import { analyzeInvoice, fetchDemo, ApiError } from '../lib/api'
 import { saveAudit, setLastResult, newAuditId, buildAuditSummary } from '../lib/audits'
 
+// Card amounts are the DETERMINISTICALLY VERIFIED totals — they must match
+// what /api/demo/<id> returns after verify_findings (backend enforces this
+// with tests; keep in sync when demo scenarios change).
 const DEMOS = [
-  { id: 1, code: '9403.90', label: 'Office furniture — Mexico', tag: 'USMCA missed', savings: '$3,392', desc: 'Parts code used for finished chairs; USMCA never claimed' },
+  { id: 1, code: '9403.90', label: 'Office furniture — Mexico', tag: 'Misclassified', savings: '$2,752', desc: 'Parts code used for finished metal chairs — 4.3% paid vs 0% owed' },
   { id: 2, code: '6404.19', label: 'Athletic footwear — Vietnam', tag: 'Misclassified', savings: '$10,850', desc: 'Sports footwear provision applies — 37.5% paid vs 20% owed' },
-  { id: 3, code: '8419.89', label: 'Coffee equipment — Colombia', tag: 'FTA missed', savings: '$4,338', desc: 'US–Colombia TPA not applied — 4.5% paid vs 0% owed' },
-  { id: 4, code: '8708.99', label: 'Auto parts — South Korea', tag: 'FTA missed', savings: '$1,970', desc: 'KORUS preference not claimed at entry — 2.5% to 0%' },
-  { id: 5, code: '8477.80', label: 'Pharma equipment — India', tag: 'Misclassified', savings: '$7,105', desc: 'Principal-use provision applies — 3.5% to 0%' },
+  { id: 3, code: '8419.89', label: 'Coffee equipment — Colombia', tag: 'Misclassified', savings: '$4,049', desc: 'Catch-all machinery code used — 4.2% paid vs 0% under the specific provision' },
+  { id: 4, code: '8708.99', label: 'Auto parts — South Korea', tag: 'FTA missed', savings: '$1,875', desc: 'KORUS never claimed — recoverable via 19 U.S.C. 1520(d), not protest' },
+  { id: 5, code: '8477.80', label: 'Pharma equipment — India', tag: 'Misclassified', savings: '$6,293', desc: 'Principal-use provision applies — 3.1% to 0%' },
   { id: 6, code: '9403.60', label: 'Kitchen cabinets — Vietnam', tag: 'Audit risk', savings: 'Exposure', desc: 'Wrong furniture subheading — same rate, CBP scrutiny risk' },
-  { id: 7, code: '9617.00', label: 'Stainless tumblers — China', tag: 'Section 301', savings: '$377', desc: 'Vacuum-flask vs stainless-article codes carry different rates' },
+  { id: 7, code: '9617.00', label: 'Stainless tumblers — China', tag: 'Misclassified', savings: '$377', desc: 'Vacuum-flask code used — 7.2% paid vs 2% owed; List 4B is suspended, no 301' },
   { id: 8, code: '6109.90', label: 'Cotton t-shirts — Bangladesh', tag: 'Misclassified', savings: '$1,302', desc: 'Synthetic code used for chief-weight cotton — 32% vs 16.5%' },
 ]
 
@@ -39,7 +42,7 @@ Country of Origin: Vietnam | Incoterms: CIF Savannah
 Item 1: HTS 6404.19.3560 — Athletic shoes, rubber sole, textile upper, size 6-13
 Qty: 2,000 PRS | Unit: USD 22.00 | Total: USD 44,000.00
 
-Item 2: HTS 6404.19.9060 — Walking shoes, rubber sole, mesh textile upper
+Item 2: HTS 6404.19.3960 — Walking shoes, rubber sole, mesh textile upper
 Qty: 1,000 PRS | Unit: USD 18.00 | Total: USD 18,000.00
 
 Grand Total: USD 62,000.00`,
@@ -49,13 +52,13 @@ Seller: Industrias Tecnicas de Colombia S.A.S., Medellin, Colombia
 Buyer: Specialty Coffee Roasters of America LLC, Atlanta, GA 30313
 Country of Origin: Colombia | Incoterms: CIF Miami
 
-Item 1: HTS 8419.89.1000 — Industrial coffee roasting machines, 60kg/batch capacity
+Item 1: HTS 8419.89.9585 — Industrial coffee roasting machines, 60kg/batch capacity
 Qty: 4 UNITS | Unit: USD 18,500.00 | Total: USD 74,000.00
 
-Item 2: HTS 8419.89.1000 — Replacement drum assemblies and heating elements
+Item 2: HTS 8419.89.9585 — Replacement drum assemblies and heating elements
 Qty: 8 SETS | Unit: USD 2,800.00 | Total: USD 22,400.00
 
-Grand Total: USD 96,400.00 | US-Colombia FTA applicable but not claimed`,
+Grand Total: USD 96,400.00`,
 
   4: `COMMERCIAL INVOICE — INV: KR-INV-2026-7734
 Seller: Korea Precision Components Co. Ltd., Incheon, South Korea
@@ -65,7 +68,7 @@ Country of Origin: South Korea | Incoterms: FOB Incheon
 Item 1: HTS 8708.99.8180 — Precision transmission housings, cast aluminum
 Qty: 300 PCS | Unit: USD 145.00 | Total: USD 43,500.00
 
-Item 2: HTS 8483.40.5000 — Gear boxes and speed reducers, automotive
+Item 2: HTS 8409.99.9190 — Engine components, cylinder liners and valve assemblies
 Qty: 150 PCS | Unit: USD 210.00 | Total: USD 31,500.00
 
 Grand Total: USD 75,000.00 | KORUS FTA not applied at entry`,
@@ -112,7 +115,7 @@ Item 2: HTS 9617.00.9000 — Stainless steel insulated tumblers, 30oz, powder co
 Quantity: 300 PCS | Unit Price: USD 10.00 | Total: USD 3,000.00
 
 Grand Total: USD 7,250.00
-Note: China origin — Section 301 List 3 applies to Chapter 73 goods.`,
+Note: China origin.`,
 
   8: `COMMERCIAL INVOICE — INV: BD-APR-2026-1142
 Seller: Dhaka Premium Garments Ltd., Dhaka, Bangladesh
@@ -165,11 +168,11 @@ function friendlyError(err) {
 }
 
 function RecoveredAmount() {
-  const value = useCountUp(3392, { duration: 850, startDelay: 1650 })
+  const value = useCountUp(2752, { duration: 850, startDelay: 1650 })
   return <span className="tally-amount">{formatUsd(value)}</span>
 }
 
-const TAPE_ITEMS = DEMOS.filter(d => d.savings !== 'Exposure').map(d => ({
+const TAPE_ITEMS = DEMOS.filter(d => d.savings.startsWith('$')).map(d => ({
   from: d.code, label: d.label.split(' — ')[1], amount: d.savings,
 }))
 
@@ -275,10 +278,14 @@ function StampSeal() {
 }
 
 export default function HomePage() {
-  usePageTitle()
+  usePageMeta({ description: 'Upload an invoice — get verified duty findings and a filing-ready remedy package in minutes. Every finding deterministically re-verified against all 29,755 official USITC HTS 2026 codes.', path: '/' })
   const [tab, setTab] = useState('demo')
   const [text, setText] = useState('')
   const [file, setFile] = useState(null)
+  // Optional entry facts → backend remedy router (PSC vs §1514 vs 1520(d))
+  const [entryDate, setEntryDate] = useState('')
+  const [liquidationStatus, setLiquidationStatus] = useState('')
+  const [liquidationDate, setLiquidationDate] = useState('')
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -320,7 +327,12 @@ export default function HomePage() {
         }
         data.meta = { ...(data.meta || {}), demo: true }
       } else {
-        data = await analyzeInvoice({ text: tab === 'text' ? text : undefined, file: tab === 'file' ? file : undefined, signal: controller.signal })
+        data = await analyzeInvoice({
+          text: tab === 'text' ? text : undefined,
+          file: tab === 'file' ? file : undefined,
+          entryDate, liquidationDate, liquidationStatus,
+          signal: controller.signal,
+        })
       }
 
       setLastResult(data)
@@ -412,7 +424,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="specimen" aria-label="Example audit finding: misclassified office chairs from Mexico, $3,392 recoverable">
+            <div className="specimen" aria-label="Example audit finding: misclassified office chairs from Mexico, $2,752 recoverable">
               <div className="specimen-head">
                 <span className="specimen-head-label">Audit specimen · Entry line 001</span>
                 <span className="specimen-sample-tag">Sample</span>
@@ -427,16 +439,16 @@ export default function HomePage() {
                 <div className="spec-reveal-2">
                   <div className="specimen-code-row">
                     <span className="code-struck">9403.90.8040</span>
-                    <span className="code-corrected">9403.10 + USMCA</span>
+                    <span className="code-corrected">9403.10.0000</span>
                   </div>
-                  <div className="specimen-note">Parts code used for finished chairs · USMCA preference never claimed</div>
+                  <div className="specimen-note">Parts code used for finished metal office chairs — specific provision is duty-free</div>
                 </div>
                 <div className="tally spec-reveal-3">
                   <div className="tally-row">
-                    <span>Duty paid at entry</span><span className="leader" /><span className="tally-amount">$3,392.00</span>
+                    <span>Duty paid at entry (4.3%)</span><span className="leader" /><span className="tally-amount">$2,752.00</span>
                   </div>
                   <div className="tally-row">
-                    <span>Duty owed under USMCA</span><span className="leader" /><span className="tally-amount">$0.00</span>
+                    <span>Duty owed under 9403.10 (Free)</span><span className="leader" /><span className="tally-amount">$0.00</span>
                   </div>
                   <div className="tally-row recovered">
                     <span className="tally-label">Recoverable via §1514 protest</span><span className="leader" /><RecoveredAmount />
@@ -533,6 +545,38 @@ export default function HomePage() {
               </button>
             </>
           )}
+
+          <details style={{ marginTop: 14 }}>
+            <summary style={{ cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--slate-500)', letterSpacing: '0.06em' }}>
+              ENTRY DETAILS (OPTIONAL) — unlocks real filing deadlines
+            </summary>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 10, fontSize: 13 }}>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 150 }}>
+                <span style={{ fontSize: 11, color: 'var(--slate-500)' }}>Entry date</span>
+                <input type="date" value={entryDate} onChange={e => setEntryDate(e.target.value)}
+                  style={{ padding: '8px 10px', border: '1.5px solid var(--slate-200)', borderRadius: 'var(--radius-sm)' }} />
+              </label>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 170 }}>
+                <span style={{ fontSize: 11, color: 'var(--slate-500)' }}>Liquidation status</span>
+                <select value={liquidationStatus} onChange={e => setLiquidationStatus(e.target.value)}
+                  style={{ padding: '8px 10px', border: '1.5px solid var(--slate-200)', borderRadius: 'var(--radius-sm)', background: 'var(--sheet)' }}>
+                  <option value="">Not sure</option>
+                  <option value="not_liquidated">Not yet liquidated</option>
+                  <option value="liquidated">Liquidated</option>
+                </select>
+              </label>
+              {liquidationStatus === 'liquidated' && (
+                <label style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 150 }}>
+                  <span style={{ fontSize: 11, color: 'var(--slate-500)' }}>Liquidation date</span>
+                  <input type="date" value={liquidationDate} onChange={e => setLiquidationDate(e.target.value)}
+                    style={{ padding: '8px 10px', border: '1.5px solid var(--slate-200)', borderRadius: 'var(--radius-sm)' }} />
+                </label>
+              )}
+              <div style={{ flexBasis: '100%', fontSize: 11.5, color: 'var(--slate-500)', lineHeight: 1.5 }}>
+                Why it matters: a §1514 protest runs 180 days <em>from liquidation</em>; unliquidated entries are corrected via ACE PSC; unclaimed FTA preferences have a 1-year 1520(d) window from entry. Find these dates on the CBP Form 7501 or in ACE.
+              </div>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -575,7 +619,7 @@ export default function HomePage() {
           </div>
           <div className="niche-point">
             <span className="niche-point-code">FTA never claimed</span>
-            USMCA, KORUS, and 19 other free-trade preferences left unclaimed at entry — duty paid at the full MFN rate on goods that qualified for 0%.
+            USMCA, KORUS, and every other US FTA preference in the schedule left unclaimed at entry — duty paid at the full MFN rate on goods that qualified for 0%.
           </div>
           <div className="niche-point">
             <span className="niche-point-code">Section 301 stacking</span>
@@ -603,9 +647,9 @@ export default function HomePage() {
       <div className="trust-section">
         <div className="trust-badges">
           <div className="trust-item">Official USITC 2026 data</div>
-          <div className="trust-item">§1514-compliant drafts</div>
-          <div className="trust-item">USMCA · KORUS · 21 FTAs</div>
-          <div className="trust-item">CBP Form 19 ready</div>
+          <div className="trust-item">Broker-ready §1514 drafts</div>
+          <div className="trust-item">Every US FTA program in-schedule</div>
+          <div className="trust-item">We prepare — your broker files</div>
         </div>
         <div className="trust-disclaimer">
           TariffCheck prepares filings; it does not file with CBP. All findings should be reviewed by the importer of

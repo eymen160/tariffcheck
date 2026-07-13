@@ -41,3 +41,6 @@ public/
 
 # Vite build output (Vercel builds from source)
 frontend/dist/
+
+# Internal strategy docs — never commit
+private/

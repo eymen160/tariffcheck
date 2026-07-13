@@ -12,6 +12,10 @@ export default function Footer() {
           <Link to="/hts-lookup">HTS Lookup</Link>
           <Link to="/cape-refund">CAPE Refunds</Link>
           <Link to="/pricing">Pricing</Link>
+          <Link to="/methodology">Methodology</Link>
+          <Link to="/security">Security</Link>
+          <Link to="/about">About</Link>
+          <Link to="/privacy">Privacy</Link>
           <Link to="/terms">Terms</Link>
         </div>
         <div className="site-footer-legal">
@@ -23,7 +27,8 @@ export default function Footer() {
           Duty rates sourced from the official USITC Harmonized Tariff Schedule of the United States, 2026 edition
           (29,755 codes) —{' '}
           <a href="https://hts.usitc.gov" target="_blank" rel="noopener noreferrer">hts.usitc.gov</a>.
-          Section 301 figures are chapter-level estimates.
+          Section 301 rates applied at line level per the USITC China Tariffs table; partial-coverage codes are
+          flagged as estimates.
         </div>
         <div className="site-footer-legal">© 2026 TariffCheck</div>
       </div>

@@ -14,7 +14,33 @@ const FIELD_OPTIONS = [
   { value: 'description', label: 'Description' },
   { value: 'declared_value', label: 'Declared value (USD)' },
   { value: 'origin', label: 'Country of origin' },
+  { value: 'entry_no', label: 'Entry number' },
+  { value: 'line_no', label: 'Line number' },
+  { value: 'entry_date', label: 'Entry date' },
+  { value: 'liquidation_date', label: 'Liquidation date' },
+  { value: 'liquidation_status', label: 'Liquidation status' },
+  { value: 'duty_paid', label: 'Duty amount paid (USD)' },
+  { value: 'spi_claimed', label: 'SPI (program claimed)' },
 ]
+
+// Exact-match presets for the reports brokers actually export (ACE ES-003 /
+// entry-summary line reports, CargoWise/NetCHB exports). Exact matches always
+// beat regex guesses — "Duty Amount" must never land in declared_value.
+const HEADER_PRESETS = {
+  'entry summary number': 'entry_no', 'entry number': 'entry_no', 'entry no': 'entry_no',
+  'entry summary line number': 'line_no', 'line number': 'line_no', 'line no': 'line_no',
+  'entry date': 'entry_date', 'entry summary date': 'entry_date',
+  'liquidation date': 'liquidation_date',
+  'liquidation status': 'liquidation_status', 'entry liquidation status': 'liquidation_status',
+  'duty amount': 'duty_paid', 'duty paid': 'duty_paid', 'total duty': 'duty_paid',
+  'spi': 'spi_claimed', 'special program indicator': 'spi_claimed', 'special programs indicator': 'spi_claimed',
+  'hts number': 'hts_code', 'hts code': 'hts_code', 'hts': 'hts_code', 'tariff number': 'hts_code', 'tariff ordinal': '',
+  'country of origin': 'origin', 'country of origin code': 'origin', 'origin': 'origin',
+  'country of export': '', 'country of export code': '',
+  'line goods value': 'declared_value', 'entered value': 'declared_value',
+  'goods value': 'declared_value', 'declared value': 'declared_value', 'value': 'declared_value',
+  'description': 'description', 'commodity description': 'description',
+}
 
 const SAMPLE_CSV = `hts_code,description,declared_value,origin
 9403.40.9060,"Wooden kitchen cabinets, shaker style",12000,China
@@ -67,7 +93,14 @@ function parseCSV(text) {
 }
 
 function guessField(header) {
-  const h = String(header).toLowerCase()
+  const h = String(header).toLowerCase().replace(/[_\s]+/g, ' ').trim()
+  if (Object.prototype.hasOwnProperty.call(HEADER_PRESETS, h)) return HEADER_PRESETS[h]
+  if (/country of export|export country/.test(h)) return ''
+  if (/liquidation/.test(h)) return /date/.test(h) ? 'liquidation_date' : 'liquidation_status'
+  if (/\bspi\b|special program/.test(h)) return 'spi_claimed'
+  if (/duty/.test(h)) return 'duty_paid'
+  if (/entry.*date/.test(h)) return 'entry_date'
+  if (/entry/.test(h)) return 'entry_no'
   if (/hts|tariff|code/.test(h)) return 'hts_code'
   if (/origin|country/.test(h)) return 'origin'
   if (/value|amount|total|price|cost/.test(h)) return 'declared_value'
@@ -76,7 +109,10 @@ function guessField(header) {
 }
 
 function csvEscape(v) {
-  const s = v == null ? '' : String(v)
+  let s = v == null ? '' : String(v)
+  // Neutralize spreadsheet formula injection (OWASP): a cell starting with
+  // =, +, -, @, tab or CR executes when the exported report opens in Excel.
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 
@@ -152,6 +188,25 @@ export default function BatchPage() {
   function onFile(e) {
     const f = e.target.files[0]
     if (!f) return
+    const name = (f.name || '').toLowerCase()
+    if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
+      // ACE exports arrive as Excel; convert the first sheet to CSV
+      // client-side (lazy-loaded so the landing bundle stays small).
+      const reader = new FileReader()
+      reader.onload = async ev => {
+        try {
+          const XLSX = await import('xlsx')
+          const wb = XLSX.read(ev.target.result, { type: 'array' })
+          const sheet = wb.Sheets[wb.SheetNames[0]]
+          loadCsvString(XLSX.utils.sheet_to_csv(sheet), false)
+        } catch {
+          setError('We could not read that Excel file. Save it as CSV and try again.')
+        }
+      }
+      reader.onerror = () => setError('We could not read that file. Save it as CSV and try again.')
+      reader.readAsArrayBuffer(f)
+      return
+    }
     const reader = new FileReader()
     reader.onload = ev => loadCsvString(String(ev.target.result || ''), false)
     reader.onerror = () => setError('We could not read that file. Try pasting the CSV as text instead.')
@@ -175,9 +230,9 @@ export default function BatchPage() {
         const field = effectiveMapping[ci]
         if (!field) return
         const raw = (r[ci] || '').trim()
-        if (field === 'declared_value') {
+        if (field === 'declared_value' || field === 'duty_paid') {
           const num = parseFloat(raw.replace(/[$,\s]/g, ''))
-          if (!isNaN(num)) row.declared_value = num
+          if (!isNaN(num)) row[field] = num
         } else if (raw) {
           row[field] = raw
         }
@@ -226,7 +281,7 @@ export default function BatchPage() {
 
   function downloadReport() {
     if (!results) return
-    const header = ['row_id', 'status', 'description', 'origin', 'declared_value', 'current_code', 'total_current_rate', 'issue', 'suggested_code', 'total_suggested_rate', 'estimated_savings', 'confidence', 'verified', 'note']
+    const header = ['row_id', 'entry_no', 'status', 'description', 'origin', 'declared_value', 'duty_paid', 'current_code', 'total_current_rate', 'issue', 'suggested_code', 'total_suggested_rate', 'estimated_savings', 'remedy_vehicle', 'protest_by', 'confidence', 'verified', 'note']
     const lines = [header.join(',')]
     results.forEach(r => {
       lines.push(header.map(k => csvEscape(r[k])).join(','))
@@ -283,7 +338,7 @@ export default function BatchPage() {
         <div className="card" style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
             <button className="btn-secondary" onClick={() => fileRef.current.click()}>Upload CSV</button>
-            <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: 'none' }} onChange={onFile} />
+            <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls,text/csv" style={{ display: 'none' }} onChange={onFile} />
             <button className="btn-secondary" onClick={() => loadCsvString(SAMPLE_CSV, true)}>
               Load sample portfolio <span className="badge-sample" style={{ fontSize: 9, padding: '2px 7px' }}>Sample data</span>
             </button>

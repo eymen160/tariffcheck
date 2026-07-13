@@ -49,7 +49,14 @@ async function request(path, options = {}) {
  * POST /api/analyze — invoice text, file upload, or explicit demo scenario.
  * opts: { text?, file?, demoId?, signal? }
  */
-export function analyzeInvoice({ text, file, demoId, signal } = {}) {
+export function analyzeInvoice({ text, file, demoId, entryDate, liquidationDate, liquidationStatus, signal } = {}) {
+  // Optional entry facts drive the backend's remedy router (PSC vs §1514 vs
+  // 1520(d)) and produce real statutory deadlines instead of estimates.
+  const facts = {}
+  if (entryDate) facts.entry_date = entryDate
+  if (liquidationDate) facts.liquidation_date = liquidationDate
+  if (liquidationStatus) facts.liquidation_status = liquidationStatus
+
   if (demoId != null) {
     return request('/api/analyze', {
       method: 'POST',
@@ -61,12 +68,13 @@ export function analyzeInvoice({ text, file, demoId, signal } = {}) {
   if (file) {
     const fd = new FormData()
     fd.append('file', file)
+    for (const [k, v] of Object.entries(facts)) fd.append(k, v)
     return request('/api/analyze', { method: 'POST', body: fd, signal })
   }
   return request('/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, ...facts }),
     signal,
   })
 }
@@ -92,12 +100,16 @@ export function landedCost({ code, origin = '', value, mode = 'ocean' }, signal)
   return request(`/api/landed-cost?${params.toString()}`, { signal })
 }
 
-/** POST /api/leads — stateless email capture. */
-export function submitLead({ email, source, context = '' }, signal) {
+/** POST /api/leads — email capture with optional broker-qualification
+ * fields. `website` is a honeypot: real users never fill it. */
+export function submitLead({ email, source, context = '', firm = '', entriesPerMonth = '', software = '', website = '' }, signal) {
   return request('/api/leads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, source, context }),
+    body: JSON.stringify({
+      email, source, context,
+      firm, entries_per_month: entriesPerMonth, software, website,
+    }),
     signal,
   })
 }

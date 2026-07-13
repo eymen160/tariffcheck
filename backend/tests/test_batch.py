@@ -3,6 +3,10 @@ RESULT_KEYS = {
     "declared_value", "origin", "current_rate", "section_301_rate",
     "total_current_rate", "issue", "suggested_code", "suggested_rate",
     "total_suggested_rate", "estimated_savings", "confidence", "verified", "note",
+    # ACE ES-003 / entry-summary passthrough + remedy routing (additive)
+    "entry_no", "line_no", "entry_date", "liquidation_status",
+    "protest_by", "protest_days_left", "protest_window_open",
+    "remedy_vehicle", "spi_claimed", "duty_paid", "origin_normalized",
 }
 
 CONTRACT_ROWS = {
