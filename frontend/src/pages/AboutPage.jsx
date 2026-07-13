@@ -49,8 +49,8 @@ export default function AboutPage() {
         <section>
           <h2><span className="legal-num">03</span>The team</h2>
           <p>
-            TariffCheck was built by <strong>Eymen Keyvan</strong>, <strong>Esat Sarac</strong> and{' '}
-            <strong>Selcuk Kandemir</strong> — three engineers who started it at Hacklanta 2026 and kept
+            TariffCheck was built by <strong>Eymen Keyvan</strong> (backend &amp; full-stack) and{' '}
+            <strong>Esat Sarac</strong> (frontend) — two engineers who started it at Hacklanta 2026 and kept
             going when the first real invoices showed real money. We grew up around import businesses;
             the first users were the cabinet, stone and home-goods importers in our own community, which
             keeps the product honest: these are businesses that check the math.

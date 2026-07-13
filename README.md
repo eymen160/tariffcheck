@@ -1,6 +1,6 @@
 # TariffCheck — AI Customs Duty Auditor
 
-> **Live:** https://tariffcheck-zeta.vercel.app · Born at **Hacklanta 2026**, built by Eymen Keyvan, Esat Sarac, Selcuk Kandemir
+> **Live:** https://tariffcheck-zeta.vercel.app · Born at **Hacklanta 2026**, built by Eymen Keyvan, Esat Sarac
 
 US importers systematically overpay customs duties — every number here is from a public government source, not a vendor estimate: **$509.7B of 2024 US imports entered with no USMCA claim** (USITC DataWeb), only **~3,750 filers produce all ~45,000 CBP protests a year** while the long tail of ~330K importers lets the window close (CBP, 87 FR 34894), and the tariff schedule was revised **32 times in 2025**, so yesterday's correct code goes stale. TariffCheck is the AI duty auditor for importers and the customs brokers who file for them: it reads any invoice or batch of entry lines, audits every line with Claude, deterministically re-verifies each finding against the complete **29,755-code official USITC HTS 2026 schedule** that ships inside the product, and hands back a broker-ready remedy package — a **19 U.S.C. §1514 protest draft** for misclassifications, with unclaimed FTA preferences routed to their correct vehicle (a 19 U.S.C. 1520(d) claim). We prepare the filing; you or your licensed broker files it.
 
@@ -87,9 +87,8 @@ docker run -p 80:80 -e ANTHROPIC_API_KEY=sk-... tariffcheck
 
 | Name | Role |
 |---|---|
-| Eymen Keyvan | Full-Stack & Deployment |
-| Esat Sarac | Backend & AI Integration |
-| Selcuk Kandemir | Frontend & UI/UX |
+| Eymen Keyvan | Backend & Full-Stack |
+| Esat Sarac | Frontend |
 
 ## Legal
 

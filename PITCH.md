@@ -131,9 +131,8 @@ Then:
 
 | Name | Role |
 |---|---|
-| Eymen Keyvan | Full-Stack & Deployment |
-| Esat Sarac | Backend & AI Integration |
-| Selcuk Kandemir | Frontend & UI/UX |
+| Eymen Keyvan | Backend & Full-Stack |
+| Esat Sarac | Frontend |
 
 ---
 
