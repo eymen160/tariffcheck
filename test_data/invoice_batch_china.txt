@@ -1,0 +1,57 @@
+COMMERCIAL INVOICE
+
+Seller: Global Exports Ltd. (China)
+Buyer: Peachtree Imports LLC, Atlanta, GA, USA
+Country of Origin: China
+Invoice Date: July 10, 2026
+Invoice No: GX-2026-9688
+
+Item 1:
+HTS Code: 3926.20.9050
+Description: boot band
+Total Declared Value: $2,327.00 USD
+(Source: CBP ruling N361710, 2026-06-10)
+
+Item 2:
+HTS Code: 6402.19.9031
+Description: baseball shoe
+Total Declared Value: $60,974.00 USD
+(Source: CBP ruling N361358, 2026-06-05)
+
+Item 3:
+HTS Code: 3924.90.5650
+Description: plastic shoe tree
+Total Declared Value: $8,916.00 USD
+(Source: CBP ruling N360630, 2026-05-05)
+
+Item 4:
+HTS Code: 6404.11.9050
+Description: woman’s cycling shoe
+Total Declared Value: $60,430.00 USD
+(Source: CBP ruling N360629, 2026-04-29)
+
+Item 5:
+HTS Code: 5907.00.6000
+Description: two leather flocked fabrics
+Total Declared Value: $40,769.00 USD
+(Source: CBP ruling N360009, 2026-04-21)
+
+Item 6:
+HTS Code: 6307.90.9891
+Description: various footwear styles
+Total Declared Value: $1,628.00 USD
+(Source: CBP ruling N359880, 2026-04-14)
+
+Item 7:
+HTS Code: 6402.91.5050
+Description: protective footwear
+Total Declared Value: $10,294.00 USD
+(Source: CBP ruling N357144, 2026-01-14)
+
+Item 8:
+HTS Code: 6401.92.9060
+Description: various molded footwear
+Total Declared Value: $40,144.00 USD
+(Source: CBP ruling N357047, 2026-01-13)
+
+Total Invoice Value: $225,482.00 USD

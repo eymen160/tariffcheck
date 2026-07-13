@@ -1,0 +1,694 @@
+{
+  "rows": [
+    {
+      "row_id": 101,
+      "hts_code": "8441.40.0000",
+      "description": "Fiber Packaging System",
+      "declared_value": 42609.2,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 102,
+      "hts_code": "8541.43.0010",
+      "description": "solar-powered trailer",
+      "declared_value": 57099.9,
+      "origin": "China"
+    },
+    {
+      "row_id": 103,
+      "hts_code": "8211.93.0035",
+      "description": "folding utility knife",
+      "declared_value": 40300.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 104,
+      "hts_code": "8422.11.0000",
+      "description": "dishwashers",
+      "declared_value": 63820.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 105,
+      "hts_code": "0805.50.2050",
+      "description": "lemons",
+      "declared_value": 58905.0,
+      "origin": "Somalia"
+    },
+    {
+      "row_id": 106,
+      "hts_code": "4202.92.0807",
+      "description": "insulated cooler bag",
+      "declared_value": 23736.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 107,
+      "hts_code": "4419.12.0000",
+      "description": "chopsticks and a chopstick rest",
+      "declared_value": 64548.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 108,
+      "hts_code": "3213.10.0000",
+      "description": "DIY Canvas Painting Kit",
+      "declared_value": 9450.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 109,
+      "hts_code": "5404.19.8020",
+      "description": "string art kit",
+      "declared_value": 48510.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 110,
+      "hts_code": "1605.29.0500",
+      "description": "Frozen Shrimp Scampi Meal",
+      "declared_value": 55935.0,
+      "origin": "France"
+    },
+    {
+      "row_id": 111,
+      "hts_code": "6116.10.7520",
+      "description": "gloves",
+      "declared_value": 37566.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 112,
+      "hts_code": "6506.10.6045",
+      "description": "bicycle helmets",
+      "declared_value": 33504.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 113,
+      "hts_code": "6307.90.9891",
+      "description": "gift bags",
+      "declared_value": 67756.0,
+      "origin": "Afghanistan"
+    },
+    {
+      "row_id": 114,
+      "hts_code": "4412.52.3105",
+      "description": "multilayered wood flooring",
+      "declared_value": 67719.0
+    },
+    {
+      "row_id": 115,
+      "hts_code": "9401.61.6011",
+      "description": "sofa sectional and sofa sectional components",
+      "declared_value": 59063.1,
+      "origin": "China"
+    },
+    {
+      "row_id": 116,
+      "hts_code": "6106.20.2010",
+      "description": "women\u2019s blouse",
+      "declared_value": 34967.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 117,
+      "hts_code": "6110.30.3053",
+      "description": "men\u2019s upper body garment",
+      "declared_value": 7059.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 118,
+      "hts_code": "6109.90.1065",
+      "description": "women\u2019s tank top",
+      "declared_value": 20828.0,
+      "origin": "Cambodia"
+    },
+    {
+      "row_id": 119,
+      "hts_code": "9505.90.6000",
+      "description": "costume",
+      "declared_value": 36456.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 120,
+      "hts_code": "9503.00.0073",
+      "description": "\u201cDisney Princess Set\u201d",
+      "declared_value": 9467.4,
+      "origin": "China"
+    },
+    {
+      "row_id": 121,
+      "hts_code": "9505.90.6000",
+      "description": "costume",
+      "declared_value": 52920.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 122,
+      "hts_code": "9505.90.6000",
+      "description": "costume",
+      "declared_value": 30576.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 123,
+      "hts_code": "9505.90.6000",
+      "description": "costume",
+      "declared_value": 32928.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 124,
+      "hts_code": "8421.21.0000",
+      "description": "robot pool cleaner",
+      "declared_value": 3939.6,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 125,
+      "hts_code": "8421.39.0115",
+      "description": "Isolators",
+      "declared_value": 3072.6,
+      "origin": "Ireland"
+    },
+    {
+      "row_id": 126,
+      "hts_code": "8419.89.9585",
+      "description": "temperature control unit",
+      "declared_value": 41678.88,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 127,
+      "hts_code": "8704.23.0100",
+      "description": "John Deere Log Forwarder",
+      "declared_value": 115562.91,
+      "origin": "Finland"
+    },
+    {
+      "row_id": 128,
+      "hts_code": "8421.39.0115",
+      "description": "replacement air filters",
+      "declared_value": 8535.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 129,
+      "hts_code": "8431.49.9020",
+      "description": "shear attachments",
+      "declared_value": 56259.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 130,
+      "hts_code": "7326.90.8688",
+      "description": "cam levers",
+      "declared_value": 19570.0,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 131,
+      "hts_code": "8716.31.0000",
+      "description": "wheeled propane tanker",
+      "declared_value": 71207.33,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 132,
+      "hts_code": "8431.49.9020",
+      "description": "quick coupler",
+      "declared_value": 53298.0,
+      "origin": "Sweden"
+    },
+    {
+      "row_id": 133,
+      "hts_code": "8462.29.0050",
+      "description": "stretch-bend-leveling line",
+      "declared_value": 67549.76,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 134,
+      "hts_code": "8423.81.0040",
+      "description": "pellet production equipment",
+      "declared_value": 47767.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 135,
+      "hts_code": "8423.81.0040",
+      "description": "Bluetooth coffee scale",
+      "declared_value": 45830.5,
+      "origin": "China"
+    },
+    {
+      "row_id": 136,
+      "hts_code": "8701.10.0100",
+      "description": "four electric trailer dollies",
+      "declared_value": 13227.2,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 137,
+      "hts_code": "8421.21.0000",
+      "description": "Lex Aqua closed-loop water treatment system",
+      "declared_value": 23919.0
+    },
+    {
+      "row_id": 138,
+      "hts_code": "8428.90.0390",
+      "description": "patient lift system",
+      "declared_value": 41866.66,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 139,
+      "hts_code": "8483.90.8040",
+      "description": "yoke",
+      "declared_value": 54120.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 140,
+      "hts_code": "8716.80.5090",
+      "description": "heavy-duty low bed trailer",
+      "declared_value": 68510.0,
+      "origin": "Finland"
+    },
+    {
+      "row_id": 141,
+      "hts_code": "9031.80.8085",
+      "description": "Industrial Data Acquisition Sensor Box",
+      "declared_value": 35885.2
+    },
+    {
+      "row_id": 142,
+      "hts_code": "8479.20.0000",
+      "description": "mechanical screw press oil extraction machinery line",
+      "declared_value": 51022.8,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 143,
+      "hts_code": "9506.62.4040",
+      "description": "miniature sports balls",
+      "declared_value": 12214.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 144,
+      "hts_code": "9503.00.0073",
+      "description": "children\u2019s plush ladybug stuffed toy",
+      "declared_value": 18324.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 145,
+      "hts_code": "9503.00.0071",
+      "description": "4 children\u2019s sensory activity soft toys",
+      "declared_value": 42756.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 146,
+      "hts_code": "9503.00.0073",
+      "description": "\u201cDisney Princess Style Collection Glam Jewelry Tower,\u201d children\u2019s toy",
+      "declared_value": 67188.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 147,
+      "hts_code": "3924.90.5650",
+      "description": "cat toy",
+      "declared_value": 61494.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 148,
+      "hts_code": "9102.12.4000",
+      "description": "children\u2019s projection wristwatch",
+      "declared_value": 36880.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 149,
+      "hts_code": "6307.90.9891",
+      "description": "Classification of pillow-like articles",
+      "declared_value": 8599.8,
+      "origin": "China"
+    },
+    {
+      "row_id": 150,
+      "hts_code": "9503.00.0073",
+      "description": "\u201cRazzle Dazzle\u201d children\u2019s craft kit",
+      "declared_value": 47337.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 151,
+      "hts_code": "9503.00.0073",
+      "description": "\u201cStitch-It\u201d cross-stitch children\u2019s craft kit",
+      "declared_value": 65661.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 152,
+      "hts_code": "9503.00.0090",
+      "description": "Bug-A-Salt toy guns",
+      "declared_value": 54972.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 153,
+      "hts_code": "4901.99.0093",
+      "description": "story book and a sudoku puzzle book",
+      "declared_value": 64452.0,
+      "origin": "Malaysia"
+    },
+    {
+      "row_id": 154,
+      "hts_code": "4901.99.0093",
+      "description": "story book, a crossword book and a sudoku book",
+      "declared_value": 23580.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 155,
+      "hts_code": "9503.00.0073",
+      "description": "various children\u2019s puzzle books",
+      "declared_value": 30540.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 156,
+      "hts_code": "9503.00.0090",
+      "description": "word seek puzzle book",
+      "declared_value": 56499.0,
+      "origin": "Denmark"
+    },
+    {
+      "row_id": 157,
+      "hts_code": "9503.00.0073",
+      "description": "\u201cTote-Ily Teenies\u201d toys",
+      "declared_value": 38175.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 158,
+      "hts_code": "6307.90.9891",
+      "description": "pillow-like article in the form of a ribbon bow with a detachable plushie",
+      "declared_value": 15636.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 159,
+      "hts_code": "9503.00.0090",
+      "description": "origin, and applicability under the United States-Mexico-Canada Agreement (USMCA) of a plastic doll",
+      "declared_value": 3970.2
+    },
+    {
+      "row_id": 160,
+      "hts_code": "9404.90.2090",
+      "description": "stuffed Hot Wheels\u00ae tire and stuffed Thomas and Friends\u2122 character",
+      "declared_value": 10244.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 161,
+      "hts_code": "9503.00.0073",
+      "description": "Sticker by Number books",
+      "declared_value": 62607.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 162,
+      "hts_code": "3924.90.5650",
+      "description": "textile and a plastic pail",
+      "declared_value": 6648.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 163,
+      "hts_code": "4903.00.0000",
+      "description": "children\u2019s soft books",
+      "declared_value": 26240.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 164,
+      "hts_code": "9503.00.0073",
+      "description": "\u201cBluey Gardening Set\u201d",
+      "declared_value": 25959.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 165,
+      "hts_code": "6405.20.9060",
+      "description": "workout footwear",
+      "declared_value": 54444.0,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 166,
+      "hts_code": "9503.00.0073",
+      "description": "pedal cars",
+      "declared_value": 4733.7,
+      "origin": "China"
+    },
+    {
+      "row_id": 167,
+      "hts_code": "4911.91.2040",
+      "description": "puzzles and memory sets",
+      "declared_value": 37550.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 168,
+      "hts_code": "9503.00.0090",
+      "description": "educational science kits",
+      "declared_value": 24432.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 169,
+      "hts_code": "9503.00.0073",
+      "description": "puzzle booklet with stamp dispenser",
+      "declared_value": 22905.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 170,
+      "hts_code": "9405.99.4090",
+      "description": "lampshade",
+      "declared_value": 24610.0,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 171,
+      "hts_code": "8702.20.3100",
+      "description": "bus shells",
+      "declared_value": 377370.57,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 172,
+      "hts_code": "8703.80.0020",
+      "description": "electric vehicle",
+      "declared_value": 48783.68,
+      "origin": "China"
+    },
+    {
+      "row_id": 173,
+      "hts_code": "4202.92.3131",
+      "description": "Affirmation of NY N321380; Classification of hamper tote bags",
+      "declared_value": 41538.0
+    },
+    {
+      "row_id": 174,
+      "hts_code": "8507.90.8000",
+      "description": "enclosure weldment",
+      "declared_value": 56238.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 175,
+      "hts_code": "8530.80.0000",
+      "description": "pedestrian signaling system",
+      "declared_value": 12780.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 176,
+      "hts_code": "3926.90.9989",
+      "description": "plastic film holding device and components",
+      "declared_value": 2298,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 177,
+      "hts_code": "9504.90.4000",
+      "description": "\u201cAtomic LED Azure Foosball Table\u201d",
+      "declared_value": 37800.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 178,
+      "hts_code": "8716.39.0090",
+      "description": "industrial trailer with a tipping cassette",
+      "declared_value": 32904.94,
+      "origin": "Poland"
+    },
+    {
+      "row_id": 179,
+      "hts_code": "8306.29.0000",
+      "description": "decorative metal articles",
+      "declared_value": 25476.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 180,
+      "hts_code": "8703.90.0100",
+      "description": "electric vehicles",
+      "declared_value": 49520.8,
+      "origin": "China"
+    },
+    {
+      "row_id": 181,
+      "hts_code": "9405.50.4000",
+      "description": "hand-painted candles",
+      "declared_value": 48140.0,
+      "origin": "Lithuania"
+    },
+    {
+      "row_id": 182,
+      "hts_code": "9506.99.5500",
+      "description": "fiberglass swimming pool shells",
+      "declared_value": 7633.9,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 183,
+      "hts_code": "8704.31.01",
+      "description": "Revocation of HQ 965246 and HQ 964598; Tariff classification of certain vehicles for the transportation of goods",
+      "declared_value": 29420.23
+    },
+    {
+      "row_id": 184,
+      "hts_code": "8716.39.0090",
+      "description": "utility trailer",
+      "declared_value": 16452.47,
+      "origin": "China"
+    },
+    {
+      "row_id": 185,
+      "hts_code": "7326.90.8688",
+      "description": "5-ply clad metal disc",
+      "declared_value": 64890.0,
+      "origin": "South Korea"
+    },
+    {
+      "row_id": 186,
+      "hts_code": "7612.90.1090",
+      "description": "aluminum cups and lids",
+      "declared_value": 6043.4,
+      "origin": "Austria"
+    },
+    {
+      "row_id": 187,
+      "hts_code": "7323.93.0060",
+      "description": "household kitchen cutting board",
+      "declared_value": 39216.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 188,
+      "hts_code": "9406.90.0130",
+      "description": "prefabricated building structure",
+      "declared_value": 59079.0
+    },
+    {
+      "row_id": 189,
+      "hts_code": "6802.93.0010",
+      "description": "Caravelas stone",
+      "declared_value": 33310.69,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 190,
+      "hts_code": "7615.10.7125",
+      "description": "classification and country of origin of three round disposable aluminum foil trays",
+      "declared_value": 53352.0
+    },
+    {
+      "row_id": 191,
+      "hts_code": "9404.90.2090",
+      "description": "two decorative pillows",
+      "declared_value": 15760.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 192,
+      "hts_code": "7615.10.7130",
+      "description": "aluminum sheet pan",
+      "declared_value": 50388.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 193,
+      "hts_code": "7615.10.5040",
+      "description": "aluminum skillet",
+      "declared_value": 61503.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 194,
+      "hts_code": "7615.10.3025",
+      "description": "salad bar bowl",
+      "declared_value": 11856.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 195,
+      "hts_code": "7323.99.9080",
+      "description": "2-Piece Bathroom Accessory Set",
+      "declared_value": 38704.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 196,
+      "hts_code": "7323.99.7000",
+      "description": "carbon steel pan set",
+      "declared_value": 55696.0
+    },
+    {
+      "row_id": 197,
+      "hts_code": "7323.99.7000",
+      "description": "five carbon steel pan sets",
+      "declared_value": 37760.0
+    },
+    {
+      "row_id": 198,
+      "hts_code": "7615.10.9100",
+      "description": "sprinklers",
+      "declared_value": 67431.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 199,
+      "hts_code": "6802.99.0090",
+      "description": "Nero Mist stone",
+      "declared_value": 13802.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 200,
+      "hts_code": "4421.99.9400",
+      "description": "wood butcher block",
+      "declared_value": 59479.0,
+      "origin": "Vietnam"
+    }
+  ]
+}

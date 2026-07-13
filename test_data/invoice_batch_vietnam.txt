@@ -1,0 +1,57 @@
+COMMERCIAL INVOICE
+
+Seller: Global Exports Ltd. (Vietnam)
+Buyer: Peachtree Imports LLC, Atlanta, GA, USA
+Country of Origin: Vietnam
+Invoice Date: July 10, 2026
+Invoice No: GX-2026-5862
+
+Item 1:
+HTS Code: 6402.19.9031
+Description: man’s golf shoe
+Total Declared Value: $40,245.00 USD
+(Source: CBP ruling N359996, 2026-04-17)
+
+Item 2:
+HTS Code: 6404.11.9020
+Description: man’s sneaker
+Total Declared Value: $60,653.00 USD
+(Source: CBP ruling N358104, 2026-02-10)
+
+Item 3:
+HTS Code: 6404.19.9090
+Description: boy’s slip-on shoe
+Total Declared Value: $60,550.00 USD
+(Source: CBP ruling N357157, 2026-01-15)
+
+Item 4:
+HTS Code: 9401.61.6011
+Description: sofa sectional storage console
+Total Declared Value: $40,432.00 USD
+(Source: CBP ruling N362229, 2026-06-24)
+
+Item 5:
+HTS Code: 9401.71.0011
+Description: seats
+Total Declared Value: $1,985.00 USD
+(Source: CBP ruling N361489, 2026-06-01)
+
+Item 6:
+HTS Code: 4202.92.0807
+Description: insulated cooler bag
+Total Declared Value: $1,981.00 USD
+(Source: CBP ruling N361940, 2026-06-25)
+
+Item 7:
+HTS Code: 6106.20.2010
+Description: women’s blouse
+Total Declared Value: $2,509.00 USD
+(Source: CBP ruling N361556, 2026-06-12)
+
+Item 8:
+HTS Code: 6110.30.3053
+Description: men’s upper body garment
+Total Declared Value: $40,585.00 USD
+(Source: CBP ruling N361705, 2026-06-12)
+
+Total Invoice Value: $248,940.00 USD

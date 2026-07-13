@@ -1,0 +1,57 @@
+COMMERCIAL INVOICE
+
+Seller: Global Exports Ltd. (Canada)
+Buyer: Peachtree Imports LLC, Atlanta, GA, USA
+Country of Origin: Canada
+Invoice Date: July 10, 2026
+Invoice No: GX-2026-2610
+
+Item 1:
+HTS Code: 9406.10.0000
+Description: prefabricated home structure
+Total Declared Value: $15,372.00 USD
+(Source: CBP ruling N362195, 2026-06-25)
+
+Item 2:
+HTS Code: 8302.50.0000
+Description: steel wall-mounted racks
+Total Declared Value: $60,824.00 USD
+(Source: CBP ruling N361352, 2026-06-02)
+
+Item 3:
+HTS Code: 9403.20.0082
+Description: metal furniture
+Total Declared Value: $10,561.00 USD
+(Source: CBP ruling N361192, 2026-05-13)
+
+Item 4:
+HTS Code: 8708.93.6000
+Description: clutch
+Total Declared Value: $40,938.00 USD
+(Source: CBP ruling N359991, 2026-04-20)
+
+Item 5:
+HTS Code: 9403.20.0086
+Description: metal furniture
+Total Declared Value: $1,769.00 USD
+(Source: CBP ruling N359134, 2026-03-04)
+
+Item 6:
+HTS Code: 8708.80.6590
+Description: pull bars
+Total Declared Value: $10,684.00 USD
+(Source: CBP ruling N357812, 2026-02-09)
+
+Item 7:
+HTS Code: 6307.90.9891
+Description: Classification and eligibility under the United States-Mexico-Canada Agreement (USMCA) of retractable screen
+Total Declared Value: $40,706.00 USD
+(Source: CBP ruling N361799, 2026-06-25)
+
+Item 8:
+HTS Code: 4421.99.9880
+Description: structural timber frame kit
+Total Declared Value: $8,484.00 USD
+(Source: CBP ruling N362220, 2026-06-25)
+
+Total Invoice Value: $189,338.00 USD

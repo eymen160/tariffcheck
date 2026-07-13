@@ -1,0 +1,692 @@
+{
+  "rows": [
+    {
+      "row_id": 201,
+      "hts_code": "7615.10.9100",
+      "description": "beverage cooling device",
+      "declared_value": 28899.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 202,
+      "hts_code": "8205.51.3030",
+      "description": "knife sharpeners",
+      "declared_value": 31407.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 203,
+      "hts_code": "8310.00.0000",
+      "description": "aluminum business cards and table signs",
+      "declared_value": 31392.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 204,
+      "hts_code": "7407.29.1680",
+      "description": "copper alloy hollow bars, solid bars, and rectangular wear plate",
+      "declared_value": 8283.9,
+      "origin": "Spain"
+    },
+    {
+      "row_id": 205,
+      "hts_code": "9401.99.9085",
+      "description": "seat component",
+      "declared_value": 23239.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 206,
+      "hts_code": "6815.99.4170",
+      "description": "aluminum hydroxide-based surface",
+      "declared_value": 26085.0,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 207,
+      "hts_code": "8486.90.0000",
+      "description": "dynamic gas lock membrane device",
+      "declared_value": 20768.96,
+      "origin": "Netherlands"
+    },
+    {
+      "row_id": 208,
+      "hts_code": "7616.99.5190",
+      "description": "rope clamp ascenders",
+      "declared_value": 36512.0,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 209,
+      "hts_code": "8413.60.0030",
+      "description": "hydraulic units",
+      "declared_value": 55503.6,
+      "origin": "Italy"
+    },
+    {
+      "row_id": 210,
+      "hts_code": "8483.40.5010",
+      "description": "harmonic planetary reducer",
+      "declared_value": 30985.6
+    },
+    {
+      "row_id": 211,
+      "hts_code": "2939.79.0000",
+      "description": "Berberine Chloride Dihydrate 98.5% (CAS No. 5956-60-5) in bulk powder form",
+      "declared_value": 35022.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 212,
+      "hts_code": "6211.33.9061",
+      "description": "man\u2019s protective jacket and pants set",
+      "declared_value": 24783.5,
+      "origin": "United Kingdom"
+    },
+    {
+      "row_id": 213,
+      "hts_code": "3824.99.9397",
+      "description": "food additive for chocolate milk",
+      "declared_value": 35035.0,
+      "origin": "Malaysia"
+    },
+    {
+      "row_id": 214,
+      "hts_code": "9021.90.8100",
+      "description": "insulin pump patches and continuous glucose monitor patches",
+      "declared_value": 11197.34,
+      "origin": "China"
+    },
+    {
+      "row_id": 215,
+      "hts_code": "3824.99.9397",
+      "description": "silicon wafer that will be used for testing purposes",
+      "declared_value": 56485.0,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 216,
+      "hts_code": "3824.99.3990",
+      "description": "inorganic compounds",
+      "declared_value": 56485.0,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 217,
+      "hts_code": "2921.30.3000",
+      "description": "Cyclohexylamine (CAS No. 108-91-8) in bulk form",
+      "declared_value": 57546.0,
+      "origin": "Czech Republic"
+    },
+    {
+      "row_id": 218,
+      "hts_code": "3105.10.0000",
+      "description": "Power K",
+      "declared_value": 59823.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 219,
+      "hts_code": "3105.10.0000",
+      "description": "Herbitec",
+      "declared_value": 18423.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 220,
+      "hts_code": "3824.99.3990",
+      "description": "Combate",
+      "declared_value": 67210.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 221,
+      "hts_code": "3824.99.3990",
+      "description": "NiCoMo",
+      "declared_value": 62205.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 222,
+      "hts_code": "3105.10.0000",
+      "description": "Biofran",
+      "declared_value": 46161.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 223,
+      "hts_code": "3105.10.0000",
+      "description": "Aminomax",
+      "declared_value": 30222.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 224,
+      "hts_code": "3105.10.0000",
+      "description": "fertilizers",
+      "declared_value": 55476.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 225,
+      "hts_code": "3105.10.0000",
+      "description": "Max Fulvic",
+      "declared_value": 59823.0,
+      "origin": "Brazil"
+    },
+    {
+      "row_id": 226,
+      "hts_code": "2106.90.9998",
+      "description": "origin, marking and status under the United States-Australia Free Trade Agreement (UAFTA) of a dietary supplement",
+      "declared_value": 47926.0
+    },
+    {
+      "row_id": 227,
+      "hts_code": "2914.79.9000",
+      "description": "Hexachloroacetone (CAS No. 116-16-5) from Germany in bulk form",
+      "declared_value": 66472.0
+    },
+    {
+      "row_id": 228,
+      "hts_code": "9019.20.0000",
+      "description": "Eligibility for duty-free treatment under Nairobi Protocol concerning Bonhawa Respiratory Humidifier System component part",
+      "declared_value": 26807.6,
+      "origin": "China"
+    },
+    {
+      "row_id": 229,
+      "hts_code": "9817.00.96",
+      "description": "Subheading 9817.00.96, HTSUS; Negative Pressure Wound Therapy Pump",
+      "declared_value": 2859
+    },
+    {
+      "row_id": 230,
+      "hts_code": "9817.00.96",
+      "description": "Applicability of Subheading 9817.00.96, HTSUS to Expandable Lumbar Fusion Cage",
+      "declared_value": 5566
+    },
+    {
+      "row_id": 231,
+      "hts_code": "9018.19.4000",
+      "description": "insertion tubes",
+      "declared_value": 13427.5,
+      "origin": "China"
+    },
+    {
+      "row_id": 232,
+      "hts_code": "9018.39.0050",
+      "description": "Precision Flow Rate Tubing, High-Flo Subcutaneous Safety Needle Sets, and Adapter",
+      "declared_value": 40455.0,
+      "origin": "Nicaragua"
+    },
+    {
+      "row_id": 233,
+      "hts_code": "9018.90.6000",
+      "description": "surgical devices",
+      "declared_value": 41385.0,
+      "origin": "Costa Rica"
+    },
+    {
+      "row_id": 234,
+      "hts_code": "8517.62.0090",
+      "description": "\u201cCharger Package Assembly\u201d",
+      "declared_value": 38371.2,
+      "origin": "China"
+    },
+    {
+      "row_id": 235,
+      "hts_code": "8543.40.0040",
+      "description": "electronic vaporizer device",
+      "declared_value": 10366.0,
+      "origin": "Malaysia"
+    },
+    {
+      "row_id": 236,
+      "hts_code": "9817.00.96",
+      "description": "Eligibility for duty-free treatment under Nairobi Protocol concerning F&P 950 Respiratory Humidifier System component parts",
+      "declared_value": 1642,
+      "origin": "New Zealand"
+    },
+    {
+      "row_id": 237,
+      "hts_code": "8421.39.0190",
+      "description": "disposable CLIC absorber",
+      "declared_value": 51210.0,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 238,
+      "hts_code": "8479.89.9599",
+      "description": "mechanical tensioning device and mounting interface",
+      "declared_value": 40233.6,
+      "origin": "China"
+    },
+    {
+      "row_id": 239,
+      "hts_code": "9817.00.96",
+      "description": "eligibility under the Nairobi Protocol of electric space heaters",
+      "declared_value": 8695,
+      "origin": "China"
+    },
+    {
+      "row_id": 240,
+      "hts_code": "9817.00.96",
+      "description": "eligibility under the Nairobi Protocol of electric space heaters",
+      "declared_value": 60882,
+      "origin": "Vietnam"
+    },
+    {
+      "row_id": 241,
+      "hts_code": "9019.20.0000",
+      "description": "Freestyle Comfort (FSC) Oxygen Concentrator components",
+      "declared_value": 40673.6,
+      "origin": "China"
+    },
+    {
+      "row_id": 242,
+      "hts_code": "9817.00.96",
+      "description": "Eligibility for duty-free treatment under Nairobi Protocol concerning Airvo 3 Respiratory Support System components",
+      "declared_value": 25724,
+      "origin": "New Zealand"
+    },
+    {
+      "row_id": 243,
+      "hts_code": "8423.10.0010",
+      "description": "smart scale",
+      "declared_value": 17334.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 244,
+      "hts_code": "8543.70.9860",
+      "description": "LED patches",
+      "declared_value": 23621.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 245,
+      "hts_code": "3001.90.0190",
+      "description": "nitinol tubing",
+      "declared_value": 21493.5,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 246,
+      "hts_code": "9817.00.96",
+      "description": "Application for Further Review of Protest No. 3501-25-103394; Articles for the Handicapped; Subheading 9817.00.96; Flexitouch Plus Power Supplies",
+      "declared_value": 8383
+    },
+    {
+      "row_id": 247,
+      "hts_code": "8508.11.0000",
+      "description": "hearing aid vacuum cleaner",
+      "declared_value": 40110.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 248,
+      "hts_code": "9018.90.7560",
+      "description": "tinnitus treatment device",
+      "declared_value": 9765.0,
+      "origin": "Ireland"
+    },
+    {
+      "row_id": 249,
+      "hts_code": "8421.21.0000",
+      "description": "robotic pool skimmer",
+      "declared_value": 21105.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 250,
+      "hts_code": "8541.43.0010",
+      "description": "solar roof tiles",
+      "declared_value": 67348.6,
+      "origin": "China"
+    },
+    {
+      "row_id": 251,
+      "hts_code": "7308.90.9590",
+      "description": "cleanroom panel",
+      "declared_value": 14335.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 252,
+      "hts_code": "9030.33.3800",
+      "description": "regenerative emulator",
+      "declared_value": 48777.0,
+      "origin": "Malaysia"
+    },
+    {
+      "row_id": 253,
+      "hts_code": "7326.90.8688",
+      "description": "empty electrical conduit box",
+      "declared_value": 54075.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 254,
+      "hts_code": "8479.90.95",
+      "description": "Application for Further Review of Protest No. 5301-23-109539; Classification of Aluminum \u201cClamps\u201d for Certain Solar Panel Tracking Systems",
+      "declared_value": 1973
+    },
+    {
+      "row_id": 255,
+      "hts_code": "8504.40.95",
+      "description": "Request to reconsider NY N340642 (June 26, 2024); Classification of a lithium-ion battery and charger set",
+      "declared_value": 50625.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 256,
+      "hts_code": "8707.10.0020",
+      "description": "electric vehicle bodies",
+      "declared_value": 16392.32,
+      "origin": "China"
+    },
+    {
+      "row_id": 257,
+      "hts_code": "9030.39.0100",
+      "description": "LED electrical properties tester",
+      "declared_value": 45298.44,
+      "origin": "Netherlands"
+    },
+    {
+      "row_id": 258,
+      "hts_code": "9030.39.0100",
+      "description": "LED electrical properties tester",
+      "declared_value": 37062.36,
+      "origin": "China"
+    },
+    {
+      "row_id": 259,
+      "hts_code": "8541.43.0010",
+      "description": "country of origin of solar panels",
+      "declared_value": 21961.5
+    },
+    {
+      "row_id": 260,
+      "hts_code": "8516.10.00",
+      "description": "Application for Further Review of Protest No 460124137945; Classification of AquaHT water heater module",
+      "declared_value": 59381.0
+    },
+    {
+      "row_id": 261,
+      "hts_code": "9030.33.3800",
+      "description": "electrical measurement device",
+      "declared_value": 22442.0,
+      "origin": "India"
+    },
+    {
+      "row_id": 262,
+      "hts_code": "8501.72.2000",
+      "description": "Solar Tower",
+      "declared_value": 23924.0,
+      "origin": "Belgium"
+    },
+    {
+      "row_id": 263,
+      "hts_code": "8541.42.0080",
+      "description": "solar cells",
+      "declared_value": 20502.0,
+      "origin": "Germany"
+    },
+    {
+      "row_id": 264,
+      "hts_code": "9903.45.25",
+      "description": "Classification of certain crystalline silicon photovoltaic modules",
+      "declared_value": 1546
+    },
+    {
+      "row_id": 265,
+      "hts_code": "8541.90.0000",
+      "description": "composite frames for photovoltaic (PV) solar panels",
+      "declared_value": 8870,
+      "origin": "China"
+    },
+    {
+      "row_id": 266,
+      "hts_code": "8703.33.01",
+      "description": "motorhome",
+      "declared_value": 97837.65,
+      "origin": "France"
+    },
+    {
+      "row_id": 267,
+      "hts_code": "8479.89.6500",
+      "description": "electric hand-held seed spreader",
+      "declared_value": 30175.2,
+      "origin": "China"
+    },
+    {
+      "row_id": 268,
+      "hts_code": "8543.70.9860",
+      "description": "ozone generator bag kits",
+      "declared_value": 63595.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 269,
+      "hts_code": "9506.91.0010",
+      "description": "stationary exercise bicycle accessory",
+      "declared_value": 55200.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 270,
+      "hts_code": "8714.99.8000",
+      "description": "tariff classification, country-of-origin, and status under the United States-Mexico-Canada Agreement (USMCA) of a bicycle dual-bottle mounting bracket kit",
+      "declared_value": 30504.0
+    },
+    {
+      "row_id": 271,
+      "hts_code": "3919.90.5060",
+      "description": "printed self-adhesive vinyl bib numbers and helmet stickers",
+      "declared_value": 5988,
+      "origin": "Canada"
+    },
+    {
+      "row_id": 272,
+      "hts_code": "6506.10.6045",
+      "description": "bicycle helmet",
+      "declared_value": 4048.4,
+      "origin": "China"
+    },
+    {
+      "row_id": 273,
+      "hts_code": "6507.00.0000",
+      "description": "helmet accessories",
+      "declared_value": 9469.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 274,
+      "hts_code": "7616.99.5190",
+      "description": "bicycle work stand",
+      "declared_value": 4564.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 275,
+      "hts_code": "8512.10.4000",
+      "description": "bicycle accessories",
+      "declared_value": 11033.0,
+      "origin": "Taiwan"
+    },
+    {
+      "row_id": 276,
+      "hts_code": "8711.60.0090",
+      "description": "Electric Motorcycle",
+      "declared_value": 48860.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 277,
+      "hts_code": "8716.80.5090",
+      "description": "hand cart and hitch rack",
+      "declared_value": 40300.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 278,
+      "hts_code": "6912.00.4500",
+      "description": "cowboy boot cup",
+      "declared_value": 65835.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 279,
+      "hts_code": "6912.00.4500",
+      "description": "two ceramic cups",
+      "declared_value": 26334.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 280,
+      "hts_code": "6913.90.5000",
+      "description": "ceramic decoration",
+      "declared_value": 55268.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 281,
+      "hts_code": "8516.79.0000",
+      "description": "electric skillet",
+      "declared_value": 43560.0,
+      "origin": "Indonesia"
+    },
+    {
+      "row_id": 282,
+      "hts_code": "6912.00.4400",
+      "description": "ceramic mug and handled ceramic cups",
+      "declared_value": 46683.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 283,
+      "hts_code": "6912.00.5000",
+      "description": "ceramic toothbrush holder",
+      "declared_value": 44289.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 284,
+      "hts_code": "9102.11.9510",
+      "description": "four wristwatches",
+      "declared_value": 65343.0,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 285,
+      "hts_code": "8424.89.9000",
+      "description": "dolomite soap dispensers",
+      "declared_value": 24189.12,
+      "origin": "China"
+    },
+    {
+      "row_id": 286,
+      "hts_code": "8516.79.0000",
+      "description": "electric skillet",
+      "declared_value": 17820.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 287,
+      "hts_code": "8533.40.8070",
+      "description": "potentiometer for aviation headsets",
+      "declared_value": 5322,
+      "origin": "China"
+    },
+    {
+      "row_id": 288,
+      "hts_code": "7013.99.9090",
+      "description": "glass car mascot",
+      "declared_value": 34048.0,
+      "origin": "France"
+    },
+    {
+      "row_id": 289,
+      "hts_code": "7013.91.5000",
+      "description": "lead crystal decoration",
+      "declared_value": 5029,
+      "origin": "Czech Republic"
+    },
+    {
+      "row_id": 290,
+      "hts_code": "6810.99.0080",
+      "description": "decorative water globe",
+      "declared_value": 68445.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 291,
+      "hts_code": "8419.20.0020",
+      "description": "autoclave sterilizers",
+      "declared_value": 61959.2,
+      "origin": "Japan"
+    },
+    {
+      "row_id": 292,
+      "hts_code": "7013.28.1000",
+      "description": "glass stemware, drinking glasses, and a glass bottle",
+      "declared_value": 49231.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 293,
+      "hts_code": "7013.37.2090",
+      "description": "glassware",
+      "declared_value": 60543.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 294,
+      "hts_code": "7013.99.8090",
+      "description": "decorative glass article",
+      "declared_value": 48832.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 295,
+      "hts_code": "7013.49.6090",
+      "description": "glass beverage dispenser",
+      "declared_value": 64736.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 296,
+      "hts_code": "7013.37.2090",
+      "description": "glassware",
+      "declared_value": 29016.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 297,
+      "hts_code": "6307.90.98",
+      "description": "Tariff Classification of Rope Coiled Baskets",
+      "declared_value": 66453.0
+    },
+    {
+      "row_id": 298,
+      "hts_code": "7013.42.2000",
+      "description": "four glass articles",
+      "declared_value": 26975.0,
+      "origin": "China"
+    },
+    {
+      "row_id": 299,
+      "hts_code": "0603.90.0000",
+      "description": "Glass Globe with Preserved Rose",
+      "declared_value": 52800.0,
+      "origin": "Mexico"
+    },
+    {
+      "row_id": 300,
+      "hts_code": "7013.99.5090",
+      "description": "decorative glass article",
+      "declared_value": 32256.0,
+      "origin": "China"
+    }
+  ]
+}
