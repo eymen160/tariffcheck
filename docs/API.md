@@ -531,3 +531,17 @@ Free, deterministic, CDN-cached. Source: WCO Correlation Table II (HS2022→HS20
 | POST | `/api/hs2028-check-batch` | `{"codes": [...]}` (≤500) → per-code verdicts + summary (`action_needed` count) |
 
 Scope honesty baked into every response: correlations are at the **international 6-digit level**; US 10-digit lines arrive with the USITC 2028 schedule (late 2027). A subheading absent from Table II is unchanged at 6-digit — its US statistical suffixes may still move.
+
+---
+
+## v3.5 additions (July 2026) — optional persistence layer (Neon Postgres)
+
+Set `DATABASE_URL` (Neon pooled endpoint) and the stateless product gains durable storage — unset, every helper is a no-op and behavior is byte-identical to v3.4. Persistence is additive, never load-bearing: a down database can never fail a user request (`backend/db.py`, pure-Python `pg8000`, fresh connection per operation, schema auto-bootstraps).
+
+| Table | What lands there |
+|---|---|
+| `leads` | Durable copy of every `/api/leads` submission (alongside the webhook) |
+| `audit_events` | Per-request metadata only — endpoint, firm, row/finding counts, verified savings totals. **Never invoice contents or findings text** — the privacy stance survives persistence |
+| `api_keys` | Self-serve keys stored as `sha256(key)` with firm + tier; checked by `X-API-Key` auth after the `TARIFFCHECK_API_KEYS` env pairs (env wins ties). Issue keys via the Neon SQL console for now — an admin endpoint ships with the accounts work |
+
+Enables next: tariff-change alerts, client workspaces, usage dashboards — the pricing-page "coming soon" items.

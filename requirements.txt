@@ -4,3 +4,4 @@ anthropic>=0.75
 PyPDF2
 pdfplumber
 python-dotenv
+pg8000

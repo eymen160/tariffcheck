@@ -29,10 +29,11 @@ from remedy import build_remedy_summary
 from batch_audit import run_batch_audit, BatchValidationError
 from entry7501 import parse_7501, Form7501Error
 from hs2028 import check_code as hs2028_check_code, check_codes as hs2028_check_codes
+import db
 
 load_dotenv()
 
-VERSION = "3.4.0"
+VERSION = "3.5.0"
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")
 
 logging.basicConfig(
@@ -109,17 +110,16 @@ def api_key_firm():
     "key:FirmName" pairs. A valid X-API-Key identifies the firm and bypasses
     the anonymous per-IP rate limit (their usage is logged per firm instead).
     No env var → feature off, everything stays anonymous+rate-limited."""
-    raw = os.getenv("TARIFFCHECK_API_KEYS", "").strip()
-    if not raw:
-        return None
     supplied = (request.headers.get("X-API-Key") or "").strip()
     if not supplied:
         return None
-    for pair in raw.split(","):
+    raw = os.getenv("TARIFFCHECK_API_KEYS", "").strip()
+    for pair in raw.split(",") if raw else ():
         key, _, firm = pair.strip().partition(":")
         if key and hmac.compare_digest(key, supplied):
             return firm or "unnamed"
-    return None
+    # DB-issued keys (stored hashed) — a no-op unless DATABASE_URL is set.
+    return db.lookup_api_key(supplied)
 
 
 def check_rate_limit():
@@ -722,6 +722,12 @@ def analyze():
             "model": CLAUDE_MODEL,
             "latency_ms": int((time.time() - started) * 1000),
         }
+        db.record_audit(
+            "analyze", firm=firm,
+            findings=len(analysis.get('findings') or []),
+            verified_savings=analysis.get('total_savings'),
+            meta={"model": CLAUDE_MODEL,
+                  "latency_ms": analysis['meta']["latency_ms"]})
         return jsonify(analysis)
 
     except Exception as e:
@@ -767,6 +773,12 @@ def analyze_batch():
         return api_error(400, e.code, e.message)
     if source is not None:
         result["source"] = source
+    summary = result.get("summary") or {}
+    db.record_audit(
+        "analyze-batch", firm=api_key_firm(),
+        rows=summary.get("rows"), findings=summary.get("flagged"),
+        verified_savings=summary.get("total_estimated_exposure"),
+        meta={"source_type": (source or {}).get("type", "json_rows")})
     return jsonify(result)
 
 
@@ -951,6 +963,7 @@ def leads():
         "software": str(data.get('software', '') or '')[:100],
     }
     payload["forwarded"] = _forward_lead(payload)
+    payload["persisted"] = db.record_lead(payload)
     log.info(json.dumps(payload))
     return jsonify({"ok": True, "message": "Thanks — we'll be in touch."})
 
