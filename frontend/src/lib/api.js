@@ -94,6 +94,15 @@ export function analyzeBatch(rows, signal) {
   })
 }
 
+/** POST /api/analyze-batch with a CBP Form 7501 PDF (multipart). The entry
+ * summary is parsed server-side to ES-003 rows and audited; the response
+ * carries a `source` block (entry_no, rows_parsed, warnings). */
+export function analyzeBatch7501(file, signal) {
+  const form = new FormData()
+  form.append('file', file)
+  return request('/api/analyze-batch', { method: 'POST', body: form, signal })
+}
+
 /** GET /api/landed-cost?code=&origin=&value=&mode= */
 export function landedCost({ code, origin = '', value, mode = 'ocean' }, signal) {
   const params = new URLSearchParams({ code, origin, value: String(value), mode })

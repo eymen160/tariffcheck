@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { analyzeBatch, isFeatureUnavailable } from '../lib/api'
+import { analyzeBatch, analyzeBatch7501, isFeatureUnavailable } from '../lib/api'
 import { money, rate } from '../lib/format'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -151,6 +151,7 @@ export default function BatchPage() {
   const [unavailable, setUnavailable] = useState(false)
   const [showOk, setShowOk] = useState(false)
   const [sort, setSort] = useState({ key: 'estimated_savings', dir: 'desc' })
+  const [pdfSource, setPdfSource] = useState(null) // 7501 upload: {entry_no, rows_parsed, warnings}
   const fileRef = useRef()
 
   usePageTitle('Batch Audit')
@@ -183,12 +184,40 @@ export default function BatchPage() {
     setSummary(null)
     setError('')
     setUnavailable(false)
+    setPdfSource(null)
+  }
+
+  async function onPdf(f) {
+    // CBP Form 7501: parsed server-side to ES-003 rows — no column mapping
+    // step, results land directly.
+    setError('')
+    setUnavailable(false)
+    setResults(null)
+    setSummary(null)
+    setPdfSource(null)
+    setRunning(true)
+    try {
+      const data = await analyzeBatch7501(f)
+      setResults(data.results || [])
+      setSummary(data.summary || null)
+      setPdfSource(data.source || null)
+    } catch (err) {
+      if (isFeatureUnavailable(err)) setUnavailable(true)
+      else setError(err.message || 'We could not read that 7501. Try the CSV path instead.')
+    } finally {
+      setRunning(false)
+    }
   }
 
   function onFile(e) {
     const f = e.target.files[0]
     if (!f) return
     const name = (f.name || '').toLowerCase()
+    if (name.endsWith('.pdf')) {
+      onPdf(f)
+      e.target.value = ''
+      return
+    }
     if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
       // ACE exports arrive as Excel; convert the first sheet to CSV
       // client-side (lazy-loaded so the landing bundle stays small).
@@ -218,6 +247,7 @@ export default function BatchPage() {
     setUnavailable(false)
     setResults(null)
     setSummary(null)
+    setPdfSource(null)
     setRunning(true)
     setProgress(0)
 
@@ -337,8 +367,8 @@ export default function BatchPage() {
         {/* Input card */}
         <div className="card" style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-            <button className="btn-secondary" onClick={() => fileRef.current.click()}>Upload CSV</button>
-            <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls,text/csv" style={{ display: 'none' }} onChange={onFile} />
+            <button className="btn-secondary" onClick={() => fileRef.current.click()}>Upload CSV / Excel / 7501 PDF</button>
+            <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls,.pdf,text/csv,application/pdf" style={{ display: 'none' }} onChange={onFile} />
             <button className="btn-secondary" onClick={() => loadCsvString(SAMPLE_CSV, true)}>
               Load sample portfolio <span className="badge-sample" style={{ fontSize: 9, padding: '2px 7px' }}>Sample data</span>
             </button>
@@ -457,6 +487,17 @@ export default function BatchPage() {
             {skipped > 0 && (
               <div style={{ fontSize: 13, color: 'var(--slate-500)', marginBottom: 12 }}>
                 {skipped} row{skipped !== 1 ? 's' : ''} skipped (no HTS code).
+              </div>
+            )}
+
+            {pdfSource && (
+              <div style={{ fontSize: 13, color: 'var(--slate-600)', marginBottom: 12, background: 'var(--slate-50)', border: '1px solid var(--slate-200)', borderRadius: 'var(--radius-sm)', padding: '10px 14px' }}>
+                Parsed from CBP Form 7501{pdfSource.entry_no ? <> — entry <span style={{ fontFamily: 'var(--font-mono)' }}>{pdfSource.entry_no}</span></> : null} · {pdfSource.rows_parsed} line{pdfSource.rows_parsed !== 1 ? 's' : ''} extracted.
+                {(pdfSource.warnings || []).length > 0 && (
+                  <ul style={{ margin: '6px 0 0', paddingLeft: 18, color: 'var(--amber)', lineHeight: 1.6 }}>
+                    {pdfSource.warnings.map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                )}
               </div>
             )}
 
