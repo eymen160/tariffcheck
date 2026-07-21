@@ -11,7 +11,7 @@ TariffCheck prepares classification audits and 19 U.S.C. §1514 protest packages
 | Findings detail | Summary only (savings shown, codes partially masked) | Full findings, verified against USITC rates, exportable | Full + white-label drafts — the API-keyed firm is named as preparer on every draft *(shipped v3.2)* |
 | §1514 protest packages | — | 3/mo included, then $149 each | Unlimited |
 | Tariff-change alerts *(roadmap — requires the persistence layer)* | 5 HTS codes | Full catalog (up to 2,500 SKUs) | Multi-client catalogs, ACE report ingestion |
-| Success-fee recovery service (optional) | — | 10% of verified recovery, filed via partner broker, $1,500 min | 8%, or waived for brokers filing themselves |
+| Success-fee recovery service (optional) | — | 3% of verified recovery, filed via partner broker ($750 min per filing, $25K/yr cap) | 2% ($50K/yr cap), always 0% for brokers filing themselves |
 | Support | Community | Email, 1-business-day | Dedicated CSM + licensed-broker review tier |
 
 **One-time SKU — CAPE Readiness Check: $149 flat per claim batch.** Deterministic screen of an IEEPA refund entry list (Chapter 99 lines, entry-date windows, phase eligibility, liquidation timing) plus a validated declaration checklist before the importer files free in ACE. Priced against the $500–$2,000 brokers charge per CAPE declaration; flat, never a percentage of the refund. Time-boxed offer — retires when the CAPE window closes.
@@ -39,5 +39,5 @@ Defense in four points:
 
 1. **The regulatory wall makes pure contingency structurally unsound for a non-filer.** Never build the P&L on cash you can't collect.
 2. **Subscriptions monetize the durable product** — continuous entry auditing and per-SKU tariff-change monitoring, the retention layer — rather than the one-time CAPE/IEEPA wave.
-3. **The 10% success fee**, charged only on managed recoveries filed via our broker-partner network, still delivers the "we sell the outcome" narrative and lifts ACV without making revenue hostage to CBP liquidation timelines.
+3. **The 2–3% capped success fee**, charged only on managed recoveries filed via our broker-partner network, still delivers the "we sell the outcome" narrative without making revenue hostage to CBP liquidation timelines. Repriced July 2026 against the market: Caspian sells §1514 protest recovery at **2% of claim ($100K annual cap)** — but files as a brokerage, competing with the buyer's own broker; the drawback industry charges 10–25%. Our answer: match Caspian's number at Enterprise (2%, $50K cap), charge 3% with a $750-per-filing minimum on Pro managed recoveries (the minimum covers the partner broker's flat filing fee — pure 2% is uneconomic on small recoveries when a licensed partner must be paid), and keep the 0% waiver whenever the client's own broker files, which no filer-competitor can offer.
 4. **Brokers — our wedge buyer — hate revenue-sharing and love per-seat/per-client tools.** Contingency pricing would poison the broker channel that solves our license wall; that's why brokers filing themselves get the fee waived.

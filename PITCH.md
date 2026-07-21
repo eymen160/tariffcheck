@@ -48,7 +48,7 @@ Honest math, built to survive diligence — the recurring recoverable pool is **
 
 - **TAM — $1.5–3B/yr.** The recovered-money fee pool: 10–30% contingency on the recurring recoverable pool (the fee band the drawback/recovery industry actually charges today) ≈ $0.5–1B/yr in service fees, plus the $1.2–2.7B global trade-management-software category an AI-native challenger takes share from. The one-time ~$166B IEEPA refund event sits on top of this as 2026 customer acquisition, not run-rate.
 - **SAM — $400–700M/yr.** What our mechanism (classification audit → §1514 protest package) and motion (broker-first, US-only) actually address: ~3,000 active brokerage firms ($300–500M at realistic ACVs) plus the recovery fees flowing through them. Honestly excluded: duty drawback (§1313), non-US regimes, filing itself (license wall), and CAPE-mechanical IEEPA refunds.
-- **SOM — $8–12M revenue by end of year 3.** Bottom-up: 150 broker-firm accounts (~5% of the 3,000-firm universe) at ~$25K ACV + 1,500 self-serve importer subscriptions at ~$3.5K + $1–2M in success fees on managed recoveries. Note the mix: at maturity roughly half of this is recovery-linked, not pure SaaS — we price the way this market demonstrably pays.
+- **SOM — $7–11M revenue by end of year 3.** Bottom-up: 150 broker-firm accounts (~5% of the 3,000-firm universe) at ~$25K ACV + 1,500 self-serve importer subscriptions at ~$3.5K + $0.4–1M in capped success fees on managed recoveries (2–3%, repriced Jul 2026 against Caspian's 2% benchmark — the fee is an accelerant, not a pillar). The revenue quality improves with the reprice: ~90% of the mix is recurring SaaS valued at software multiples.
 
 ## 6. Business Model
 
@@ -58,9 +58,10 @@ Honest math, built to survive diligence — the recurring recoverable pool is **
 |---|---|---|
 | Free | $0 | Unlimited HTS lookup, 2 audits/mo — the PLG funnel |
 | Pro | **$349/mo** ($299/mo annual) | SMB importers: 300 entries/mo, full verified findings, protest packages |
-| Enterprise / Broker | **from $1,750/mo** | Brokerages: unlimited entries, bulk client-portfolio scanning, white-label drafts |
+| Broker Audit | **$795/mo** | Brokerage firms — audit-only, your license files, no success fee |
+| Enterprise / Broker+ | **from $1,750/mo** | Brokerages: unlimited entries, white-label drafts, bulk client-portfolio scanning |
 
-Plus a **10% success fee** charged only on managed recoveries filed via partner brokers (8% or waived for brokers filing themselves).
+Plus a **2–3% capped success fee** only on managed recoveries filed via partner brokers — 3% on Pro ($750 min/filing, $25K/yr cap), 2% on Enterprise ($50K/yr cap), **always 0% when the client's own broker files**. Priced deliberately against the market (July 2026): Caspian sells protest recovery at 2% ($100K cap) but files as a rival brokerage; the drawback industry charges 10–25%. We match the disruptive number while staying the only player structurally incapable of competing with the broker who files.
 
 Why not pure contingency? Because we don't file — the importer of record or a licensed broker does, and recovery closes 60–180+ days later, outside our control. Building the P&L on cash we can't collect is structurally unsound for a non-filer: fee leakage, unenforceable collection, lumpy non-recurring revenue valued at 1–2x instead of software multiples — and contingency pricing would poison the broker channel, since brokers hate revenue-sharing and love per-seat tools. Subscriptions monetize the durable product (continuous audit + tariff-change monitoring); the success fee still delivers the "we sell the outcome" upside where a partner broker closes the loop.
 
@@ -74,7 +75,7 @@ Full pricing detail: [docs/PRICING.md](docs/PRICING.md).
 |---|---|---|
 | M0–4: PLG proof | Free lookup live (done), 5K MAU on lookup, 40 Pro self-serve @ $3.6K | **$144K** |
 | M4–9: Broker wedge | 8 broker Enterprise @ $22K (design partners → paid; zero design partners today — this is the plan) + 90 Pro | **$500K** |
-| M9–15: $1M | 25 broker firms @ $22K ($550K) + 150 Pro @ $3.6K ($540K) + ~$75–100K realized success fees | **~$1.15M** |
+| M9–15: $1M | 25 broker firms @ $22K ($550K) + 150 Pro @ $3.6K ($540K) + ~$25–50K realized success fees (2–3% capped) | **~$1.1M** |
 
 Why credible: (a) the buyer universe is enumerable — 3,000 broker firms is a spreadsheet, not a market-sizing exercise; (b) the product's first output is a dollar figure ("we found $X across your last 12 months of entries"), which collapses sales cycles; (c) tariff volatility re-creates the audit need with every rate change.
 

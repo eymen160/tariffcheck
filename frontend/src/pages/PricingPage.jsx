@@ -36,7 +36,7 @@ const TIERS = [
       'API keys for your office',
       'Client workspaces (coming soon)',
       'Dedicated licensed-broker review tier',
-      'Optional 8% success fee on managed recoveries',
+      'Optional 2% success fee on managed recoveries (capped $50K/yr) — 0% when your firm files',
     ],
     cta: 'lead',
     highlight: false,
@@ -150,7 +150,7 @@ export default function PricingPage() {
         </div>
 
         <div style={{ fontSize: 13, color: 'var(--slate-500)', textAlign: 'center', marginBottom: 10, lineHeight: 1.6 }}>
-          Optional success fees on managed recoveries filed via partner brokers: 10% on Pro, 8% on Enterprise (waived when your firm files). $1,500 minimum.
+          Optional success fees on managed recoveries filed via partner brokers: 3% on Pro ($750 min per filing, $25K/yr cap), 2% on Enterprise ($50K/yr cap) — always 0% when your own broker files. The drawback industry charges 10–25% for the same recovery.
         </div>
         <div style={{ fontSize: 13, color: 'var(--slate-500)', textAlign: 'center', fontWeight: 600 }}>
           TariffCheck prepares filings; the importer of record or a licensed customs broker files them.
