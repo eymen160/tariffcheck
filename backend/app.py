@@ -28,10 +28,11 @@ from verifier import verify_findings, VERIFICATION_SOURCE
 from remedy import build_remedy_summary
 from batch_audit import run_batch_audit, BatchValidationError
 from entry7501 import parse_7501, Form7501Error
+from hs2028 import check_code as hs2028_check_code, check_codes as hs2028_check_codes
 
 load_dotenv()
 
-VERSION = "3.3.0"
+VERSION = "3.4.0"
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")
 
 logging.basicConfig(
@@ -868,6 +869,33 @@ def landed_cost():
     # Deterministic per query string → safe to cache hard at the CDN.
     response.headers["Cache-Control"] = "public, s-maxage=86400, stale-while-revalidate=604800"
     return response
+
+
+@app.route('/api/hs2028-check', methods=['GET'])
+def hs2028_check_one():
+    """Will this code survive the Jan 1, 2028 HS renumbering? Free, from the
+    WCO correlation tables — no competitor ships this yet."""
+    code = (request.args.get('code') or '').strip()
+    if not code:
+        return api_error(400, "missing_code", "Pass ?code= with a 6/8/10-digit HTS code.")
+    result = hs2028_check_code(code)
+    if result.get("status") == "invalid":
+        return api_error(400, "invalid_code", result["message"])
+    response = jsonify(result)
+    response.headers["Cache-Control"] = "public, s-maxage=86400, stale-while-revalidate=604800"
+    return response
+
+
+@app.route('/api/hs2028-check-batch', methods=['POST'])
+def hs2028_check_many():
+    """Batch readiness screen: {"codes": [...]} up to 500."""
+    data = request.get_json(silent=True) or {}
+    codes = data.get('codes')
+    if not isinstance(codes, list) or not codes:
+        return api_error(400, "missing_codes", 'Send JSON {"codes": ["8471.30.0100", ...]}.')
+    if len(codes) > 500:
+        return api_error(400, "too_many_codes", "Maximum 500 codes per request.")
+    return jsonify(hs2028_check_codes([str(c) for c in codes]))
 
 
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")

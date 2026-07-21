@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import ResultsPage from './pages/ResultsPage'
 import CapePage from './pages/CapePage'
+import Hs2028Page from './pages/Hs2028Page'
 import LookupPage from './pages/LookupPage'
 import BatchPage from './pages/BatchPage'
 import CalculatorPage from './pages/CalculatorPage'
@@ -21,6 +22,7 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/results" element={<ResultsPage />} />
       <Route path="/cape-refund" element={<CapePage />} />
+      <Route path="/hs2028" element={<Hs2028Page />} />
       <Route path="/hts-lookup" element={<LookupPage />} />
       <Route path="/batch" element={<BatchPage />} />
       <Route path="/calculator" element={<CalculatorPage />} />

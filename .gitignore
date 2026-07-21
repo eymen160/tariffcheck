@@ -33,7 +33,7 @@ frontend 2/
 .env*
 
 # Vercel build artifacts
-public/
+/public/
 .vercel/
 
 # Local agent config

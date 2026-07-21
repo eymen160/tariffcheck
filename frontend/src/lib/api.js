@@ -103,6 +103,17 @@ export function analyzeBatch7501(file, signal) {
   return request('/api/analyze-batch', { method: 'POST', body: form, signal })
 }
 
+/** POST /api/hs2028-check-batch — {codes: [...]} up to 500; returns per-code
+ * HS 2028 verdicts (unchanged / renumbered / split) + summary. */
+export function hs2028CheckBatch(codes, signal) {
+  return request('/api/hs2028-check-batch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ codes }),
+    signal,
+  })
+}
+
 /** GET /api/landed-cost?code=&origin=&value=&mode= */
 export function landedCost({ code, origin = '', value, mode = 'ocean' }, signal) {
   const params = new URLSearchParams({ code, origin, value: String(value), mode })

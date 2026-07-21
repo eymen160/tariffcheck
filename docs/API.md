@@ -518,3 +518,16 @@ The response keeps the exact batch shape (`summary` + `results`) and gains a `so
 | 400 | `{"error":"too_many_rows","message":"Maximum 100 rows per request — send in chunks."}` — 7501s with more than 100 lines exceed the batch cap |
 
 Error bodies never contain `summary`/`results` — a failed parse can never look like a clean audit.
+
+---
+
+## v3.4 additions (July 2026) — HS 2028 readiness check
+
+Free, deterministic, CDN-cached. Source: WCO Correlation Table II (HS2022→HS2028, April 2026, incl. July 2026 corrigendum), parsed to `backend/data/hs2028_correlations.json.gz` by `test_data/build_hs2028_table.py` (308 affected 2022 subheadings, 187 one-to-many splits).
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/hs2028-check?code=` | One code (6/8/10-digit) → `unchanged` \| `renumbered` \| `split` + targets/notes |
+| POST | `/api/hs2028-check-batch` | `{"codes": [...]}` (≤500) → per-code verdicts + summary (`action_needed` count) |
+
+Scope honesty baked into every response: correlations are at the **international 6-digit level**; US 10-digit lines arrive with the USITC 2028 schedule (late 2027). A subheading absent from Table II is unchanged at 6-digit — its US statistical suffixes may still move.

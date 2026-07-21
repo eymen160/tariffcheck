@@ -11,6 +11,7 @@ export default function Footer() {
           <Link to="/calculator">Landed Cost</Link>
           <Link to="/hts-lookup">HTS Lookup</Link>
           <Link to="/cape-refund">CAPE Refunds</Link>
+          <Link to="/hs2028">HS 2028 Checker</Link>
           <Link to="/pricing">Pricing</Link>
           <Link to="/methodology">Methodology</Link>
           <Link to="/security">Security</Link>
