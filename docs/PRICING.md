@@ -6,13 +6,17 @@ TariffCheck prepares classification audits and 19 U.S.C. §1514 protest packages
 
 | | **Free** | **Pro — $349/mo** (annual: $299/mo) | **Enterprise / Broker — from $1,750/mo** |
 |---|---|---|---|
-| HTS lookup (29,755-code USITC 2026 schedule) | Unlimited | Unlimited + CROSS rulings citations | Unlimited + API access |
+| HTS lookup (29,755-code USITC 2026 schedule) | Unlimited | Unlimited + CROSS rulings citations *(roadmap)* | Unlimited + API access |
 | Invoice/entry audits | 2/mo, 1 seat | 300 entries/mo, 3 seats | Unlimited entries, unlimited seats, bulk client-portfolio scanning |
-| Findings detail | Summary only (savings shown, codes partially masked) | Full findings, verified against USITC rates, exportable | Full + white-label drafts under broker letterhead |
+| Findings detail | Summary only (savings shown, codes partially masked) | Full findings, verified against USITC rates, exportable | Full + white-label drafts — the API-keyed firm is named as preparer on every draft *(shipped v3.2)* |
 | §1514 protest packages | — | 3/mo included, then $149 each | Unlimited |
-| Tariff-change alerts | 5 HTS codes | Full catalog (up to 2,500 SKUs) | Multi-client catalogs, ACE report ingestion |
+| Tariff-change alerts *(roadmap — requires the persistence layer)* | 5 HTS codes | Full catalog (up to 2,500 SKUs) | Multi-client catalogs, ACE report ingestion |
 | Success-fee recovery service (optional) | — | 10% of verified recovery, filed via partner broker, $1,500 min | 8%, or waived for brokers filing themselves |
 | Support | Community | Email, 1-business-day | Dedicated CSM + licensed-broker review tier |
+
+**One-time SKU — CAPE Readiness Check: $149 flat per claim batch.** Deterministic screen of an IEEPA refund entry list (Chapter 99 lines, entry-date windows, phase eligibility, liquidation timing) plus a validated declaration checklist before the importer files free in ACE. Priced against the $500–$2,000 brokers charge per CAPE declaration; flat, never a percentage of the refund. Time-boxed offer — retires when the CAPE window closes.
+
+> **Honesty ledger:** rows tagged *(roadmap)* are sold forward and not yet in the product; the public pricing page marks the same items "coming soon". White-label drafts shipped in v3.2 (July 2026).
 
 ## Target ACVs
 

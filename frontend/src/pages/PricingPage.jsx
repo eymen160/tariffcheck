@@ -32,8 +32,9 @@ const TIERS = [
     subtitle: 'For brokerages and high-volume importers',
     features: [
       'Unlimited entries and seats',
-      'White-label remedy drafts',
-      'Client workspaces + API access',
+      'White-label remedy drafts — your firm named as preparer on every draft',
+      'API keys for your office',
+      'Client workspaces (coming soon)',
       'Dedicated licensed-broker review tier',
       'Optional 8% success fee on managed recoveries',
     ],
@@ -50,7 +51,7 @@ const TIERS = [
       '3 seats',
       'Full verified findings',
       '3 remedy packages/mo, then $149 each',
-      'Full-catalog rate alerts',
+      'Tariff-change alerts (coming soon)',
     ],
     cta: 'lead',
     highlight: false,
@@ -90,11 +91,16 @@ function TierCard({ tier }) {
       </div>
       <div style={{ fontSize: 12.5, color: 'var(--slate-500)', marginBottom: 18 }}>{tier.subtitle}</div>
       <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 22, flex: 1 }}>
-        {tier.features.map(f => (
-          <li key={f} style={{ fontSize: 13.5, color: 'var(--slate-600)', display: 'flex', gap: 8, lineHeight: 1.5 }}>
-            <span style={{ color: 'var(--green)', fontWeight: 700, flexShrink: 0 }}>✓</span>{f}
-          </li>
-        ))}
+        {tier.features.map(f => {
+          // Roadmap items render honestly: hollow marker + muted text, never
+          // the green check that means "ships today".
+          const soon = f.includes('(coming soon)')
+          return (
+            <li key={f} style={{ fontSize: 13.5, color: soon ? 'var(--slate-400)' : 'var(--slate-600)', display: 'flex', gap: 8, lineHeight: 1.5 }}>
+              <span style={{ color: soon ? 'var(--slate-400)' : 'var(--green)', fontWeight: 700, flexShrink: 0 }}>{soon ? '○' : '✓'}</span>{f}
+            </li>
+          )
+        })}
       </ul>
       {tier.cta === 'free' ? (
         <Link to="/" className={tier.highlight ? 'btn-primary' : 'btn-secondary'} style={{ width: '100%' }}>
@@ -127,6 +133,20 @@ export default function PricingPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, alignItems: 'stretch', marginBottom: 28 }}>
           {TIERS.map(t => <TierCard key={t.name} tier={t} />)}
+        </div>
+
+        <div className="card" style={{ marginBottom: 28, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, border: '1px solid var(--slate-200)' }}>
+          <div style={{ flex: '1 1 380px' }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--slate-900)', marginBottom: 4 }}>
+              CAPE Readiness Check — <span style={{ fontFamily: 'var(--font-serif)' }}>$149</span> flat per claim batch
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--slate-600)', lineHeight: 1.6 }}>
+              Before you upload an IEEPA refund declaration to CBP's CAPE portal, we screen your entry list — IEEPA Chapter 99 lines, entry-date windows, phase eligibility — and hand back a validated declaration checklist. You file free in ACE; brokers charge $500–$2,000 for the same review. <Link to="/cape-refund" style={{ color: 'var(--ledger)' }}>How CAPE works →</Link>
+            </div>
+          </div>
+          <div style={{ flex: '0 1 260px', minWidth: 220 }}>
+            <LeadForm source="cape_readiness_pricing" buttonLabel="Check my batch" />
+          </div>
         </div>
 
         <div style={{ fontSize: 13, color: 'var(--slate-500)', textAlign: 'center', marginBottom: 10, lineHeight: 1.6 }}>

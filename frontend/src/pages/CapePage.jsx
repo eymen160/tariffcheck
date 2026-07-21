@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import LeadForm from '../components/LeadForm'
 import { usePageTitle } from '../lib/usePageTitle'
 
 export default function CapePage() {
@@ -25,8 +26,23 @@ export default function CapePage() {
 
         <div className="card" style={{marginBottom:24}}>
           <h2 style={{fontSize:20, marginBottom:16}}>What happened?</h2>
-          <p style={{color:'var(--slate-600)', lineHeight:1.7}}>
-            In a publicly reported 6-3 decision, the Supreme Court ruled that President Trump's broad tariffs imposed under the International Emergency Economic Powers Act (IEEPA) exceeded presidential authority. CBP launched the CAPE (Consolidated Administration and Processing of Entries) system on April 20, 2026 to process refund claims. As of May 2026, $35.46 billion in refunds have been calculated (per CBP, May 2026).
+          <p style={{color:'var(--slate-600)', lineHeight:1.7, marginBottom:16}}>
+            In a 6-3 decision (February 20, 2026), the Supreme Court ruled that the broad tariffs imposed under the International Emergency Economic Powers Act (IEEPA) exceeded presidential authority. CBP launched the CAPE (Consolidated Administration and Processing of Entries) system in ACE to process refund claims. As of late June 2026, CBP had authorized roughly $104B in refunds and paid about $71B.
+          </p>
+          <div style={{display:'flex', flexDirection:'column', gap:10}}>
+            {[
+              {phase:'Phase 1', date:'Apr 20, 2026', text:'Live — unliquidated entries, plus entries liquidated within 80 days of submission (~63% of affected entries).'},
+              {phase:'Phase 2', date:'Jun 29, 2026', text:'Live — adds reconciliation-flagged entries.'},
+              {phase:'Phase 3', date:'late Jul 2026', text:'Expected — finally liquidated entries, only for importers who filed at the Court of International Trade.'},
+            ].map(p => (
+              <div key={p.phase} style={{display:'flex', gap:12, alignItems:'baseline'}}>
+                <span style={{fontFamily:'var(--font-mono)', fontSize:11, fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--ledger)', whiteSpace:'nowrap', flexShrink:0}}>{p.phase} · {p.date}</span>
+                <span style={{color:'var(--slate-600)', fontSize:13.5, lineHeight:1.6}}>{p.text}</span>
+              </div>
+            ))}
+          </div>
+          <p style={{color:'var(--slate-500)', fontSize:12.5, lineHeight:1.6, marginTop:14, marginBottom:0}}>
+            Note: the government appealed the refund order in June 2026, so mechanics may still shift — another reason not to sit on eligible claims. Separately, the replacement 10% global tariff under Section 122 expires by statute on July 24, 2026.
           </p>
         </div>
 
@@ -58,7 +74,7 @@ export default function CapePage() {
               <ul style={{color:'var(--ledger-deep)', fontSize:13, paddingLeft:16, margin:0, lineHeight:1.7}}>
                 <li>Refunds ordered following the Supreme Court ruling</li>
                 <li>Filed through CBP ACE Portal</li>
-                <li>Covers tariffs from Jan 2026</li>
+                <li>Covers IEEPA duties paid Feb 2025 – Feb 2026</li>
                 <li>60-90 day processing time</li>
                 <li>Free to claim yourself</li>
               </ul>
@@ -73,6 +89,16 @@ export default function CapePage() {
                 <li>Can stack with IEEPA refund</li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        <div className="card" style={{marginBottom:24, border:'2px solid var(--ledger)'}}>
+          <h2 style={{fontSize:20, marginBottom:8}}>CAPE Readiness Check — $149 flat per claim batch</h2>
+          <p style={{color:'var(--slate-600)', lineHeight:1.7, marginBottom:14}}>
+            One malformed CSV row can bounce a whole declaration. Before you upload, we screen your entry list — IEEPA Chapter 99 lines, entry-date windows, phase eligibility, liquidation timing — and hand back a validated declaration checklist. You still file yourself, free, in ACE; brokers charge $500–$2,000 for the same review. Flat fee, no percentage of your refund.
+          </p>
+          <div style={{maxWidth:380}}>
+            <LeadForm source="cape_readiness" buttonLabel="Check my batch" />
           </div>
         </div>
 

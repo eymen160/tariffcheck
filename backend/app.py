@@ -4,6 +4,7 @@ from pathlib import Path
 import anthropic
 import PyPDF2
 import pdfplumber
+import hmac
 import json
 import logging
 import re
@@ -29,7 +30,7 @@ from batch_audit import run_batch_audit, BatchValidationError
 
 load_dotenv()
 
-VERSION = "3.0.0"
+VERSION = "3.2.0"
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")
 
 logging.basicConfig(
@@ -41,16 +42,27 @@ log = logging.getLogger("tariffcheck")
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload cap
 
-# CORS: pin to product origins via ALLOWED_ORIGINS (comma-separated). When
-# unset we keep the historical wide-open default so a missing env var can't
-# take the public API down — but production should always set it: origins="*"
-# lets any third-party site drive the Claude-spending /api/analyze endpoint
-# from its visitors' browsers.
-_allowed_origins = [
-    o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()
-]
-CORS(app, origins=_allowed_origins or "*")
-if not _allowed_origins:
+# CORS: pin to product origins via ALLOWED_ORIGINS (comma-separated). On
+# Vercel *production* an unset var no longer falls open to "*" — it pins to
+# the known product origin, because origins="*" lets any third-party site
+# drive the Claude-spending /api/analyze endpoint from its visitors'
+# browsers. Local/dev (no VERCEL_ENV) keeps the open default.
+PROD_ORIGIN = "https://tariffcheck-zeta.vercel.app"
+
+
+def _resolve_origins(allowed_origins_env, vercel_env):
+    explicit = [o.strip() for o in (allowed_origins_env or "").split(",") if o.strip()]
+    if explicit:
+        return explicit
+    if (vercel_env or "").strip().lower() == "production":
+        return [PROD_ORIGIN]
+    return "*"
+
+
+_origins = _resolve_origins(os.getenv("ALLOWED_ORIGINS", ""),
+                            os.getenv("VERCEL_ENV", ""))
+CORS(app, origins=_origins)
+if _origins == "*":
     logging.getLogger("tariffcheck").warning(
         "ALLOWED_ORIGINS not set — CORS is wide open; set it in production.")
 
@@ -103,7 +115,7 @@ def api_key_firm():
         return None
     for pair in raw.split(","):
         key, _, firm = pair.strip().partition(":")
-        if key and key == supplied:
+        if key and hmac.compare_digest(key, supplied):
             return firm or "unnamed"
     return None
 
@@ -409,9 +421,22 @@ def analyze_with_claude(invoice_text):
         raise ModelResponseError(f"Unparseable model output: {e}") from e
 
 
-def generate_protest_letter(findings, total_savings, fta_type=None, remedy_summary=None):
+def _sanitize_firm_name(value):
+    """One printable line, bounded length — letterhead input can't break the
+    letter structure or smuggle control characters."""
+    cleaned = re.sub(r"[\x00-\x1f\x7f]+", " ", str(value or ""))
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned[:80] or None
+
+
+def generate_protest_letter(findings, total_savings, fta_type=None, remedy_summary=None,
+                            preparer_firm=None):
     # Only verified findings may reach the legal artifact — every number below
     # was recomputed server-side against the USITC schedule by verify_findings.
+    # preparer_firm (Enterprise/pilot white-label): the API-keyed firm's name
+    # appears as the preparing office. The non-filer disclaimer is a legal
+    # statement, not branding — it survives white-labeling.
+    preparer_firm = _sanitize_firm_name(preparer_firm)
     # Remedy routing: unclaimed FTA preferences are NOT protestable under
     # §1514 (CBP rejects them; the exclusive vehicle is 19 U.S.C. 1520(d)),
     # so they are carved out of the protest into a separate advisory block.
@@ -451,13 +476,24 @@ claim separately.{fta_deadline_line}
 {fta_items}
 Estimated FTA recovery: ${fta_total:,.2f}"""
 
-    signature = """This document is a draft prepared with TariffCheck and verified against the
+    if preparer_firm:
+        prepared_clause = (
+            f"This document is a draft prepared for {preparer_firm} with "
+            "TariffCheck's verification engine and checked against the")
+        preparer_block = f"Prepared by: {preparer_firm}\n\n"
+    else:
+        prepared_clause = (
+            "This document is a draft prepared with TariffCheck and verified "
+            "against the")
+        preparer_block = ""
+
+    signature = f"""{prepared_clause}
 official USITC HTS 2026 schedule. It must be reviewed, completed (entry
 numbers, liquidation dates, protestant details), and filed by the importer of
 record or a licensed customs broker. TariffCheck does not file with CBP and
 does not act as the importer's representative.
 
-Submitted by (importer of record / licensed customs broker):
+{preparer_block}Submitted by (importer of record / licensed customs broker):
 
 Name: ______________________________  IOR / License No.: ____________________
 
@@ -668,12 +704,17 @@ def analyze():
         analysis = verify_findings(analysis)
         remedy_summary = build_remedy_summary(**entry_facts)
         analysis['remedy_summary'] = remedy_summary
+        # White-label (Enterprise/pilot): only an API-keyed firm gets its name
+        # on the draft — anonymous callers can't forge letterhead.
         analysis['protest_letter'] = generate_protest_letter(
             analysis.get('findings', []),
             analysis.get('total_savings', 0),
             analysis.get('fta_type'),
             remedy_summary=remedy_summary,
+            preparer_firm=firm,
         )
+        if firm:
+            analysis['white_label'] = {"preparer_firm": _sanitize_firm_name(firm)}
         analysis['meta'] = {
             "demo": False,
             "model": CLAUDE_MODEL,

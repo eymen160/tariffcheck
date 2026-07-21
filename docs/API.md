@@ -444,3 +444,23 @@ Section 301 rates are now applied at **line level** from the USITC "China Tariff
 ### Auth (pilot)
 
 Setting `TARIFFCHECK_API_KEYS` (comma-separated `key:FirmName` pairs) enables `X-API-Key` authentication: valid keys bypass the anonymous per-IP rate limit and usage is logged per firm. Setting `ALLOWED_ORIGINS` pins CORS. `LEADS_WEBHOOK_URL` forwards `/api/leads` submissions to a durable inbox; the leads endpoint also accepts `firm`, `entries_per_month`, `software` and a `website` honeypot field.
+
+---
+
+## v3.2 additions (July 2026) — white-label drafts, CORS/auth hardening
+
+Additive and backward compatible.
+
+### White-label protest drafts (Enterprise/pilot)
+
+When a request to `POST /api/analyze` carries a valid `X-API-Key`, the firm name registered for that key (`TARIFFCHECK_API_KEYS` → `key:FirmName`) is used as the preparing office on the generated letter:
+
+- The signature block reads "This document is a draft prepared for *FirmName* with TariffCheck's verification engine…" and adds a `Prepared by: FirmName` line.
+- The response gains `"white_label": {"preparer_firm": "FirmName"}`.
+- Anonymous (un-keyed) requests always get the plain TariffCheck draft — letterhead cannot be forged by an unauthenticated caller.
+- The non-filer disclaimer ("TariffCheck does not file with CBP…") is a legal statement, not branding: it survives white-labeling. Firm names are sanitized to one printable line (≤80 chars).
+
+### Hardening
+
+- API-key comparison now uses `hmac.compare_digest` (constant-time).
+- CORS: on Vercel **production**, an unset `ALLOWED_ORIGINS` no longer falls open to `*` — it pins to `https://tariffcheck-zeta.vercel.app`. Explicit `ALLOWED_ORIGINS` still wins; local/dev stays open.
