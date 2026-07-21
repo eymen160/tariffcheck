@@ -1,0 +1,14 @@
+{"ruling_number": "N361493", "true_code": "7616.99.5190", "decoy_code": "9503.00.0073", "description": "spray shield", "flagged": false, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N356185", "true_code": "9503.00.0073", "decoy_code": "9030.39.0100", "description": "\u201cBluey Gardening Set\u201d", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N355574", "true_code": "9030.39.0100", "decoy_code": "7616.99.5190", "description": "LED electrical properties tester", "flagged": true, "match_depth": 4, "suggested": "9030.90.25.00", "http": 200}
+{"ruling_number": "N347828", "true_code": "8543.70.9820", "decoy_code": "7117.90.9000", "description": "effects pedal", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N352325", "true_code": "8541.42.0080", "decoy_code": "7117.90.9000", "description": "solar cells", "flagged": true, "match_depth": 4, "suggested": "8541.41.00.00", "http": 200}
+{"ruling_number": "N349243", "true_code": "7117.90.9000", "decoy_code": "9603.30.6000", "description": "origin", "flagged": false, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N336645", "true_code": "9603.30.6000", "decoy_code": "9208.10.0000", "description": "two painting sets", "flagged": false, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N335478", "true_code": "9208.10.0000", "decoy_code": "9403.20.0082", "description": "\u201cHappy Loop\u201d music box with note cards", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N361192", "true_code": "9403.20.0082", "decoy_code": "3926.90.9989", "description": "metal furniture", "flagged": true, "match_depth": 4, "suggested": "9403.90.8041", "http": 200}
+{"ruling_number": "N347075", "true_code": "3926.90.9989", "decoy_code": "9401.61.6011", "description": "passport holder gift set", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N362489", "true_code": "9401.61.6011", "decoy_code": "8708.29.5125", "description": "sofa sectional and sofa sectional components", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N337606", "true_code": "8708.29.5125", "decoy_code": "9403.60.80", "description": "accessory panel kit with or without a cargo rack", "flagged": false, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "H325523", "true_code": "9403.60.80", "decoy_code": "6307.90.9891", "description": "Tariff classification of fireplace mantels with built-in electric fireplaces", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}
+{"ruling_number": "N353699", "true_code": "6307.90.9891", "decoy_code": "8424.89.9000", "description": "textile bag charms", "flagged": true, "match_depth": 0, "suggested": null, "http": 200}

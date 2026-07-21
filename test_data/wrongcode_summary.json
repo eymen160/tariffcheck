@@ -1,0 +1,23 @@
+{
+  "protocol": "wrong-code recovery v2: sanitized full CROSS ruling texts, different-chapter decoy, verified-findings-only, seed=2026, single run",
+  "n_scored": 198,
+  "n_errors": 1,
+  "overall": {
+    "n": 198,
+    "flag_rate": 0.9596,
+    "recovery@10": 0.0051,
+    "recovery@8": 0.0606,
+    "recovery@6": 0.0909,
+    "recovery@4": 0.3232
+  },
+  "full_text_only": {
+    "n": 198,
+    "flag_rate": 0.9596,
+    "recovery@10": 0.0051,
+    "recovery@8": 0.0606,
+    "recovery@6": 0.0909,
+    "recovery@4": 0.3232
+  },
+  "snippet_only": null,
+  "reference": "ATLAS (arXiv 2509.18400): 40% @10, 57.5% @6 \u2014 full ruling texts, no decoy; comparable in spirit only"
+}

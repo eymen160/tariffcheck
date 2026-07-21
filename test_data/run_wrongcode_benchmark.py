@@ -24,6 +24,19 @@ Protocol (documented for reproducibility):
   task includes rejecting a decoy code (different). Numbers are comparable
   in spirit, not split-identical — say so wherever results are published.
 
+Descriptions: the corpus one-liners are CROSS search-index snippets (often
+2-4 words — protocol v1 using them was invalidated for measuring nothing but
+description starvation). v2 fetches each ruling's FULL text from
+rulings.cbp.gov/api/ruling/{number} and uses the product-description section,
+sanitized against answer leakage:
+  - the header block (which contains "TARIFF NO.: <answer>") is dropped,
+  - text is cut before the decision sentence ("The applicable subheading…"),
+  - every remaining HTS-shaped token and "heading/subheading NNNN" mention is
+    excised.
+Rulings whose sanitized description comes back too short fall back to the
+corpus one-liner and are tagged desc_source="snippet"; the summary reports
+full-text-only metrics separately.
+
 Run: python3 run_wrongcode_benchmark.py [N] [--base URL]
 Results stream to wrongcode_results.jsonl (resumable: already-done ruling
 numbers are skipped on restart). Summary printed at the end and written to
@@ -31,6 +44,7 @@ wrongcode_summary.json.
 """
 import json
 import random
+import re
 import sys
 import time
 import urllib.error
@@ -41,8 +55,64 @@ HERE = Path(__file__).parent
 BASE = "https://tariffcheck-zeta.vercel.app"
 OUT = HERE / "wrongcode_results.jsonl"
 SUMMARY = HERE / "wrongcode_summary.json"
+TEXT_CACHE = HERE / "ruling_texts_cache.json"
 SEED = 2026
 PACE_SECONDS = 32  # 10 req / 300 s anonymous limit, with margin
+CROSS_API = "https://rulings.cbp.gov/api/ruling/"
+MIN_DESC_CHARS = 80
+MAX_DESC_CHARS = 1400
+
+_HTS_TOKEN_RE = re.compile(r"\b\d{4}\.\d{2}(?:\.\d{2}){0,2}\d*\b")
+_HEADING_RE = re.compile(
+    r"\b(?:sub)?heading[s]?\s+\d{4}(?:\.\d{2})*(?:\s*,?\s*(?:HTSUS|HTS))?",
+    re.IGNORECASE)
+_CHAPTER_RE = re.compile(r"\bchapter\s+\d{1,2}\b", re.IGNORECASE)
+
+
+def sanitize_ruling_text(raw):
+    """Product-description section of a CROSS ruling with the answer excised.
+    Returns None when no usable description survives."""
+    text = raw.replace("\r", " ")
+    # Drop everything up to the request sentence — the header above it
+    # carries "TARIFF NO.: <answer>" and the CLA-2-NN chapter hint.
+    m = re.search(r"requested a tariff classification ruling[.:]?", text,
+                  re.IGNORECASE)
+    if m:
+        text = text[m.end():]
+    # Cut before the decision. Several phrasings appear across decades.
+    for stop in (r"The applicable subheading", r"The applicable tariff",
+                 r"is classified (?:in|under)", r"is provided for in"):
+        m = re.search(stop, text, re.IGNORECASE)
+        if m:
+            text = text[:m.start()]
+    # Excise any surviving code-shaped tokens or heading references.
+    text = _HTS_TOKEN_RE.sub("[code]", text)
+    text = _HEADING_RE.sub("[heading]", text)
+    text = _CHAPTER_RE.sub("[chapter]", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) < MIN_DESC_CHARS:
+        return None
+    return text[:MAX_DESC_CHARS]
+
+
+def full_description(ruling_number):
+    """Sanitized full-text description, cached on disk across runs."""
+    cache = {}
+    if TEXT_CACHE.exists():
+        cache = json.loads(TEXT_CACHE.read_text())
+    if ruling_number in cache:
+        return cache[ruling_number]
+    desc = None
+    try:
+        with urllib.request.urlopen(CROSS_API + ruling_number, timeout=30) as r:
+            raw = json.load(r).get("text", "")
+        desc = sanitize_ruling_text(raw)
+    except Exception as e:  # noqa: BLE001 — cache the miss, fall back
+        print(f"  CROSS fetch failed for {ruling_number}: {e}")
+    cache[ruling_number] = desc
+    TEXT_CACHE.write_text(json.dumps(cache))
+    time.sleep(1.0)  # be polite to rulings.cbp.gov
+    return desc
 
 
 def build_sample(n):
@@ -65,6 +135,7 @@ def invoice_text(rec):
     return (
         "COMMERCIAL INVOICE\n"
         f"Item: {rec['description']}\n"
+        f"Product details: {rec['bench_description']}\n"
         f"HTS: {rec['decoy_code']}  "
         f"Value: ${rec['declared_value']:,.2f}  "
         f"Origin: {rec.get('origin') or 'Unknown'}\n"
@@ -127,13 +198,20 @@ def main():
     todo = [r for r in sample if r["ruling_number"] not in done]
     print(f"sample={len(sample)} done={len(done)} todo={len(todo)} base={base}")
 
+    # Resolve full-text descriptions up front (cached; ~1s/ruling first time).
+    for rec in todo:
+        full = full_description(rec["ruling_number"])
+        rec["bench_description"] = full or rec["description"]
+        rec["desc_source"] = "full_text" if full else "snippet"
+
     with OUT.open("a") as out:
         for i, rec in enumerate(todo):
             started = time.time()
             row = {"ruling_number": rec["ruling_number"],
                    "true_code": rec["hts_code"],
                    "decoy_code": rec["decoy_code"],
-                   "description": rec["description"]}
+                   "description": rec["description"],
+                   "desc_source": rec["desc_source"]}
             try:
                 status, analysis = post_analyze(base, invoice_text(rec))
                 row.update(score(analysis, rec))
@@ -162,14 +240,29 @@ def main():
     if not ok:
         print("no scorable rows")
         return
+    def metrics(subset):
+        if not subset:
+            return None
+        return {
+            "n": len(subset),
+            "flag_rate": round(
+                sum(1 for r in subset if r["flagged"]) / len(subset), 4),
+            **{f"recovery@{d}": round(
+                sum(1 for r in subset if (r["match_depth"] or 0) >= d)
+                / len(subset), 4) for d in (10, 8, 6, 4)},
+        }
+
     summary = {
-        "protocol": "wrong-code recovery, different-chapter decoy, seed=2026",
+        "protocol": ("wrong-code recovery v2: sanitized full CROSS ruling "
+                     "texts, different-chapter decoy, verified-findings-only, "
+                     "seed=2026, single run"),
         "n_scored": len(ok),
         "n_errors": len(rows) - len(ok),
-        "flag_rate": round(sum(1 for r in ok if r["flagged"]) / len(ok), 4),
-        **{f"recovery@{d}": round(
-            sum(1 for r in ok if (r["match_depth"] or 0) >= d) / len(ok), 4)
-           for d in (10, 8, 6, 4)},
+        "overall": metrics(ok),
+        "full_text_only": metrics(
+            [r for r in ok if r.get("desc_source") == "full_text"]),
+        "snippet_only": metrics(
+            [r for r in ok if r.get("desc_source") == "snippet"]),
         "reference": "ATLAS (arXiv 2509.18400): 40% @10, 57.5% @6 — "
                      "full ruling texts, no decoy; comparable in spirit only",
     }

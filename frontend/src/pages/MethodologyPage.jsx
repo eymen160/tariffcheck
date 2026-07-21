@@ -73,11 +73,39 @@ export default function MethodologyPage() {
         </section>
 
         <section>
-          <h2><span className="legal-num">04</span>What this benchmark does NOT claim</h2>
+          <h2><span className="legal-num">04</span>The adversarial benchmark: wrong-code recovery</h2>
           <p>
-            Honesty about scope is the point of this page. The benchmark demonstrates that the
+            The harder question: when an entry is declared under the <em>wrong</em> code, does the audit
+            catch it? We sampled 198 CROSS rulings (seeded, reproducible), used each ruling's full text
+            with the answer excised in three sanitization layers, and declared every line under a
+            deliberately wrong code from a <em>different chapter</em> — so the declared code leaks nothing.
+            Only deterministically verified findings score. Results, July 2026, production API:
+          </p>
+          <p>
+            <strong>96.0%</strong> wrong-code flag rate — the audit detects that the declared code is wrong.<br />
+            Suggested-code recovery of CBP's exact ruling code: <strong>32.3%</strong> at heading (4-digit),
+            <strong> 9.1%</strong> at subheading (6-digit), <strong>6.1%</strong> at the US rate line (8-digit).
+          </p>
+          <p>
+            The honest read: detection plus verified dollars is the auditor's production job — 96.0% flag
+            rate with the 1.0% high-confidence false-alarm rate above is that story. Exact-code recovery
+            from ruling text alone is the frontier: the closest public reference (ATLAS, arXiv 2509.18400)
+            reports 40% at 10-digit for a purpose-built fine-tuned 70B model under a different protocol.
+            Our default model is a cost-efficient tier and the prompt is precision-biased by design — a
+            confidently hallucinated code would be worse than none. We publish this baseline so the
+            roadmap (stronger model tier, CROSS-retrieval grounding) can be measured against it. Full
+            protocol, the invalidated v1 run, and the reproduction command:
+            <code> test_data/BENCHMARK.md</code> in the open repository.
+          </p>
+        </section>
+
+        <section>
+          <h2><span className="legal-num">05</span>What these benchmarks do NOT claim</h2>
+          <p>
+            Honesty about scope is the point of this page. These benchmarks demonstrate that the
             verification layer's schedule math is sound — codes resolve, rates are real, no false
-            accusations against CBP-ruled classifications. It does <strong>not</strong> claim that every
+            accusations against CBP-ruled classifications — and that wrong codes get caught. They do
+            <strong> not</strong> claim that every
             AI-suggested reclassification is legally correct for your goods: whether a code's legal text
             actually fits specific merchandise is a classification judgment that belongs to a licensed
             customs broker, which is why every TariffCheck output is a draft for professional review.
@@ -89,7 +117,7 @@ export default function MethodologyPage() {
         </section>
 
         <section>
-          <h2><span className="legal-num">05</span>A standing invitation</h2>
+          <h2><span className="legal-num">06</span>A standing invitation</h2>
           <p>
             If any vendor in this category publishes an equivalent, reproducible benchmark — dataset,
             method, and false-positive rate — we will link to it here. Until then, ask them for one.
