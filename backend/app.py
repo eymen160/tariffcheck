@@ -27,10 +27,11 @@ from hts_database import (
 from verifier import verify_findings, VERIFICATION_SOURCE
 from remedy import build_remedy_summary
 from batch_audit import run_batch_audit, BatchValidationError
+from entry7501 import parse_7501, Form7501Error
 
 load_dotenv()
 
-VERSION = "3.2.0"
+VERSION = "3.3.0"
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5")
 
 logging.basicConfig(
@@ -730,12 +731,41 @@ def analyze():
 @app.route('/api/analyze-batch', methods=['POST'])
 def analyze_batch():
     """Deterministic bulk screen for brokers: 1-100 entry lines audited
-    against the USITC schedule + curated patterns. Zero Claude calls."""
-    payload = request.get_json(silent=True)
+    against the USITC schedule + curated patterns. Zero Claude calls.
+
+    Accepts either JSON rows (the original contract) or a multipart CBP Form
+    7501 PDF (`file` field) — the entry summary is parsed to ES-003 rows and
+    run through the identical audit, so brokers can drop the 7501 straight in
+    instead of hand-building a CSV."""
+    source = None
+    if request.files and 'file' in request.files:
+        file_bytes = request.files['file'].read()
+        if not file_bytes.startswith(b'%PDF-'):
+            return api_error(
+                422, "unreadable_file",
+                "We couldn't read this file. Upload a CBP Form 7501 PDF, "
+                "or send JSON rows.",
+            )
+        try:
+            parsed = parse_7501(file_bytes)
+        except Form7501Error as e:
+            return api_error(422, e.code, e.message)
+        payload = {"rows": parsed["rows"]}
+        source = {
+            "type": "7501_pdf",
+            "entry_no": parsed["header"].get("entry_no"),
+            "rows_parsed": len(parsed["rows"]),
+            "warnings": parsed["warnings"],
+        }
+    else:
+        payload = request.get_json(silent=True)
+
     try:
         result = run_batch_audit(payload)
     except BatchValidationError as e:
         return api_error(400, e.code, e.message)
+    if source is not None:
+        result["source"] = source
     return jsonify(result)
 
 

@@ -464,3 +464,57 @@ When a request to `POST /api/analyze` carries a valid `X-API-Key`, the firm name
 
 - API-key comparison now uses `hmac.compare_digest` (constant-time).
 - CORS: on Vercel **production**, an unset `ALLOWED_ORIGINS` no longer falls open to `*` — it pins to `https://tariffcheck-zeta.vercel.app`. Explicit `ALLOWED_ORIGINS` still wins; local/dev stays open.
+
+---
+
+## v3.3 additions (July 2026) — CBP Form 7501 PDF ingestion
+
+Additive and backward compatible. `POST /api/analyze-batch` now also accepts a CBP Form 7501 (Entry Summary) PDF, so brokers drop the entry summary straight into the batch audit instead of hand-building JSON/CSV rows.
+
+### POST /api/analyze-batch — multipart PDF
+
+Send `multipart/form-data` with a `file` field containing the 7501 PDF (same convention as `/api/analyze`). The JSON-rows contract is unchanged; a request with a `file` field ignores any JSON body.
+
+The PDF is parsed deterministically (no Claude calls) into ES-003 rows and run through the **identical** batch audit:
+
+| 7501 block | Parsed as | Row field |
+|---|---|---|
+| Block 1 (Entry Number, `XXX-NNNNNNN-N`) | header | `entry_no` on every row |
+| Block 6 (Entry Date) | header, ISO `YYYY-MM-DD` | `entry_date` on every row |
+| Block 10 (Country of Origin) | header fallback | `origin` when no line-level code |
+| Block 12 (Importer No.) | header only | — (not part of the row schema) |
+| Column 27 (Line No.) | per line | `line_no`, `row_id` |
+| Column 28 (Description) | per line | `description` |
+| Column 29 (HTSUS No., 10-digit `NNNN.NN.NNNN`) | per line, validated | `hts_code` |
+| Column 32 (Entered Value) | per line | `declared_value` |
+| Column 34 (Duty and IR Tax) | per line | `duty_paid` (drives actual-dollar savings) |
+
+Multi-page 7501s are supported — line items on continuation pages are parsed the same way. Only machine-generated PDFs (ABI software: NetCHB, CargoWise, …) work; scanned/image PDFs are rejected honestly instead of producing garbage.
+
+### Success 200 — `source` block
+
+The response keeps the exact batch shape (`summary` + `results`) and gains a `source` block (PDF uploads only — JSON-row responses are unchanged):
+
+```json
+"source": {
+  "type": "7501_pdf",
+  "entry_no": "231-1234567-8",
+  "rows_parsed": 3,
+  "warnings": [
+    "page 2: '9403.6.80 1,000 NO 5,000 Free 0.00': HTS-like token '9403.6.80' is not a 10-digit code — skipped."
+  ]
+}
+```
+
+`warnings` is the honest-degradation channel: anything unparseable (malformed HTS token, missing entered value, missing header block) is reported there with page/line context — never silently dropped. A row with a valid HTS code but no readable entered value still audits (savings math is skipped for it, per the existing row rules).
+
+### Errors
+
+| Status | Body |
+|---|---|
+| 422 | `{"error":"unreadable_file","message":"We couldn't read this file. Upload a CBP Form 7501 PDF, or send JSON rows."}` — the uploaded file is not a PDF |
+| 422 | `{"error":"unreadable_file","message":"No extractable text in this PDF — it looks scanned. Upload the machine-generated 7501 from your ABI software, not a scan."}` |
+| 422 | `{"error":"not_a_7501","message":"No HTS line items found — this does not look like a CBP Form 7501 entry summary."}` |
+| 400 | `{"error":"too_many_rows","message":"Maximum 100 rows per request — send in chunks."}` — 7501s with more than 100 lines exceed the batch cap |
+
+Error bodies never contain `summary`/`results` — a failed parse can never look like a clean audit.
